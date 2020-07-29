@@ -42,8 +42,11 @@ The `examples` directory contains sample apps for Kotlin and Java.
 
 # Build
 ```
-# Build all packages
+# Build all projects
 ./gradlew build
+
+# Build a single project
+./gradlew :packages:sdk:build
 ```
 
 # Publish To Maven

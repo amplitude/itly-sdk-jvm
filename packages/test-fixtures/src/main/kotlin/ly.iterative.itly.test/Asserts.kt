@@ -1,5 +1,6 @@
-package ly.iterative.itly;
+package ly.iterative.itly.test
 
+import ly.iterative.itly.*
 import okhttp3.mockwebserver.*
 import org.junit.jupiter.api.Assertions
 

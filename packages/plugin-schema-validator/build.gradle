@@ -6,6 +6,8 @@ plugins {
 dependencies {
     implementation(project(":packages:sdk"))
     implementation("com.networknt:json-schema-validator:1.0.42")
+
+    testImplementation(project(":packages:test-fixtures"))
 }
 
 apply from: rootProject.file('gradle/publish-java.gradle')
