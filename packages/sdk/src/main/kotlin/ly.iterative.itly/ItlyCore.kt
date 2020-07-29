@@ -163,6 +163,7 @@ class ItlyCore: Plugin {
         }
     }
 
+    @Throws(java.lang.IllegalArgumentException::class)
     override fun validate(event: Event): ValidationResponse {
         var pluginId = this.id();
 
