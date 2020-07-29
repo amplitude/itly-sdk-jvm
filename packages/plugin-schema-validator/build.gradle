@@ -3,6 +3,10 @@ plugins {
     id 'maven-publish'
 }
 
+//test {
+//    testLogging.showStandardStreams = true
+//}
+
 dependencies {
     implementation(project(":packages:sdk"))
     implementation("com.networknt:json-schema-validator:1.0.42")
