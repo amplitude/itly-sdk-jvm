@@ -27,4 +27,15 @@ class EventWithAllProperties(
         ENUM_1("Enum1"),
         ENUM_2("Enum2")
     }
+
+    companion object {
+        val VALID_ALL_PROPS = EventWithAllProperties(
+            requiredArray = arrayOf("required", "strings"),
+            requiredBoolean = true,
+            requiredEnum = EventWithAllProperties.RequiredEnum.ENUM_1,
+            requiredInteger = 42,
+            requiredNumber = 2.0,
+            requiredString = "don't forget this. it's required."
+        )
+    }
 }

@@ -11,5 +11,12 @@ class Group(
         *(if (optionalString != null) arrayOf("optionalString" to optionalString) else arrayOf()),
         "requiredBoolean" to requiredBoolean
     )
-)
+) {
+    companion object {
+        val VALID_ALL_PROPS = Group(
+                requiredBoolean = false,
+                optionalString = "I'm optional!"
+        )
+    }
+}
 

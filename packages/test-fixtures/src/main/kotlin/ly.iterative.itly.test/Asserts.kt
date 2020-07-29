@@ -4,6 +4,8 @@ import ly.iterative.itly.*
 import okhttp3.mockwebserver.*
 import org.junit.jupiter.api.Assertions
 
+const val NOT_INITIALIZED_ERROR_MESSAGE = "Itly is not initialized. Call Itly.load(Options(...))"
+
 class Asserts {
     companion object {
         fun assertValidTrackerRequest(
@@ -44,6 +46,11 @@ class Asserts {
                     body.contains(trackTypeText),
                     "should contain track type in json body. $body"
             )
+        }
+
+        fun assertThrowsErrorNotInitialized(executable: () -> Unit) {
+            val exception = Assertions.assertThrows(Exception::class.java, executable)
+            Assertions.assertEquals(NOT_INITIALIZED_ERROR_MESSAGE, exception.message)
         }
     }
 }

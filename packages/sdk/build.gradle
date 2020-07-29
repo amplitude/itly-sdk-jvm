@@ -17,7 +17,8 @@ repositories {
 dependencies {
     // TODO: Remove to seperate module and load seperately in plugins
     implementation(rootProject.findProperty("orgJsonImplementation"))
-    testImplementation(":packages:test-fixtures")
+
+    testImplementation(project(":packages:test-fixtures"))
 }
 
 apply from: rootProject.file('gradle/publish-java.gradle')

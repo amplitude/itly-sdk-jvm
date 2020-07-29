@@ -1,6 +1,7 @@
 package ly.iterative.itly
 
 import java.lang.Error
+import java.lang.IllegalStateException
 import java.util.HashMap
 
 class ItlyCore: Plugin {
@@ -9,11 +10,12 @@ class ItlyCore: Plugin {
     private val enabledPlugins: ArrayList<Plugin> = arrayListOf()
 
     private val disabled: Boolean
+        @Throws(IllegalStateException::class)
         get() {
-            if (!this::config.isInitialized) {
-                throw Error("Itly is not initialized. Call Itly.load(Options(...))")
+            if (this::config.isInitialized) {
+                return config.disabled
             }
-            return config.disabled
+            throw IllegalStateException("Itly is not initialized. Call Itly.load(Options(...))")
         }
 
     override fun id(): String {
@@ -92,7 +94,7 @@ class ItlyCore: Plugin {
     }
 
     override fun identify(userId: String?, properties: Properties?) {
-        if (config.disabled) {
+        if (this.disabled) {
             return
         }
 
@@ -114,7 +116,7 @@ class ItlyCore: Plugin {
     }
 
     override fun group(userId: String?, groupId: String, properties: Properties?) {
-        if (config.disabled) {
+        if (this.disabled) {
             return
         }
 
@@ -136,7 +138,7 @@ class ItlyCore: Plugin {
     }
 
     override fun track(userId: String?, event: Event) {
-        if (config.disabled) {
+        if (this.disabled) {
             return
         }
 

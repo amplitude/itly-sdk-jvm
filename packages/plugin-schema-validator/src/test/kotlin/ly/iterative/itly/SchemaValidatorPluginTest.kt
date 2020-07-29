@@ -5,84 +5,71 @@ import ly.iterative.itly.test.events.*
 import org.junit.jupiter.api.*
 import java.lang.IllegalArgumentException
 
-val context = Context(
-    requiredString = "Required context string"
-)
-
-fun getSchemaValidator(
-    validationOptions: ValidationOptions = ValidationOptions()
-): SchemaValidatorPlugin {
-    val schemaValidatorPlugin = SchemaValidatorPlugin(Schemas.DEFAULT_SCHEMA, validationOptions)
-
-    schemaValidatorPlugin.load(OptionsCore(
-        context = context,
-        validationOptions = validationOptions
-    ))
-
-    return schemaValidatorPlugin
-}
-
-val invalidEvent = EventMaxIntForTest(
-    intMax10 = 20
-)
-const val invalidEventExpectedErrorMessage = "(Itly) Error validating event EventMaxIntForTest (\$.intMax10: must have a maximum value of 10)."
+val invalidEvent = EventMaxIntForTest.INVALID_MAX_VALUE
+const val invalidEventExpectedErrorMessage = EventMaxIntForTest.INVALID_MAX_VALUE_ERROR_MESSAGE
 
 class SchemaValidatorPluginTest {
     @Test
-    fun validate_ContextWithProperties_valid() {
-        val validation = getSchemaValidator().validate(Context(
-            requiredString = "Required context string."
-        ))
+    fun validate_contextWithProperties_valid() {
+        val validation = TestUtil.getSchemaValidator().validate(Context.VALID_ALL_PROPS)
         Assertions.assertEquals(validation.valid, true)
     }
 
     @Test
-    fun validate_GroupWithProperties_valid() {
-        val validation = getSchemaValidator().validate(Group(
-            requiredBoolean = false,
-            optionalString = "I'm optional!"
-        ))
+    fun validate_groupWithProperties_valid() {
+        val validation = TestUtil.getSchemaValidator().validate(Group.VALID_ALL_PROPS)
         Assertions.assertEquals(validation.valid, true)
     }
 
     @Test
-    fun validate_IdentifyWithProperties_valid() {
-        val validation = getSchemaValidator().validate(Identify(
-            requiredNumber = 2.0,
-            optionalArray = arrayOf("optional")
-        ))
+    fun validate_identifyWithProperties_valid() {
+        val validation = TestUtil.getSchemaValidator().validate(Identify.VALID_ALL_PROPS)
         Assertions.assertEquals(validation.valid, true)
     }
 
     @Test
-    fun validate_EventWithAllProperties_valid() {
-        val event = EventWithAllProperties(
-            requiredArray = arrayOf("required", "strings"),
-            requiredBoolean = true,
-            requiredEnum = EventWithAllProperties.RequiredEnum.ENUM_1,
-            requiredInteger = 42,
-            requiredNumber = 2.0,
-            requiredString = "don't forget this. it's required."
-        )
-        val validation = getSchemaValidator().validate(event);
+    fun validate_eventWithAllProperties_valid() {
+        val validation = TestUtil.getSchemaValidator().validate(EventWithAllProperties.VALID_ALL_PROPS);
         Assertions.assertEquals(validation.valid, true)
     }
 
     @Test
-    fun validate_InvalidEvent_notValid() {
-        val validation = getSchemaValidator().validate(invalidEvent)
+    fun validate_invalidEvent_notValid() {
+        val validation = TestUtil.getSchemaValidator().validate(invalidEvent)
         Assertions.assertEquals(validation.valid, false)
         Assertions.assertEquals(invalidEventExpectedErrorMessage, validation.message)
     }
 
     @Test
-    fun validate_InvalidEventWithErrorOnInvalid_throwsError() {
+    fun validate_invalidEventWithErrorOnInvalid_throwsError() {
         val exception = Assertions.assertThrows(IllegalArgumentException::class.java) {
-            getSchemaValidator(ValidationOptions(
+            TestUtil.getSchemaValidator(ValidationOptions(
                 errorOnInvalid = true
             )).validate(invalidEvent)
         }
 
         Assertions.assertEquals(invalidEventExpectedErrorMessage, exception.message)
+    }
+
+    @Test
+    fun itlyTrack_invalidEventWithErrorOnInvalid_throwsError() {
+        val validationOptions = ValidationOptions(
+                errorOnInvalid = true
+        )
+        val itly = TestUtil.getItly(OptionsCore(
+            plugins = arrayListOf(
+                TestUtil.getSchemaValidator(validationOptions = validationOptions)
+            ),
+            validationOptions = validationOptions
+        ))
+
+        val exception = Assertions.assertThrows(IllegalArgumentException::class.java) {
+            itly.track(user.id, EventMaxIntForTest.INVALID_MAX_VALUE)
+        }
+
+        Assertions.assertEquals(
+            EventMaxIntForTest.INVALID_MAX_VALUE_ERROR_MESSAGE,
+            exception.message
+        )
     }
 }

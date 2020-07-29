@@ -11,4 +11,11 @@ class Identify(
         *(if (optionalArray != null) arrayOf("optionalArray" to optionalArray) else arrayOf()),
         "requiredNumber" to requiredNumber
     )
-)
+) {
+    companion object {
+        val VALID_ALL_PROPS = Identify(
+            requiredNumber = 2.0,
+            optionalArray = arrayOf("optional")
+        )
+    }
+}

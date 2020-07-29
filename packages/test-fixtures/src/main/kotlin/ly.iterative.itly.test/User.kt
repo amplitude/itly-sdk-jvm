@@ -5,4 +5,8 @@ data class User(
     val companyId: String = "company-id",
     val groupId: String = "group-id",
     val apiKey: String = "api-key"
-)
+) {
+    companion object {
+        val DEFAULT = User()
+    }
+}

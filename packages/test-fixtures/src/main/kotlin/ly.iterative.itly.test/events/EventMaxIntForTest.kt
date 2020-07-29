@@ -7,6 +7,18 @@ class EventMaxIntForTest(
 ) : Event(
     name = "EventMaxIntForTest",
     properties = mapOf(
-            "intMax10" to intMax10
+        "intMax10" to intMax10
     )
-)
+) {
+    companion object {
+        val VALID = EventMaxIntForTest(
+            intMax10 = 5
+        )
+
+        val INVALID_MAX_VALUE = EventMaxIntForTest(
+            intMax10 = 20
+        )
+
+        const val INVALID_MAX_VALUE_ERROR_MESSAGE = "(Itly) Error validating event EventMaxIntForTest (\$.intMax10: must have a maximum value of 10)."
+    }
+}
