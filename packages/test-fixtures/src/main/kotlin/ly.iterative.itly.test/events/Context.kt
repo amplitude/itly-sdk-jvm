@@ -13,6 +13,8 @@ class Context(
     )
 ) {
     companion object {
+        val ERROR_MESSAGE_REQUIRED_STRING_MISSING = "(Itly) Error validating event context (\$.requiredString: is missing but it is required)."
+
         val VALID_ONLY_REQUIRED_PROPS = Context(
             requiredString = "Required context string"
         )
