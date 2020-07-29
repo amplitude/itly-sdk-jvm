@@ -11,6 +11,8 @@ application {
 
 dependencies {
     implementation(project(":packages:sdk"))
+//    implementation(project(":packages:plugin-iteratively"))
+    implementation 'ly.iterative.itly:plugin-iteratively-jvm:1.0'
     implementation(project(":packages:plugin-iteratively"))
     implementation(project(":packages:plugin-schema-validator"))
 }

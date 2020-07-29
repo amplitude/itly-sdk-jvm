@@ -1,11 +1,12 @@
 plugins {
-    id 'org.jetbrains.kotlin.jvm' version '1.3.72'
+    id 'org.jetbrains.kotlin.jvm'
     id 'maven-publish'
 }
 
 dependencies {
     implementation(project(":packages:sdk"))
-    implementation(project(":packages:plugin-iteratively"))
+//    implementation(project(":packages:plugin-iteratively"))
+    implementation 'ly.iterative.itly:plugin-iteratively-jvm:1.0'
     implementation(rootProject.findProperty("jUnitImplementation"))
     implementation(rootProject.findProperty("okHttpImplementation"))
     implementation(rootProject.findProperty("mockWebServerImplementation"))
