@@ -1,0 +1,19 @@
+package ly.iterative.itly
+
+abstract class PluginBase: Plugin {
+    override fun load(options: OptionsCore) {}
+    override fun alias(userId: String, previousId: String?) {}
+    override fun identify(userId: String?, properties: Properties?) {}
+    override fun group(userId: String?, groupId: String, properties: Properties?) {}
+    override fun track(userId: String?, event: Event) {}
+    override fun reset() {}
+    override fun validate(event: Event): ValidationResponse {
+        return ValidationResponse(
+            valid = true,
+            pluginId = this.id()
+        )
+    }
+    override fun validationError(validation: ValidationResponse, event: Event) {}
+    override fun flush() {}
+    override fun shutdown() {}
+}

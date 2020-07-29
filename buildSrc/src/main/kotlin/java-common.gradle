@@ -1,0 +1,23 @@
+//// Common settings for projects that already apply the 'java' plugin
+//
+//tasks.withType(JavaCompile) {
+//    options.debug = true
+//}
+//
+//apply plugin: 'jacoco'
+//
+//// Must be after sourceSets closure
+//jacocoTestReport {
+//    dependsOn tasks.test
+//
+//    //noinspection GroovyAssignabilityCheck
+//    sourceSets sourceSets.main
+//    reports {
+//        html.enabled = true
+//        xml.enabled = true
+//        csv.enabled = false
+//    }
+//}
+//
+//tasks.check.dependsOn tasks.jacocoTestReport
+//rootProject.tasks.jacocoTestReport.dependsOn tasks.test
