@@ -70,12 +70,7 @@ class ItlyCore: Plugin {
         }
 
         // Validate Context
-        validate(Event(
-            name = "context",
-            properties = config.context?.properties,
-            id = "context",
-            version = "0-0-0"
-        ));
+        validate(Event("context", config.context?.properties));
     }
 
     override fun alias(userId: String, previousId: String?) {
@@ -98,11 +93,7 @@ class ItlyCore: Plugin {
             return
         }
 
-        val identify = Event(
-            name = "identify",
-            properties = properties?.properties
-        )
-
+        val identify = Event("identify", properties?.properties)
         if (shouldBeTracked(identify)) {
             enabledPlugins.forEach {
                 try {
@@ -120,11 +111,7 @@ class ItlyCore: Plugin {
             return
         }
 
-        val group = Event(
-            name = "group",
-            properties = properties?.properties
-        )
-
+        val group = Event("group", properties?.properties)
         if(shouldBeTracked(group)) {
             enabledPlugins.forEach {
                 try{
@@ -202,7 +189,7 @@ class ItlyCore: Plugin {
                 }
             }
 
-            if (config.validationOptions.errorOnInvalid) {
+            if (config.validation.errorOnInvalid) {
                 throw IllegalArgumentException("Validation Error: ${validation.message}");
             }
         }
@@ -238,9 +225,9 @@ class ItlyCore: Plugin {
 
     private fun shouldBeTracked(event: Event): Boolean {
         var shouldTrack = true;
-        if (!config.validationOptions.disabled) {
+        if (!config.validation.disabled) {
             shouldTrack = validate(event).valid;
-            if (config.validationOptions.trackInvalid) {
+            if (config.validation.trackInvalid) {
                 shouldTrack = true;
             }
         }

@@ -15,31 +15,31 @@ val OPTIONS_ERROR_ON_INVALID = ValidationOptions(
 class SchemaValidatorPluginTest {
     @Test
     fun validate_contextWithProperties_valid() {
-        val validation = TestUtil.getSchemaValidator().validate(Context.VALID_ALL_PROPS)
+        val validation = TestUtil.loadDefaultSchemaValidator().validate(Context.VALID_ALL_PROPS)
         Assertions.assertEquals(validation.valid, true)
     }
 
     @Test
     fun validate_groupWithProperties_valid() {
-        val validation = TestUtil.getSchemaValidator().validate(Group.VALID_ALL_PROPS)
+        val validation = TestUtil.loadDefaultSchemaValidator().validate(Group.VALID_ALL_PROPS)
         Assertions.assertEquals(validation.valid, true)
     }
 
     @Test
     fun validate_identifyWithProperties_valid() {
-        val validation = TestUtil.getSchemaValidator().validate(Identify.VALID_ALL_PROPS)
+        val validation = TestUtil.loadDefaultSchemaValidator().validate(Identify.VALID_ALL_PROPS)
         Assertions.assertEquals(validation.valid, true)
     }
 
     @Test
     fun validate_eventWithAllProperties_valid() {
-        val validation = TestUtil.getSchemaValidator().validate(EventWithAllProperties.VALID_ALL_PROPS);
+        val validation = TestUtil.loadDefaultSchemaValidator().validate(EventWithAllProperties.VALID_ALL_PROPS);
         Assertions.assertEquals(validation.valid, true)
     }
 
     @Test
     fun validate_invalidEvent_notValid() {
-        val validation = TestUtil.getSchemaValidator().validate(invalidEvent)
+        val validation = TestUtil.loadDefaultSchemaValidator().validate(invalidEvent)
         Assertions.assertEquals(validation.valid, false)
         Assertions.assertEquals(invalidEventExpectedErrorMessage, validation.message)
     }
@@ -47,7 +47,7 @@ class SchemaValidatorPluginTest {
     @Test
     fun validate_invalidEventWithErrorOnInvalid_throwsError() {
         val exception = Assertions.assertThrows(IllegalArgumentException::class.java) {
-            TestUtil.getSchemaValidator(OPTIONS_ERROR_ON_INVALID).validate(invalidEvent)
+            TestUtil.loadDefaultSchemaValidator(OPTIONS_ERROR_ON_INVALID).validate(invalidEvent)
         }
 
         Assertions.assertEquals(invalidEventExpectedErrorMessage, exception.message)
@@ -58,9 +58,9 @@ class SchemaValidatorPluginTest {
         val exception = Assertions.assertThrows(IllegalArgumentException::class.java) {
             TestUtil.getItly(OptionsCore(
                 plugins = arrayListOf(
-                    TestUtil.getSchemaValidator(OPTIONS_ERROR_ON_INVALID)
+                    TestUtil.loadDefaultSchemaValidator(OPTIONS_ERROR_ON_INVALID)
                 ),
-                validationOptions = OPTIONS_ERROR_ON_INVALID
+                validation = OPTIONS_ERROR_ON_INVALID
             ))
         }
 
@@ -75,9 +75,9 @@ class SchemaValidatorPluginTest {
         val itly = TestUtil.getItly(OptionsCore(
             context = Context.VALID_ALL_PROPS,
             plugins = arrayListOf(
-                TestUtil.getSchemaValidator(OPTIONS_ERROR_ON_INVALID)
+                TestUtil.loadDefaultSchemaValidator(OPTIONS_ERROR_ON_INVALID)
             ),
-            validationOptions = OPTIONS_ERROR_ON_INVALID
+            validation = OPTIONS_ERROR_ON_INVALID
         ))
 
         val exception = Assertions.assertThrows(IllegalArgumentException::class.java) {

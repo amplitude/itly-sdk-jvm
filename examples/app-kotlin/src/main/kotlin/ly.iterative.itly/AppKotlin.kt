@@ -30,7 +30,7 @@ object AppKotlin {
                     iterativelyPlugin
             ),
             logger = logger,
-            validationOptions = ValidationOptions(
+            validation = ValidationOptions(
                 trackInvalid = true,
                 errorOnInvalid = false
             )

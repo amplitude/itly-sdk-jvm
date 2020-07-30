@@ -11,12 +11,13 @@ class TestUtil {
             return itly
         }
 
-        fun getSchemaValidator(validationOptions: ValidationOptions = ValidationOptions()): SchemaValidatorPlugin {
-            val schemaValidatorPlugin = SchemaValidatorPlugin(Schemas.DEFAULT_SCHEMA, validationOptions)
+        fun loadDefaultSchemaValidator(validation: ValidationOptions = ValidationOptions()): SchemaValidatorPlugin {
+            val schemaValidatorPlugin = SchemaValidatorPlugin(Schemas.DEFAULT_SCHEMA, validation)
 
             schemaValidatorPlugin.load(OptionsCore(
+                environment = Environment.PRODUCTION,
                 context = Context.VALID_ONLY_REQUIRED_PROPS,
-                validationOptions = validationOptions
+                validation = validation
             ))
 
             return schemaValidatorPlugin
