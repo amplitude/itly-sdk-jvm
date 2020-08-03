@@ -1,11 +1,12 @@
-package ly.iterative.itly
+package ly.iterative.itly.core
 
+import ly.iterative.itly.*
 import java.lang.Error
 import java.lang.IllegalStateException
 import java.util.HashMap
 
-class ItlyCore: Plugin {
-    private lateinit var config: OptionsCore
+class Itly: Plugin {
+    private lateinit var config: Options
     private val pluginOptionsMap = HashMap<String, PluginOptions>()
     private val enabledPlugins: ArrayList<Plugin> = arrayListOf()
 
@@ -43,7 +44,7 @@ class ItlyCore: Plugin {
         })
     }
 
-    override fun load(options: OptionsCore) {
+    override fun load(options: Options) {
         if (this::config.isInitialized) {
             throw Error("Itly is already initialized. Itly.load() should only be called once.")
         }
@@ -87,6 +88,9 @@ class ItlyCore: Plugin {
             }
         }
     }
+    // NOTE: Can't use @JvmOverload above since it is an interface method
+    // NOTE: Need to manually override method instead
+    fun alias(userId: String) = alias(userId, null)
 
     override fun identify(userId: String?, properties: Properties?) {
         if (this.disabled) {
@@ -105,6 +109,9 @@ class ItlyCore: Plugin {
             }
         }
     }
+    // NOTE: Can't use @JvmOverload above since it is an interface method
+    // NOTE: Need to manually override method instead
+    fun identify(userId: String?) = identify(userId, null)
 
     override fun group(userId: String?, groupId: String, properties: Properties?) {
         if (this.disabled) {
@@ -123,6 +130,9 @@ class ItlyCore: Plugin {
             }
         }
     }
+    // NOTE: Can't use @JvmOverload above since it is an interface method
+    // NOTE: Need to manually override method instead
+    fun group(userId: String?, groupId: String) = group(userId, groupId, null)
 
     override fun track(userId: String?, event: Event) {
         if (this.disabled) {

@@ -3,6 +3,8 @@ package ly.iterative.itly
 import com.networknt.schema.JsonSchema
 import com.networknt.schema.JsonSchemaFactory
 import com.networknt.schema.SpecVersion
+import ly.iterative.itly.core.Options
+
 //import java.util.concurrent.ExecutorService
 
 //data class SchemaValidatorOptions @JvmOverloads constructor(
@@ -28,7 +30,7 @@ class SchemaValidatorPlugin @JvmOverloads constructor(
 
     override fun id(): String { return ID }
 
-    override fun load(options: OptionsCore) {
+    override fun load(options: Options) {
         // Get a reference to the SDK logger
         logger = options.logger
         logger.debug("[plugin-schema-validator] load")

@@ -8,6 +8,8 @@ import com.amplitude.api.Amplitude
 import com.amplitude.api.AmplitudeClient
 import com.amplitude.api.Identify
 import ly.iterative.itly.*
+import ly.iterative.itly.core.Options
+import ly.iterative.itly.internal.OrgJsonProperties
 import org.json.JSONArray
 import org.json.JSONObject
 
@@ -35,7 +37,7 @@ actual class AmplitudePlugin actual constructor(
         return ID
     }
 
-    override fun load(options: OptionsCore) {
+    override fun load(options: Options) {
         logger = options.logger
         logger.debug("[plugin-${id()}] load")
 

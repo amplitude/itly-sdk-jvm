@@ -4,6 +4,7 @@
 package ly.iterative.itly.segment
 
 import ly.iterative.itly.*
+import ly.iterative.itly.core.*
 import com.segment.analytics.Analytics
 import com.segment.analytics.messages.AliasMessage
 import com.segment.analytics.messages.GroupMessage
@@ -35,7 +36,7 @@ actual class SegmentPlugin actual constructor(
         return ID
     }
 
-    override fun load(options: OptionsCore) {
+    override fun load(options: Options) {
         logger = options.logger
         val builder = config.builder ?: Analytics.builder(writeKey)
         segment = builder.build()

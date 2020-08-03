@@ -4,6 +4,7 @@
 package ly.iterative.itly.mixpanel
 
 import ly.iterative.itly.*
+import ly.iterative.itly.core.*
 
 actual data class MixpanelOptions @JvmOverloads constructor(
     val builder: Any? = null
@@ -25,7 +26,7 @@ actual class MixpanelPlugin actual constructor(
         return ID
     }
 
-    override fun load(options: OptionsCore) {
+    override fun load(options: Options) {
         logger = options.logger
         logger.info("[plugin-${id()}] load")
     }

@@ -1,5 +1,6 @@
 package ly.iterative.itly
 
+import ly.iterative.itly.core.Options
 import ly.iterative.itly.test.*
 import ly.iterative.itly.test.events.*
 import org.junit.jupiter.api.*
@@ -56,11 +57,11 @@ class SchemaValidatorPluginTest {
     @Test
     fun itlyLoad_invalidContextWithErrorOnInvalid_throwsError() {
         val exception = Assertions.assertThrows(IllegalArgumentException::class.java) {
-            TestUtil.getItly(OptionsCore(
-                plugins = arrayListOf(
-                    TestUtil.loadDefaultSchemaValidator(OPTIONS_ERROR_ON_INVALID)
-                ),
-                validation = OPTIONS_ERROR_ON_INVALID
+            TestUtil.getItly(Options(
+                    plugins = arrayListOf(
+                            TestUtil.loadDefaultSchemaValidator(OPTIONS_ERROR_ON_INVALID)
+                    ),
+                    validation = OPTIONS_ERROR_ON_INVALID
             ))
         }
 
@@ -72,12 +73,12 @@ class SchemaValidatorPluginTest {
 
     @Test
     fun itlyTrack_invalidEventWithErrorOnInvalid_throwsError() {
-        val itly = TestUtil.getItly(OptionsCore(
-            context = Context.VALID_ALL_PROPS,
-            plugins = arrayListOf(
-                TestUtil.loadDefaultSchemaValidator(OPTIONS_ERROR_ON_INVALID)
-            ),
-            validation = OPTIONS_ERROR_ON_INVALID
+        val itly = TestUtil.getItly(Options(
+                context = Context.VALID_ALL_PROPS,
+                plugins = arrayListOf(
+                        TestUtil.loadDefaultSchemaValidator(OPTIONS_ERROR_ON_INVALID)
+                ),
+                validation = OPTIONS_ERROR_ON_INVALID
         ))
 
         val exception = Assertions.assertThrows(IllegalArgumentException::class.java) {

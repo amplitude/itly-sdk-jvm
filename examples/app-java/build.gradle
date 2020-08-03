@@ -13,4 +13,8 @@ dependencies {
     implementation(project(":packages:sdk"))
     implementation(project(":packages:plugin-iteratively"))
     implementation(project(":packages:plugin-schema-validator"))
+    implementation(project(":packages:test-fixtures"))
+
+    testImplementation(project(":packages:test-fixtures"))
+    testImplementation("$mockWebServerImplementation")
 }

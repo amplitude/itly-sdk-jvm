@@ -1,5 +1,6 @@
 package ly.iterative.itly
 
+import ly.iterative.itly.core.Options
 import okhttp3.mockwebserver.*
 import org.junit.jupiter.api.*
 import java.util.concurrent.TimeUnit
@@ -46,8 +47,8 @@ class IterativelyPluginTest {
                 )
             )
         )
-        iterativelyPlugin.load(OptionsCore(
-            logger = Logger.STD_OUT_AND_ERR
+        iterativelyPlugin.load(Options(
+                logger = Logger.STD_OUT_AND_ERR
         ))
     }
 

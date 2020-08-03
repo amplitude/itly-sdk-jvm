@@ -1,6 +1,8 @@
-package ly.iterative.itly
+package ly.iterative.itly.core
 
-class OptionsCore @JvmOverloads constructor(
+import ly.iterative.itly.*
+
+class Options @JvmOverloads constructor(
     /**
      * Additional context properties to add to all events. Default is none.
      */

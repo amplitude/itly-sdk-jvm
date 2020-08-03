@@ -1,5 +1,6 @@
-package ly.iterative.itly
+package ly.iterative.itly.internal
 
+import ly.iterative.itly.Properties
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject

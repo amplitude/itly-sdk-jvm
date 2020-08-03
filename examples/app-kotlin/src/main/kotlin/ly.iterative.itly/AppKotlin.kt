@@ -1,5 +1,7 @@
 package ly.iterative.itly
 
+import ly.iterative.itly.core.Itly
+import ly.iterative.itly.core.Options
 import ly.iterative.itly.test.*
 import ly.iterative.itly.test.events.*
 
@@ -22,9 +24,9 @@ object AppKotlin {
             )
         )
 
-        val itly = ItlyCore()
+        val itly = Itly()
 
-        itly.load(OptionsCore(
+        itly.load(Options(
             plugins = arrayListOf<Plugin>(
                     schemaValidatorPlugin,
                     iterativelyPlugin

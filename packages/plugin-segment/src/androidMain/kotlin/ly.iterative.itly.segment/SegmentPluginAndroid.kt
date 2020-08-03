@@ -7,6 +7,7 @@ import ly.iterative.itly.*
 import com.segment.analytics.Analytics
 import com.segment.analytics.Traits
 import android.content.Context
+import ly.iterative.itly.core.Options
 
 typealias SegmentProperties = com.segment.analytics.Properties
 
@@ -34,7 +35,7 @@ actual class SegmentPlugin actual constructor(
         return ID
     }
 
-    override fun load(options: OptionsCore) {
+    override fun load(options: Options) {
         logger = options.logger
         logger.debug("[plugin-segment] load")
 

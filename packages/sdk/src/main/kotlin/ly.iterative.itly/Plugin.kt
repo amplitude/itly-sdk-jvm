@@ -1,8 +1,10 @@
 package ly.iterative.itly
 
+import ly.iterative.itly.core.Options
+
 interface Plugin {
     fun id(): String
-    fun load(options: OptionsCore)
+    fun load(options: Options)
 
     // Tracking methods
     fun alias(userId: String, previousId: String?)

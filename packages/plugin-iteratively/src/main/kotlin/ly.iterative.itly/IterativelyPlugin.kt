@@ -1,5 +1,6 @@
 package ly.iterative.itly
 
+import ly.iterative.itly.core.Options
 import net.jodah.failsafe.Failsafe
 import net.jodah.failsafe.RetryPolicy
 import net.jodah.failsafe.function.CheckedRunnable
@@ -118,7 +119,7 @@ class IterativelyPlugin(
 
     override fun id(): String { return ID }
 
-    override fun load(options: OptionsCore) {
+    override fun load(options: Options) {
         logger = options.logger
         logger.info("[plugin-iteratively] load")
 

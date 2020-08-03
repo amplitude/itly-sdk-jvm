@@ -1,7 +1,9 @@
 package ly.iterative.itly
 
+import ly.iterative.itly.core.Options
+
 abstract class PluginBase: Plugin {
-    override fun load(options: OptionsCore) {}
+    override fun load(options: Options) {}
     override fun alias(userId: String, previousId: String?) {}
     override fun identify(userId: String?, properties: Properties?) {}
     override fun group(userId: String?, groupId: String, properties: Properties?) {}
