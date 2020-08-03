@@ -15,8 +15,7 @@ repositories {
 }
 
 dependencies {
-    // TODO: Remove to seperate module and load seperately in plugins
-    implementation(rootProject.findProperty("orgJsonImplementation"))
+    implementation("$orgJsonImplementation")
 
     testImplementation(project(":packages:test-fixtures"))
 }

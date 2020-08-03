@@ -7,9 +7,9 @@ dependencies {
     implementation(project(":packages:sdk"))
     implementation(project(":packages:plugin-iteratively"))
     implementation(project(":packages:plugin-schema-validator"))
-    implementation(rootProject.findProperty("jUnitImplementation"))
-    implementation(rootProject.findProperty("okHttpImplementation"))
-    implementation(rootProject.findProperty("mockWebServerImplementation"))
+    implementation("$jUnitImplementation")
+    implementation("$okHttpImplementation")
+    implementation("$mockWebServerImplementation")
 }
 
 apply from: rootProject.file('gradle/publish-java.gradle')

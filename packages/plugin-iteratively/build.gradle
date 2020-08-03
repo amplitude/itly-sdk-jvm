@@ -9,11 +9,11 @@ plugins {
 dependencies {
     implementation(project(":packages:sdk"))
     implementation("net.jodah:failsafe:2.4.0")
-    implementation(rootProject.findProperty("okHttpImplementation"))
-    implementation(rootProject.findProperty("orgJsonImplementation"))
+    implementation("$okHttpImplementation")
+    implementation("$orgJsonImplementation")
 
     testImplementation(project(":packages:test-fixtures"))
-    testImplementation(rootProject.findProperty("mockWebServerImplementation"))
+    testImplementation("$mockWebServerImplementation")
 }
 
 apply from: rootProject.file('gradle/publish-java.gradle')
