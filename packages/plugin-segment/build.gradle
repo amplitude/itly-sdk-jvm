@@ -88,7 +88,8 @@ kotlin {
         commonTest {
             dependencies {
                 implementation kotlin('test')
-                implementation kotlin('test-junit')
+                implementation kotlin('test-junit5')
+                implementation project(":packages:test-fixtures")
             }
         }
 
@@ -109,7 +110,7 @@ kotlin {
             dependencies {
                 implementation 'com.segment.analytics.java:analytics:2.1.1'
                 // Android has it's own org.json included by default
-                implementation 'org.json:json:20200518'
+                implementation "$orgJsonImplementation"
             }
         }
         jvmTest {

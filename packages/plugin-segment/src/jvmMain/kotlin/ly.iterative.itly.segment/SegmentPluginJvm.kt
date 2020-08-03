@@ -32,6 +32,8 @@ actual class SegmentPlugin actual constructor(
     val client: Analytics
         get() = this.segment
 
+    constructor(writeKey: String): this(writeKey, SegmentOptions())
+
     override fun id(): String {
         return ID
     }
