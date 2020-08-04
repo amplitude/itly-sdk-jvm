@@ -41,6 +41,19 @@ The `packages` directory contains all itly modules.
 The `examples` directory contains sample apps for Kotlin and Java.
 
 # Build
+
+### Setup `local.properties`
+To build for Android you need to set the `ANDROID_ROOT_SDK` path.
+
+Create a `local.properties` and set `sdk.dir` to be the path to the Android SDK on your machine.
+```
+# local.properties
+sdk.dir=/Users/path/Library/Android/sdk
+``` 
+
+There is a `local.properties.example` that can be used for reference.
+
+### Run `./gradlew build`
 ```
 # Build all projects
 ./gradlew build
