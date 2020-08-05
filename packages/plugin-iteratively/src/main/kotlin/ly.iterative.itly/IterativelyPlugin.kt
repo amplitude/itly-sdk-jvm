@@ -31,31 +31,6 @@ fun newDefaultExecutorService(threadFactory: ThreadFactory): ExecutorService {
     return Executors.newSingleThreadExecutor(threadFactory)
 }
 
-data class RetryOptions @JvmOverloads constructor(
-    val maxRetries: Int = 25, // ~1 day
-    val delayInitialSeconds: Long = 10, // 10 seconds
-    val delayMaximumSeconds: Long = 1 * 60 * 60 // = 1 hr
-)
-
-data class IterativelyOptions @JvmOverloads constructor(
-    val url: String,
-    val environment: Environment = Environment.DEVELOPMENT,
-    val omitValues: Boolean = false,
-    val batchSize: Int = 100,
-    val flushQueueSize: Long = 10,
-    val flushIntervalMs: Long = 100,
-
-    // TODO:
-    //  Remove disabled here, use itly.disablePlugin() instead
-    //  Do we need to stop anything else on disabled? Threads/scheduled tasks
-    val disabled: Boolean = false,
-
-    // Java/Android specific
-    val threadFactory: ThreadFactory = DEFAULT_THREAD_FACTORY,
-    val networkExecutor: ExecutorService = newDefaultExecutorService(threadFactory),
-    val retryOptions: RetryOptions = RetryOptions()
-)
-
 internal class AuthInterceptor(apiKey: String) : Interceptor {
     private val authorization: String = "Bearer $apiKey"
 
