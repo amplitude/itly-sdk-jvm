@@ -4,7 +4,7 @@ plugins {
 }
 
 dependencies {
-    implementation(project(":packages:sdk"))
+    implementation(project(":packages:sdk-core"))
     implementation(project(":packages:plugin-iteratively"))
     implementation(project(":packages:plugin-schema-validator"))
     implementation("$jUnitImplementation")

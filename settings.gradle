@@ -10,7 +10,7 @@
 rootProject.name = "itly-sdk-jvm"
 
 // Itly Core
-include("packages:sdk")
+include("packages:sdk-core")
 include("packages:plugin-iteratively")
 include("packages:plugin-schema-validator")
 

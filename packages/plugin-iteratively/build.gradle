@@ -7,7 +7,7 @@ plugins {
 }
 
 dependencies {
-    implementation(project(":packages:sdk"))
+    implementation(project(":packages:sdk-core"))
     implementation("net.jodah:failsafe:2.4.0")
     implementation("$okHttpImplementation")
     implementation("$orgJsonImplementation")

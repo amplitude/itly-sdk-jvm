@@ -36,7 +36,7 @@ subprojects {
 }
 
 def kotlinProjects = [
-    'sdk',
+    'sdk-core',
     'plugin-iteratively',
     'plugin-schema-validator',
     'app-kotlin'
