@@ -22,9 +22,7 @@ public class AppJava {
             Environment.PRODUCTION,
             new ArrayList<Plugin>(List.<Plugin>of(
                 iterativelyPlugin,
-                new SchemaValidatorPlugin(
-                    Schemas.DEFAULT_SCHEMA
-                )
+                new SchemaValidatorPlugin(Schemas.DEFAULT)
             )),
             false,
             validation

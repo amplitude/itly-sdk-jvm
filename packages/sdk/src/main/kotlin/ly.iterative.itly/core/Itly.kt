@@ -1,6 +1,7 @@
 package ly.iterative.itly.core
 
 import ly.iterative.itly.*
+import ly.iterative.itly.internal.OrgJsonProperties
 import java.lang.Error
 import java.util.HashMap
 import kotlin.IllegalStateException
@@ -76,7 +77,16 @@ class Itly {
         }
 
         // Validate Context
-        validate(Event("context", config.context?.properties));
+        try {
+            validate(Event("context", config.context?.properties))
+        } catch (e: NoSuchElementException) {
+            val contextPropertyCount = config.context?.properties?.size ?: 0
+            if (contextPropertyCount > 0) {
+                throw IllegalArgumentException(
+                    "Error validating 'context'. Schema not found but received context=${OrgJsonProperties.toOrgJson(config.context)}"
+                )
+            }
+        }
     }
 
     @Throws(IllegalStateException::class)

@@ -15,7 +15,7 @@ val OPTIONS_ERROR_ON_INVALID = ValidationOptions(
 )
 
 fun loadDefaultSchemaValidator(options: Options? = null): SchemaValidatorPlugin {
-    val schemaValidatorPlugin = SchemaValidatorPlugin(Schemas.DEFAULT_SCHEMA)
+    val schemaValidatorPlugin = SchemaValidatorPlugin(Schemas.DEFAULT)
 
     val opts = options ?: Options(
         environment = Environment.PRODUCTION,
@@ -62,7 +62,7 @@ class SchemaValidatorPluginTest {
     fun validate_invalidEventWithErrorOnInvalid_throwsError() {
         val itly: Itly = TestUtil.getItly(Options(
             context = Context.VALID_ALL_PROPS,
-            plugins = arrayListOf(TestUtil.getDefaultSchemaValidator()),
+            plugins = arrayListOf(SchemaValidatorPlugin(Schemas.DEFAULT)),
             validation = OPTIONS_ERROR_ON_INVALID
         ))
 
@@ -77,7 +77,7 @@ class SchemaValidatorPluginTest {
     fun itlyLoad_invalidContextWithErrorOnInvalid_throwsError() {
         val exception = Assertions.assertThrows(IllegalArgumentException::class.java) {
             TestUtil.getItly(Options(
-                plugins = arrayListOf(TestUtil.getDefaultSchemaValidator()),
+                plugins = arrayListOf(SchemaValidatorPlugin(Schemas.DEFAULT)),
                 validation = OPTIONS_ERROR_ON_INVALID
             ))
         }
@@ -92,7 +92,7 @@ class SchemaValidatorPluginTest {
     fun itlyTrack_invalidEventWithErrorOnInvalid_throwsError() {
         val itly: Itly = TestUtil.getItly(Options(
             context = Context.VALID_ALL_PROPS,
-            plugins = arrayListOf(TestUtil.getDefaultSchemaValidator())
+            plugins = arrayListOf(SchemaValidatorPlugin(Schemas.DEFAULT))
         ))
 
         val exception = Assertions.assertThrows(IllegalArgumentException::class.java) {
@@ -110,7 +110,7 @@ class SchemaValidatorPluginTest {
         val exception = Assertions.assertThrows(IllegalArgumentException::class.java) {
             TestUtil.getItly(Options(
                 environment = Environment.DEVELOPMENT,
-                plugins = arrayListOf(TestUtil.getDefaultSchemaValidator())
+                plugins = arrayListOf(SchemaValidatorPlugin(Schemas.DEFAULT))
             ))
         }
 
@@ -125,8 +125,49 @@ class SchemaValidatorPluginTest {
         Assertions.assertDoesNotThrow {
             TestUtil.getItly(Options(
                 environment = Environment.PRODUCTION,
-                plugins = arrayListOf(TestUtil.getDefaultSchemaValidator())
+                plugins = arrayListOf(SchemaValidatorPlugin(Schemas.DEFAULT))
             ))
         }
+    }
+
+    @Test
+    fun itly_nullContextWithNoContextSchema_succeed() {
+        Assertions.assertDoesNotThrow {
+            TestUtil.getItly(Options(
+                context = null,
+                plugins = arrayListOf(SchemaValidatorPlugin(Schemas.NO_CONTEXT)),
+                validation = OPTIONS_ERROR_ON_INVALID
+            ))
+        }
+    }
+
+    @Test
+    fun itly_nullContextWithContextSchema_throwsError() {
+        Assertions.assertThrows(IllegalArgumentException::class.java) {
+            TestUtil.getItly(Options(
+                context = null,
+                plugins = arrayListOf(SchemaValidatorPlugin(Schemas.DEFAULT)),
+                validation = OPTIONS_ERROR_ON_INVALID
+            ))
+        }
+    }
+
+
+    @Test
+    fun itly_nonNullContextWithNoContextSchema_throwsError() {
+        val exception = Assertions.assertThrows(IllegalArgumentException::class.java) {
+            TestUtil.getItly(Options(
+                context = Properties(mapOf(
+                    "prop" to "value"
+                )),
+                plugins = arrayListOf(SchemaValidatorPlugin(Schemas.NO_CONTEXT)),
+                validation = OPTIONS_ERROR_ON_INVALID
+            ))
+        }
+
+        Assertions.assertEquals(
+            "Error validating 'context'. Schema not found but received context={\"prop\":\"value\"}",
+            exception.message
+        )
     }
 }

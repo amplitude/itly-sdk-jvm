@@ -9,10 +9,8 @@ class SchemaValidatorPlugin @JvmOverloads constructor(
     private val schemas: Map<String, String>
 ): PluginBase() {
     companion object {
-        @JvmField
-        val ID = "schema-validator"
-
-        private val LOG_TAG = "[plugin-schema-validator]"
+        const val ID = "schema-validator"
+        private const val LOG_TAG = "[plugin-$ID]"
     }
 
     private lateinit var validators: Map<String, JsonSchema>

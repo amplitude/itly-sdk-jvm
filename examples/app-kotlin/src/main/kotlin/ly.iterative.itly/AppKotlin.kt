@@ -13,7 +13,7 @@ object AppKotlin {
         val user = User()
         val trackerUrl = TrackerUrl(user)
 
-        val schemaValidatorPlugin = SchemaValidatorPlugin(Schemas.DEFAULT_SCHEMA)
+        val schemaValidatorPlugin = SchemaValidatorPlugin(Schemas.DEFAULT)
 
         val iterativelyPlugin = IterativelyPlugin(
             user.apiKey,
