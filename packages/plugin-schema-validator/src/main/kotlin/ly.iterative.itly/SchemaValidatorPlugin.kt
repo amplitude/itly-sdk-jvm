@@ -5,7 +5,7 @@ import com.networknt.schema.JsonSchemaFactory
 import com.networknt.schema.SpecVersion
 import ly.iterative.itly.core.Options
 
-class SchemaValidatorPlugin @JvmOverloads constructor(
+class SchemaValidatorPlugin constructor(
     private val schemas: Map<String, String>
 ): PluginBase() {
     companion object {
