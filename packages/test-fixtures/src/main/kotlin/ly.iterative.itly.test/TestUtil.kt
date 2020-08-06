@@ -13,16 +13,8 @@ class TestUtil {
             return itly
         }
 
-        fun loadDefaultSchemaValidator(validation: ValidationOptions = ValidationOptions()): SchemaValidatorPlugin {
-            val schemaValidatorPlugin = SchemaValidatorPlugin(Schemas.DEFAULT_SCHEMA, validation)
-
-            schemaValidatorPlugin.load(Options(
-                    environment = Environment.PRODUCTION,
-                    context = Context.VALID_ONLY_REQUIRED_PROPS,
-                    validation = validation
-            ))
-
-            return schemaValidatorPlugin
+        fun getDefaultSchemaValidator(): SchemaValidatorPlugin {
+            return SchemaValidatorPlugin(Schemas.DEFAULT_SCHEMA)
         }
     }
 }

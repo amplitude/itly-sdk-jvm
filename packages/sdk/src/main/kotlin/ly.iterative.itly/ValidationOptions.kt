@@ -2,7 +2,7 @@ package ly.iterative.itly
 
 //import java.util.concurrent.ExecutorService
 
-class ValidationOptions(
+data class ValidationOptions(
     val disabled: Boolean = false,
     val trackInvalid: Boolean = false,
     val errorOnInvalid: Boolean = false

@@ -2,10 +2,15 @@ package ly.iterative.itly.core
 
 import ly.iterative.itly.*
 import java.lang.Error
-import java.lang.IllegalStateException
 import java.util.HashMap
+import kotlin.IllegalStateException
 
-class Itly: Plugin {
+class Itly {
+    companion object {
+        const val ID = "itly-core"
+        const val LOG_TAG = "[$ID]"
+    }
+
     private lateinit var config: Options
     private val pluginOptionsMap = HashMap<String, PluginOptions>()
     private val enabledPlugins: ArrayList<Plugin> = arrayListOf()
@@ -19,8 +24,8 @@ class Itly: Plugin {
             throw IllegalStateException("Itly is not initialized. Call Itly.load(Options(...))")
         }
 
-    override fun id(): String {
-        return "itly-core"
+    fun id(): String {
+        return ID
     }
 
     fun enablePlugin(pluginId: String, enable: Boolean = true) {
@@ -44,29 +49,29 @@ class Itly: Plugin {
         })
     }
 
-    override fun load(options: Options) {
+    @Throws(IllegalStateException::class)
+    fun load(options: Options) {
         if (this::config.isInitialized) {
             throw Error("Itly is already initialized. Itly.load() should only be called once.")
         }
 
         if (options.disabled) {
-            config.logger.info("[sdk] disabled = true")
+            config.logger.info("$LOG_TAG disabled = true")
             return
         }
 
         this.config = options;
-        config.logger.debug("[sdk] load")
+        config.logger.debug("$LOG_TAG load")
 
         updateEnabledPlugins();
 
-        config.logger.debug("[sdk] ${enabledPlugins.size} plugins enabled")
+        config.logger.debug("$LOG_TAG ${enabledPlugins.size} plugins enabled")
 
         enabledPlugins.forEach {
             try {
                 it.load(config)
             } catch (e: Exception) {
-                val message = "Error in ${it.id()}.load(). ${e.message}."
-                config.logger.error(message)
+                config.logger.error("$LOG_TAG Error in ${it.id()}.load(). ${e.message}.")
             }
         }
 
@@ -74,7 +79,8 @@ class Itly: Plugin {
         validate(Event("context", config.context?.properties));
     }
 
-    override fun alias(userId: String, previousId: String?) {
+    @Throws(IllegalStateException::class)
+    fun alias(userId: String, previousId: String?) {
         if (this.disabled) {
             return
         }
@@ -83,16 +89,17 @@ class Itly: Plugin {
             try{
                 it.alias(userId, previousId)
             } catch (e: Exception) {
-                val message = "Error in ${it.id()}.alias(). ${e.message}."
-                config.logger.error(message)
+                config.logger.error("$LOG_TAG Error in ${it.id()}.alias(). ${e.message}.")
             }
         }
     }
     // NOTE: Can't use @JvmOverload above since it is an interface method
     // NOTE: Need to manually override method instead
+    @Throws(IllegalStateException::class)
     fun alias(userId: String) = alias(userId, null)
 
-    override fun identify(userId: String?, properties: Properties?) {
+    @Throws(IllegalStateException::class)
+    fun identify(userId: String?, properties: Properties?) {
         if (this.disabled) {
             return
         }
@@ -103,17 +110,18 @@ class Itly: Plugin {
                 try {
                     it.identify(userId, identify)
                 } catch (e: Exception) {
-                    val message = "Error in ${it.id()}.identify(). ${e.message}."
-                    config.logger.error(message)
+                    config.logger.error("$LOG_TAG Error in ${it.id()}.identify(). ${e.message}.")
                 }
             }
         }
     }
     // NOTE: Can't use @JvmOverload above since it is an interface method
     // NOTE: Need to manually override method instead
+    @Throws(IllegalStateException::class)
     fun identify(userId: String?) = identify(userId, null)
 
-    override fun group(userId: String?, groupId: String, properties: Properties?) {
+    @Throws(IllegalStateException::class)
+    fun group(userId: String?, groupId: String, properties: Properties?) {
         if (this.disabled) {
             return
         }
@@ -124,69 +132,68 @@ class Itly: Plugin {
                 try{
                     it.group(userId, groupId, group)
                 } catch (e: Exception) {
-                    val message = "Error in ${it.id()}.group(). ${e.message}."
-                    config.logger.error(message)
+                    config.logger.error("$LOG_TAG Error in ${it.id()}.group(). ${e.message}.")
                 }
             }
         }
     }
     // NOTE: Can't use @JvmOverload above since it is an interface method
     // NOTE: Need to manually override method instead
+    @Throws(IllegalStateException::class)
     fun group(userId: String?, groupId: String) = group(userId, groupId, null)
 
-    override fun track(userId: String?, event: Event) {
+    @Throws(IllegalArgumentException::class)
+    fun track(userId: String?, event: Event) {
         if (this.disabled) {
             return
         }
 
         if (shouldBeTracked(event)) {
+            config.logger.error("$LOG_TAG track:post-validate")
             enabledPlugins.forEach {
                 try {
                     it.track(userId, event)
                 } catch (e: Exception) {
-                    val message = "Error in ${it.id()}.track(${event.name}). ${e.message}."
-                    config.logger.error(message)
+                    config.logger.error("$LOG_TAG Error in ${it.id()}.track(${event.name}). ${e.message}.")
                 }
             }
         }
     }
 
-    override fun reset() {
+    fun reset() {
         enabledPlugins.forEach {
             try {
                 it.reset()
             } catch (e: Exception) {
-                val message = "Error in ${it.id()}.reset(). ${e.message}."
-                config.logger.error(message)
+                config.logger.error("$LOG_TAG Error in ${it.id()}.reset(). ${e.message}.")
             }
         }
     }
 
-    @Throws(java.lang.IllegalArgumentException::class)
-    override fun validate(event: Event): ValidationResponse {
-        var pluginId = this.id();
-
-        // Default to true
-        var validation = ValidationResponse(
-            valid = true,
-            pluginId = pluginId
-        )
-
+    @Throws(IllegalArgumentException::class)
+    fun validate(event: Event): ValidationResponse {
         // Loop over plugins and stop if valid === false
-        try {
-            this.enabledPlugins.all {
-                pluginId = it.id()
-                validation = it.validate(event)
-                return validation
+        val validationResponses = arrayListOf<ValidationResponse>()
+        this.enabledPlugins.forEach {
+            val pluginValidation: ValidationResponse = try {
+                it.validate(event)
+            } catch (e: Error) {
+                ValidationResponse(
+                    valid = false,
+                    pluginId = it.id(),
+                    message = e.message
+                )
             }
-        } catch (e: Error) {
-            // Catch errors in validate() method
-            validation = ValidationResponse(
-                valid = false,
-                pluginId = pluginId,
-                message = e.message
-            )
+            validationResponses.add(pluginValidation)
         }
+
+        // Get first invalid response or return valid=true
+        val validation = validationResponses.firstOrNull {
+            !it.valid
+        } ?: ValidationResponse(
+            valid = true,
+            pluginId = this.id()
+        )
 
         // If validation failed call validationError hook
         if (!validation.valid) {
@@ -194,45 +201,39 @@ class Itly: Plugin {
                 try {
                     it.validationError(validation, event)
                 } catch (e: Exception) {
-                    val message = "Error in ${it.id()}.validationError(). ${e.message}."
-                    config.logger.error(message)
+                    config.logger.error("$LOG_TAG Error in ${it.id()}.validationError(). ${e.message}.")
                 }
             }
 
             if (config.validation.errorOnInvalid) {
-                throw IllegalArgumentException("Validation Error: ${validation.message}");
+                throw IllegalArgumentException(validation.message)
             }
         }
 
         return validation;
     }
 
-    override fun validationError(validation: ValidationResponse, event: Event) {
-        TODO("Not yet implemented")
-    }
-
-    override fun flush() {
+    fun flush() {
         enabledPlugins.forEach {
             try {
                 it.flush()
             } catch (e: Exception) {
-                val message = "Error in ${it.id()}.flush(). ${e.message}."
-                config.logger.error(message)
+                config.logger.error("$LOG_TAG Error in ${it.id()}.flush(). ${e.message}.")
             }
         }
     }
 
-    override fun shutdown() {
+    fun shutdown() {
         enabledPlugins.forEach {
             try {
                 it.shutdown()
             } catch (e: Exception) {
-                val message = "Error in ${it.id()}.shutdown(). ${e.message}."
-                config.logger.error(message)
+                config.logger.error("$LOG_TAG Error in ${it.id()}.shutdown(). ${e.message}.")
             }
         }
     }
 
+    @Throws(IllegalStateException::class)
     private fun shouldBeTracked(event: Event): Boolean {
         var shouldTrack = true;
         if (!config.validation.disabled) {

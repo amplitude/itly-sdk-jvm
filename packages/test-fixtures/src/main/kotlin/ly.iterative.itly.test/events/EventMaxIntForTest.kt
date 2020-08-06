@@ -19,6 +19,6 @@ class EventMaxIntForTest(
             intMax10 = 20
         )
 
-        const val INVALID_MAX_VALUE_ERROR_MESSAGE = "(Itly) Error validating event EventMaxIntForTest (\$.intMax10: must have a maximum value of 10)."
+        const val INVALID_MAX_VALUE_ERROR_MESSAGE = "Error validating event 'EventMaxIntForTest'. \$.intMax10: must have a maximum value of 10."
     }
 }
