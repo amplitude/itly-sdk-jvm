@@ -1,21 +1,15 @@
 package ly.iterative.itly
 
+import com.segment.backo.Backo
 import ly.iterative.itly.core.Options
-import net.jodah.failsafe.Failsafe
-import net.jodah.failsafe.RetryPolicy
-import net.jodah.failsafe.function.CheckedRunnable
-import okhttp3.Interceptor
+import okhttp3.*
 import okhttp3.MediaType.Companion.toMediaType
-import okhttp3.OkHttpClient
-import okhttp3.Response
-import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
 import org.json.JSONArray
 import org.json.JSONObject
 import java.io.IOException
 import java.lang.Thread.MIN_PRIORITY
 import java.net.ConnectException
-import java.time.temporal.ChronoUnit
 import java.util.concurrent.*
 
 val JSON_MEDIA_TYPE = "application/json; charset=utf-8".toMediaType()
@@ -49,8 +43,8 @@ class IterativelyPlugin(
     options: IterativelyOptions
 ): PluginBase() {
     companion object {
-        @JvmField
-        val ID = "iteratively"
+        const val ID = "iteratively"
+        const val LOG_TAG = "[plugin-$ID]"
     }
 
     private val config: IterativelyOptions
@@ -59,7 +53,7 @@ class IterativelyPlugin(
     private val queue: BlockingQueue<TrackModel>
     private val mainExecutor: ExecutorService
     private val scheduledExecutor: ScheduledExecutorService
-    private val retryPolicy: RetryPolicy<Any>
+    private val retryPolicy: Backo
     private var isShutdown: Boolean
 
     // Gets updated in load()
@@ -79,17 +73,11 @@ class IterativelyPlugin(
         mainExecutor = newDefaultExecutorService(config.threadFactory)
         scheduledExecutor = Executors.newSingleThreadScheduledExecutor(config.threadFactory)
         isShutdown = false
-        retryPolicy = RetryPolicy<Any>()
-                .handle(ConnectException::class.java)
-                .handle(IOException::class.java)
-                .onRetry { logger.warn("Retrying upload...") }
-                .withBackoff(
-                    config.retryOptions.delayInitialSeconds,
-                    config.retryOptions.delayMaximumSeconds,
-                    ChronoUnit.SECONDS
-                )
-                .withJitter(1.0)
-                .withMaxRetries(config.retryOptions.maxRetries)
+        retryPolicy = Backo.builder()
+            .base(TimeUnit.MILLISECONDS, config.retryOptions.delayInitialMillis)
+            .cap(TimeUnit.MILLISECONDS, config.retryOptions.delayMaximumMillis)
+            .jitter(1)
+            .build()
     }
 
     override fun id(): String { return ID }
@@ -236,10 +224,9 @@ class IterativelyPlugin(
 
                     if (pending.size >= config.flushQueueSize || isPoisonPill) {
                         logger.debug("Posting ${pending.size} track items.")
+
                         // submit upload
-                        Failsafe.with(retryPolicy)
-                                .with(config.networkExecutor)
-                                .run(Upload(pending))
+                        config.networkExecutor.execute(Upload(pending))
 
                         // create a new batch
                         pending = mutableListOf()
@@ -254,22 +241,58 @@ class IterativelyPlugin(
     /**
      * Uploads a @batch of TrackModels to server
      */
-    inner class Upload(private val batch: List<TrackModel>): CheckedRunnable {
-//        @Throws(IOException::class.java)
+    inner class Upload(private val batch: List<TrackModel>): Runnable {
         override fun run() {
-            var success = false;
-            try {
-                val response = postJson(config.url, getTrackModelJson(batch))
-                success = response.isSuccessful
-            } catch (e: Error) {
-                logger.error("RequestError: " + e.message)
+            for(attempt in 0..config.retryOptions.maxRetries) {
+                val retry = upload()
+                if (!retry) return
+                try {
+                    logger.debug("$LOG_TAG waiting to retry (${attempt + 1})")
+                    retryPolicy.sleep(attempt)
+                } catch (e: InterruptedException) {
+                    logger.debug(
+                       "Thread interrupted waiting to retry upload after $attempt attempts."
+                    )
+                    return
+                }
             }
 
-            if (!success) {
-                logger.error("Upload failed: ${config.url}")
-                throw IOException("Server request unsuccessful.")
-            } else {
-                logger.debug("Upload Success: ${config.url}")
+            logger.error("Failed to upload ${batch.size} events. Maximum attempts exceeded.");
+        }
+
+        /**
+         * Attempts to upload the current batch to server
+         *
+         * @return retry True if upload should be re-attempted, false otherwise
+         */
+        private fun upload(): Boolean {
+            try {
+                val response = postJson(config.url, getTrackModelJson(batch))
+                val code = response.code
+                logger.debug("response: success=${response.isSuccessful} code=$code")
+                if (response.isSuccessful) {
+                    // Upload succeeded, no need to retry
+                    return false
+                }
+                if (response.code in 500..599) {
+                    logger.debug("Upload received error response from server ($code).")
+                    return true
+                }
+                if (response.code == 429) {
+                    logger.debug("Upload rejected due to rate limiting.")
+                    return true
+                }
+                logger.debug("Upload failed due to unhandled HTTP error ($code).")
+                return false
+            } catch(exception: IOException) {
+                logger.error("Upload failed due to IOException.")
+                return true
+            } catch(exception: ConnectException) {
+                logger.error("Error connecting to server.")
+                return true
+            } catch (e: Exception) {
+                logger.error("A unhandled exception occurred. ${e.message}")
+                return false
             }
         }
 
@@ -282,7 +305,6 @@ class IterativelyPlugin(
                     .addHeader("Content-Type", "application/json")
                     .post(json.toString().toRequestBody(JSON_MEDIA_TYPE))
                     .build()
-
             return client.newCall(request).execute()
         }
     }
