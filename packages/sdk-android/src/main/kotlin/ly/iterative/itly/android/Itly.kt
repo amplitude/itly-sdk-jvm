@@ -6,9 +6,11 @@ package ly.iterative.itly.android
 import ly.iterative.itly.*
 import ly.iterative.itly.core.Options
 
-object Itly {
-    const val ID = "itly-android"
-    const val LOG_TAG = "[$ID]"
+class Itly {
+    companion object {
+        const val ID = "itly-android"
+        const val LOG_TAG = "[$ID]"
+    }
 
     private val itly = ly.iterative.itly.core.Itly()
 

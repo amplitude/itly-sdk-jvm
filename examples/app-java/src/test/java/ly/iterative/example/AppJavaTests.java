@@ -1,4 +1,4 @@
-package ly.iterative.itly;
+package ly.iterative.example;
 
 import java.io.*;
 import org.junit.jupiter.api.*;

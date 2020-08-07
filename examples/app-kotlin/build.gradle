@@ -6,11 +6,11 @@ plugins {
 }
 
 application {
-    mainClassName = "ly.iterative.itly.AppKotlin"
+    mainClassName = "ly.iterative.example.AppKotlin"
 }
 
 dependencies {
-    implementation(project(":packages:sdk-core"))
+    implementation(project(":packages:sdk-jvm"))
     implementation(project(":packages:plugin-iteratively"))
     implementation(project(":packages:plugin-schema-validator"))
     implementation(project(":packages:test-fixtures"))

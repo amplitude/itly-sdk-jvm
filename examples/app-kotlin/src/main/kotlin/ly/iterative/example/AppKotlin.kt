@@ -1,10 +1,10 @@
-package ly.iterative.itly
+package ly.iterative.example
 
-import ly.iterative.itly.core.Itly
+import ly.iterative.itly.*
+import ly.iterative.itly.jvm.Itly
 import ly.iterative.itly.core.Options
 import ly.iterative.itly.test.*
 import ly.iterative.itly.test.events.*
-
 
 object AppKotlin {
     @JvmStatic

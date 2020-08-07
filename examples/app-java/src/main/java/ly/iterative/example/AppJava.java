@@ -1,10 +1,13 @@
-package ly.iterative.itly;
+package ly.iterative.example;
 
-import ly.iterative.itly.core.Itly;
+import ly.iterative.itly.*;
+import ly.iterative.itly.jvm.Itly;
 import ly.iterative.itly.core.Options;
 import ly.iterative.itly.test.Schemas;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.ArrayList;
+import java.util.List;
 
 public class AppJava {
     public static void main(String[] args) {
@@ -20,7 +23,7 @@ public class AppJava {
         itly.load(new Options(
             new Properties(Collections.emptyMap()),
             Environment.PRODUCTION,
-            new ArrayList<Plugin>(List.<Plugin>of(
+            new ArrayList<>(List.<Plugin>of(
                 iterativelyPlugin,
                 new SchemaValidatorPlugin(Schemas.DEFAULT)
             )),

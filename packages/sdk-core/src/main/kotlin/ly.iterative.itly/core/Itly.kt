@@ -6,7 +6,7 @@ import java.lang.Error
 import java.util.HashMap
 import kotlin.IllegalStateException
 
-class Itly {
+open class Itly {
     companion object {
         const val ID = "itly-core"
         const val LOG_TAG = "[$ID]"

@@ -6,11 +6,11 @@ plugins {
 }
 
 application {
-    mainClassName = "ly.iterative.itly.AppJava"
+    mainClassName = "ly.iterative.example.AppJava"
 }
 
 dependencies {
-    implementation(project(":packages:sdk-core"))
+    implementation(project(":packages:sdk-jvm"))
     implementation(project(":packages:plugin-iteratively"))
     implementation(project(":packages:plugin-schema-validator"))
     implementation(project(":packages:test-fixtures"))
