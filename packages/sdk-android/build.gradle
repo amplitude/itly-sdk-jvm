@@ -1,0 +1,16 @@
+plugins {
+    id 'org.jetbrains.kotlin.jvm'
+    id 'maven-publish'
+}
+
+//test {
+//    testLogging.showStandardStreams = true
+//}
+
+dependencies {
+    api(project(":packages:sdk-core"))
+
+    testImplementation(project(":packages:test-fixtures"))
+}
+
+apply from: rootProject.file('gradle/publish-java.gradle')
