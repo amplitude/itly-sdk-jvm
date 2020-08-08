@@ -2,7 +2,7 @@ package ly.iterative.itly.core
 
 import ly.iterative.itly.*
 
-class Options @JvmOverloads constructor(
+data class Options @JvmOverloads constructor(
     /**
      * Additional context properties to add to all events. Default is none.
      */

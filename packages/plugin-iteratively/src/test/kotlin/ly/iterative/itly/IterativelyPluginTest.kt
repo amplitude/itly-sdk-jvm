@@ -167,6 +167,50 @@ class IterativelyPluginTest {
         )
     }
 
+    @Test
+    fun tracker_whenDisabled_doesntMakeRequests() {
+        iterativelyPlugin = IterativelyPlugin(
+            user.apiKey,
+            ITERATIVELY_OPTIONS_DEFAULT.copy(
+                disabled = true
+            )
+        )
+        iterativelyPlugin.load(ITLY_OPTIONS_DEFAULT)
+
+        val dummyProps = Properties()
+        iterativelyPlugin.identify(user.id)
+        iterativelyPlugin.group(user.id, user.groupId, dummyProps)
+        iterativelyPlugin.alias(user.id)
+        iterativelyPlugin.track(user.id, Event("event"))
+        for (i in 1..4) {
+            mockWebServer.takeRequest(TIMEOUTS.BACKOFF_MAXIMUM_MS, MS)
+        }
+
+        Assertions.assertEquals(
+            0, mockWebServer.requestCount,
+            "should not make any requests when disabled"
+        )
+    }
+
+    @Test
+    fun tracker_shutdownWhenDisabled_doesntCrash() {
+//        val itly: Itly = TestUtil.getItly(ITLY_OPTIONS_DEFAULT.copy(
+//                plugins = arrayListOf(iterativelyPlugin)
+//        ))
+
+        iterativelyPlugin = IterativelyPlugin(
+            user.apiKey,
+            ITERATIVELY_OPTIONS_DEFAULT.copy(
+                disabled = true
+            )
+        )
+        iterativelyPlugin.load(ITLY_OPTIONS_DEFAULT)
+
+        Assertions.assertDoesNotThrow {
+            iterativelyPlugin.shutdown()
+        }
+    }
+
     private fun assertValidTrackerRequest(trackType: TrackType, event: Event? = null) {
         val request: RecordedRequest = mockWebServer.takeRequest()
         Asserts.assertValidTrackerRequest(

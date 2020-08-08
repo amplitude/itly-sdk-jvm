@@ -7,7 +7,7 @@ interface Plugin {
     fun load(options: Options)
 
     // Tracking methods
-    fun alias(userId: String, previousId: String?)
+    fun alias(userId: String, previousId: String? = null)
     fun identify(userId: String?, properties: Properties? = null)
     fun group(userId: String?, groupId: String, properties: Properties? = null)
     fun track(userId: String?, event: Event)

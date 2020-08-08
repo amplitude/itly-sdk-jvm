@@ -29,17 +29,17 @@ open class Itly {
         return ID
     }
 
-    fun enablePlugin(pluginId: String, enable: Boolean = true) {
+    private fun enablePlugin(pluginId: String, enable: Boolean = true) {
         pluginOptionsMap[pluginId] = pluginOptionsMap[pluginId]?.copy(disabled = !enable)
                 ?: PluginOptions(disabled = !enable)
         this.updateEnabledPlugins()
     }
 
-    fun disablePlugin(pluginId: String) {
+    private fun disablePlugin(pluginId: String) {
         enablePlugin(pluginId, false)
     }
 
-    fun isPluginEnabled(pluginId: String): Boolean {
+    private fun isPluginEnabled(pluginId: String): Boolean {
         return !(pluginOptionsMap[pluginId]?.disabled ?: false)
     }
 

@@ -84,9 +84,10 @@ class IterativelyPlugin(
 
     override fun load(options: Options) {
         logger = options.logger
-        logger.info("[plugin-iteratively] load")
+        logger.info("$LOG_TAG load")
 
         if (this.config.disabled) {
+            logger.info("$LOG_TAG disabled")
             return
         }
 

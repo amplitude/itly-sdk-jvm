@@ -14,18 +14,6 @@ class Itly {
 
     private val itly = ly.iterative.itly.core.Itly()
 
-    fun enablePlugin(pluginId: String, enable: Boolean = true) {
-        itly.enablePlugin(pluginId, enable);
-    }
-
-    fun disablePlugin(pluginId: String) {
-        itly.disablePlugin(pluginId)
-    }
-
-    fun isPluginEnabled(pluginId: String): Boolean {
-        return itly.isPluginEnabled(pluginId)
-    }
-
     @Throws(IllegalStateException::class)
     fun load(options: Options) {
         itly.load(options)
