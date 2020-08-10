@@ -9,6 +9,7 @@ plugins {
 
 dependencies {
     api(project(":packages:sdk-core"))
+    api("$orgJsonImplementation")
 
     testImplementation(project(":packages:test-fixtures"))
 }

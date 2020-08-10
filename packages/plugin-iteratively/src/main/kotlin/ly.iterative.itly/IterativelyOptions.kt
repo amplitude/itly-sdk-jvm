@@ -17,7 +17,7 @@ data class IterativelyOptions @JvmOverloads constructor(
     val disabled: Boolean = false,
 
     // Java/Android specific
+    val retryOptions: RetryOptions = RetryOptions(),
     val threadFactory: ThreadFactory = DEFAULT_THREAD_FACTORY,
-    val networkExecutor: ExecutorService = newDefaultExecutorService(threadFactory),
-    val retryOptions: RetryOptions = RetryOptions()
+    val networkExecutor: ExecutorService? = null
 )

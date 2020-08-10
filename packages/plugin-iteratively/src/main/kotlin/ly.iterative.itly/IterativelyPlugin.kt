@@ -50,11 +50,13 @@ class IterativelyPlugin(
     private val config: IterativelyOptions
 
     private val client: OkHttpClient
+    private val retryPolicy: Backo
     private val queue: BlockingQueue<TrackModel>
     private val mainExecutor: ExecutorService
+    private val networkExecutor: ExecutorService
     private val scheduledExecutor: ScheduledExecutorService
-    private val retryPolicy: Backo
     private var isShutdown: Boolean
+    private val isExternalNetworkExecutor: Boolean
 
     // Gets updated in load()
     private lateinit var logger: Logger
@@ -66,13 +68,18 @@ class IterativelyPlugin(
 
         this.config = options.copy(disabled = disabled)
 
-        client = OkHttpClient.Builder()
-                .addInterceptor(AuthInterceptor(apiKey))
-                .build()
-        queue = LinkedBlockingQueue<TrackModel>()
         mainExecutor = newDefaultExecutorService(config.threadFactory)
         scheduledExecutor = Executors.newSingleThreadScheduledExecutor(config.threadFactory)
+        networkExecutor = options.networkExecutor ?: newDefaultExecutorService(options.threadFactory)
+
+        queue = LinkedBlockingQueue<TrackModel>()
+        isExternalNetworkExecutor = (options.networkExecutor != null)
         isShutdown = false
+
+        client = OkHttpClient.Builder()
+//                .dispatcher(Dispatcher(networkExecutor))
+                .addInterceptor(AuthInterceptor(apiKey))
+                .build()
         retryPolicy = Backo.builder()
             .base(TimeUnit.MILLISECONDS, config.retryOptions.delayInitialMillis)
             .cap(TimeUnit.MILLISECONDS, config.retryOptions.delayMaximumMillis)
@@ -153,7 +160,9 @@ class IterativelyPlugin(
         queue.clear()
         mainExecutor.shutdownNow()
         scheduledExecutor.shutdownNow()
-        config.networkExecutor.shutdown()
+        if (!isExternalNetworkExecutor) {
+            networkExecutor.shutdown()
+        }
         this.isShutdown = true
     }
 
@@ -227,7 +236,7 @@ class IterativelyPlugin(
                         logger.debug("Posting ${pending.size} track items.")
 
                         // submit upload
-                        config.networkExecutor.execute(Upload(pending))
+                        networkExecutor.execute(Upload(pending))
 
                         // create a new batch
                         pending = mutableListOf()

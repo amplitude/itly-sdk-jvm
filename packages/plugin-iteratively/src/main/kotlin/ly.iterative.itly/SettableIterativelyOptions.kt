@@ -15,7 +15,7 @@ data class SettableIterativelyOptions(
     val flushIntervalMs: Long = DEFAULT_ITERATIVELY_OPTIONS.flushIntervalMs,
     val disabled: Boolean = DEFAULT_ITERATIVELY_OPTIONS.disabled,
     val threadFactory: ThreadFactory = DEFAULT_ITERATIVELY_OPTIONS.threadFactory,
-    val networkExecutor: ExecutorService = DEFAULT_ITERATIVELY_OPTIONS.networkExecutor,
+    val networkExecutor: ExecutorService? = DEFAULT_ITERATIVELY_OPTIONS.networkExecutor,
     val retryOptions: RetryOptions = DEFAULT_ITERATIVELY_OPTIONS.retryOptions
 ) {
     companion object {
@@ -33,7 +33,7 @@ data class SettableIterativelyOptions(
         private var flushIntervalMs: Long = DEFAULT_ITERATIVELY_OPTIONS.flushIntervalMs,
         private var disabled: Boolean = DEFAULT_ITERATIVELY_OPTIONS.disabled,
         private var threadFactory: ThreadFactory = DEFAULT_ITERATIVELY_OPTIONS.threadFactory,
-        private var networkExecutor: ExecutorService = DEFAULT_ITERATIVELY_OPTIONS.networkExecutor,
+        private var networkExecutor: ExecutorService? = DEFAULT_ITERATIVELY_OPTIONS.networkExecutor,
         private var retryOptions: RetryOptions = DEFAULT_ITERATIVELY_OPTIONS.retryOptions
     ) {
 
