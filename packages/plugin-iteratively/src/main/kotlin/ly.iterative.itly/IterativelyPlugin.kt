@@ -2,9 +2,12 @@ package ly.iterative.itly
 
 import com.segment.backo.Backo
 import ly.iterative.itly.core.Options
-import okhttp3.*
+import okhttp3.Interceptor
 import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.OkHttpClient
+import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
+import okhttp3.Response
 import org.json.JSONArray
 import org.json.JSONObject
 import java.io.IOException
@@ -161,7 +164,7 @@ class IterativelyPlugin(
         mainExecutor.shutdownNow()
         scheduledExecutor.shutdownNow()
         if (!isExternalNetworkExecutor) {
-            networkExecutor.shutdown()
+            networkExecutor.shutdownNow()
         }
         this.isShutdown = true
     }
