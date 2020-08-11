@@ -1,5 +1,6 @@
-package ly.iterative.itly
+package ly.iterative.itly.iteratively
 
+import ly.iterative.itly.*
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.ThreadFactory
 

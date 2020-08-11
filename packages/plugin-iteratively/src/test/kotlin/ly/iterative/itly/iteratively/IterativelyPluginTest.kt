@@ -1,5 +1,6 @@
-package ly.iterative.itly
+package ly.iterative.itly.iteratively
 
+import ly.iterative.itly.*
 import ly.iterative.itly.core.Options
 import okhttp3.mockwebserver.*
 import org.junit.jupiter.api.*

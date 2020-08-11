@@ -1,8 +1,10 @@
-package ly.iterative.itly
+package ly.iterative.itly.iteratively
 
-import java.time.ZoneOffset
-import java.time.ZonedDateTime
-import java.time.format.DateTimeFormatter
+import ly.iterative.itly.Event
+import ly.iterative.itly.Properties
+import org.joda.time.DateTime
+import org.joda.time.DateTimeZone
+import org.joda.time.format.ISODateTimeFormat
 
 enum class TrackType {
     group,
@@ -26,7 +28,9 @@ enum class TrackType {
 
 data class TrackModel(
     val type: TrackType,
-    val dateSent: String = ZonedDateTime.now(ZoneOffset.UTC).format(DateTimeFormatter.ISO_INSTANT),
+    val dateSent: String = ISODateTimeFormat.dateTime().print(
+        DateTime().withZone(DateTimeZone.UTC)
+    ),
     val eventId: String?,
     val eventSchemaVersion: String?,
     val eventName: String?,

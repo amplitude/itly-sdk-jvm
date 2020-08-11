@@ -1,4 +1,4 @@
-package ly.iterative.itly
+package ly.iterative.itly.iteratively
 
 const val MS_IN_S: Long = 1000
 const val S_IN_M: Long = 60
