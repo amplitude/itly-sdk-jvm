@@ -52,6 +52,12 @@ class SchemaValidatorPluginTest {
     }
 
     @Test
+    fun validate_eventWithConstTypes_valid() {
+        val validation = loadDefaultSchemaValidator().validate(EventWithConstTypes.VALID);
+        Assertions.assertEquals(validation.valid, true)
+    }
+
+    @Test
     fun validate_invalidEvent_notValid() {
         val validation = loadDefaultSchemaValidator().validate(invalidEvent)
         Assertions.assertEquals(validation.valid, false)
