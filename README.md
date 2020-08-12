@@ -31,7 +31,6 @@ implementation 'ly.iterative.itly:plugin-segment-android:1.0'
 implementation 'ly.iterative.itly:sdk-jvm:1.0'
 implementation 'ly.iterative.itly:plugin-iteratively:1.0'
 implementation 'ly.iterative.itly:plugin-schema-validator:1.0'
-implementation 'ly.iterative.itly:plugin-mixpanel-jvm:1.0'
 implementation 'ly.iterative.itly:plugin-segment-jvm:1.0'
 ```
 
