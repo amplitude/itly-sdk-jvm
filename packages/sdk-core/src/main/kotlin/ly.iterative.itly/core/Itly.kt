@@ -216,7 +216,7 @@ open class Itly {
         if (!validation.valid) {
             enabledPlugins.forEach {
                 try {
-                    it.validationError(validation, event)
+                    it.onValidationError(validation, event)
                 } catch (e: Exception) {
                     config.logger.error("$LOG_TAG Error in ${it.id()}.validationError(). ${e.message}.")
                 }

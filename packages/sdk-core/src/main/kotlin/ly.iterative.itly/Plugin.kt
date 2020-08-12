@@ -15,9 +15,8 @@ interface Plugin {
 
     // Validation methods
     fun validate(event: Event): ValidationResponse
-    fun validationError(validation: ValidationResponse, event: Event)
+    fun onValidationError(validation: ValidationResponse, event: Event)
 
-    // FIXME: Add shutdown method to Itly (SDK Class)
     fun flush()
     fun shutdown()
 }

@@ -132,7 +132,7 @@ class IterativelyPlugin(
         ))
     }
 
-    override fun validationError(validation: ValidationResponse, event: Event) {
+    override fun onValidationError(validation: ValidationResponse, event: Event) {
         val type = TrackType.fromEvent(event)
         this.push(this.toTrackModel(
             type = type,

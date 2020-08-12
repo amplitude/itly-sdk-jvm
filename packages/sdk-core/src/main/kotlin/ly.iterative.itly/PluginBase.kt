@@ -15,7 +15,7 @@ abstract class PluginBase: Plugin {
             pluginId = this.id()
         )
     }
-    override fun validationError(validation: ValidationResponse, event: Event) {}
+    override fun onValidationError(validation: ValidationResponse, event: Event) {}
     override fun flush() {}
     override fun shutdown() {}
 }
