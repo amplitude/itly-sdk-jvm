@@ -3,12 +3,9 @@ package ly.iterative.itly.iteratively
 import ly.iterative.itly.*
 import com.segment.backo.Backo
 import ly.iterative.itly.core.Options
-import okhttp3.Interceptor
+import okhttp3.*
 import okhttp3.MediaType.Companion.toMediaType
-import okhttp3.OkHttpClient
-import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
-import okhttp3.Response
 import org.json.JSONArray
 import org.json.JSONObject
 import java.io.IOException
@@ -161,13 +158,17 @@ class IterativelyPlugin(
             return
         }
 
+        this.isShutdown = true
+
         queue.clear()
         mainExecutor.shutdownNow()
         scheduledExecutor.shutdownNow()
-        if (!isExternalNetworkExecutor) {
+        client.dispatcher.cancelAll()
+        client.dispatcher.executorService.shutdownNow()
+        client.connectionPool.evictAll()
+        if (!isExternalNetworkExecutor && !networkExecutor.isShutdown) {
             networkExecutor.shutdownNow()
         }
-        this.isShutdown = true
     }
 
     private fun assertNotShutdown() {
@@ -202,10 +203,11 @@ class IterativelyPlugin(
             return
         }
 
+        logger.debug("$LOG_TAG Queueing '${trackModel.eventName}' type:'${trackModel.type}'")
         try {
             queue.put(trackModel)
         } catch (e: InterruptedException) {
-            logger.error("Error: Queueing was interrupted for '${trackModel.type}'. ${e.message}")
+            logger.error("$LOG_TAG Error: Queueing was interrupted for '${trackModel.type}'. ${e.message}")
         }
     }
 
@@ -240,7 +242,7 @@ class IterativelyPlugin(
                         logger.debug("Posting ${pending.size} track items.")
 
                         // submit upload
-                        networkExecutor.execute(Upload(pending))
+                        networkExecutor.submit(Upload(pending))
 
                         // create a new batch
                         pending = mutableListOf()
@@ -283,25 +285,33 @@ class IterativelyPlugin(
             try {
                 val response = postJson(config.url, getTrackModelJson(batch))
                 val code = response.code
-                logger.debug("response: success=${response.isSuccessful} code=$code")
                 if (response.isSuccessful) {
                     // Upload succeeded, no need to retry
+                    logger.debug("Upload complete.")
                     return false
                 }
+//                response.body?.close()
                 if (response.code in 500..599) {
                     logger.debug("Upload received error response from server ($code).")
                     return true
                 }
                 if (response.code == 429) {
-                    logger.debug("Upload rejected due to rate limiting.")
+                    logger.debug("Upload rejected due to rate limiting ($code).")
                     return true
                 }
                 logger.debug("Upload failed due to unhandled HTTP error ($code).")
                 return false
-            } catch(exception: IOException) {
-                logger.error("Upload failed due to IOException.")
+            } catch (e: InterruptedException) {
+                logger.error("Thread was interrupted before upload could complete.")
+                return false
+            } catch(e: IOException) {
+                if (e.message == "interrupted") {
+                    logger.error("Thread was interrupted before upload could complete.(IOException).")
+                    return false
+                }
+                logger.error("Upload failed due to IOException (${e.message}).")
                 return true
-            } catch(exception: ConnectException) {
+            } catch(e: ConnectException) {
                 logger.error("Error connecting to server.")
                 return true
             } catch (e: Exception) {
