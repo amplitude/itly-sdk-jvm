@@ -2,23 +2,23 @@
 Iteratively SDK for Android, Kotlin and Java
 
 # Modules
-### Cross-platform
- * sdk
- * plugin-iteratively
- * plugin-schema-validator
 ### Android (Kotlin & Java)
+ * sdk-android
  * plugin-amplitude-android
  * plugin-mixpanel-android
  * plugin-segment-android
 ### JRE (Kotlin & Java)
- * plugin-mixpanel-android
- * plugin-segment-android
+ * sdk-jvm
+ * plugin-segment-jvm
+### Cross-platform
+ * plugin-iteratively
+ * plugin-schema-validator
 
 
 # Dependencies
 ## Android
 ```groovy
-implementation 'ly.iterative.itly:sdk:1.0'
+implementation 'ly.iterative.itly:sdk-android:1.0'
 implementation 'ly.iterative.itly:plugin-iteratively:1.0'
 implementation 'ly.iterative.itly:plugin-schema-validator:1.0'
 implementation 'ly.iterative.itly:plugin-amplitude-android:1.0'
@@ -28,7 +28,7 @@ implementation 'ly.iterative.itly:plugin-segment-android:1.0'
 
 ## JRE
 ```groovy
-implementation 'ly.iterative.itly:sdk:1.0'
+implementation 'ly.iterative.itly:sdk-jvm:1.0'
 implementation 'ly.iterative.itly:plugin-iteratively:1.0'
 implementation 'ly.iterative.itly:plugin-schema-validator:1.0'
 implementation 'ly.iterative.itly:plugin-mixpanel-jvm:1.0'
