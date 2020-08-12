@@ -15,10 +15,14 @@ open class Itly {
     private lateinit var config: Options
     private val pluginOptionsMap = HashMap<String, PluginOptions>()
     private val enabledPlugins: ArrayList<Plugin> = arrayListOf()
+    private var isShutdown: Boolean = false
 
     private val disabled: Boolean
         @Throws(IllegalStateException::class)
         get() {
+            if (isShutdown) {
+                throw IllegalStateException("Itly is shutdown. No more requests are possible.")
+            }
             if (this::config.isInitialized) {
                 return config.disabled
             }
@@ -159,7 +163,6 @@ open class Itly {
         }
 
         if (shouldBeTracked(event)) {
-            config.logger.error("$LOG_TAG track:post-validate")
             enabledPlugins.forEach {
                 try {
                     it.track(userId, event)
@@ -171,6 +174,10 @@ open class Itly {
     }
 
     fun reset() {
+        if (this.disabled) {
+            return
+        }
+
         enabledPlugins.forEach {
             try {
                 it.reset()
@@ -224,6 +231,10 @@ open class Itly {
     }
 
     fun flush() {
+        if (this.disabled) {
+            return
+        }
+
         enabledPlugins.forEach {
             try {
                 it.flush()
@@ -234,6 +245,11 @@ open class Itly {
     }
 
     fun shutdown() {
+        if (this.disabled) {
+            return
+        }
+
+        isShutdown = true
         enabledPlugins.forEach {
             try {
                 it.shutdown()
