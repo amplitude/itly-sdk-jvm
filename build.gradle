@@ -7,11 +7,14 @@ buildscript {
     dependencies {
         classpath("com.android.tools.build:gradle:3.5.3")
         classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:1.3.72")
+        classpath("org.jetbrains.dokka:dokka-gradle-plugin:$dokkaVersion")
+        classpath("org.jetbrains.dokka:dokka-maven-plugin:$dokkaVersion")
     }
 }
 
 plugins {
     id 'org.jetbrains.kotlin.multiplatform' version '1.3.72'
+    id 'org.jetbrains.dokka' version '1.4.0-rc'
 }
 
 allprojects {
@@ -51,6 +54,11 @@ configure(subprojects.findAll { kotlinProjects.contains(it.name) }) {
 def testProjects = [
     'app-java'
 ]
+
+configure(subprojects.findAll { true }) {
+    apply plugin: 'org.jetbrains.dokka'
+}
+
 
 configure(subprojects.findAll { testProjects.contains(it.name) }) {
     apply plugin: JavaProjectPlugin

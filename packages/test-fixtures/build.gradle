@@ -1,7 +1,8 @@
 plugins {
     id 'org.jetbrains.kotlin.jvm'
-    id 'maven-publish'
 }
+
+apply from: rootProject.file('gradle/publish-java.gradle')
 
 dependencies {
     implementation(project(":packages:sdk-core"))
@@ -11,5 +12,3 @@ dependencies {
     implementation("$okHttpImplementation")
     implementation("$mockWebServerImplementation")
 }
-
-apply from: rootProject.file('gradle/publish-java.gradle')

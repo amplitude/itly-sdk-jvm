@@ -1,0 +1,38 @@
+import org.gradle.jvm.tasks.Jar
+
+apply plugin: 'org.jetbrains.dokka'
+
+//task jvmDocsJar(type: org.gradle.jvm.tasks.Jar, dependsOn: dokkaHtml) {
+//    classifier 'javadoc'
+////    from "$buildDir/javadoc/jvm"
+//    from "$buildDir/dokka"
+//}
+
+dokkaHtml {
+    outputDirectory = "$buildDir/dokka"
+
+    dokkaSourceSets {
+//        jvmMain { // The same name as Kotlin Multiplatform plugin source set for `customName` platform, so the sources are fetched automatically
+//            includes = ['packages.md', 'extra.md']
+//            samples = ['samples/basic.kt', 'samples/advanced.kt']
+//        }
+
+        jvmMain { // Different name, so source roots, classpath and platform must be passed explicitly.
+            sourceRoot {
+                path = kotlin.sourceSets.jvmMain.kotlin.srcDirs[0]
+            }
+            sourceRoot {
+                path = kotlin.sourceSets.commonMain.kotlin.srcDirs[0]
+            }
+        }
+
+        androidMain { // Different name, so source roots, classpath and platform must be passed explicitly.
+            sourceRoot {
+                path = kotlin.sourceSets.androidMain.kotlin.srcDirs[0]
+            }
+            sourceRoot {
+                path = kotlin.sourceSets.commonMain.kotlin.srcDirs[0]
+            }
+        }
+    }
+}

@@ -1,6 +1,5 @@
 plugins {
     id 'org.jetbrains.kotlin.multiplatform'
-    id 'maven-publish'
 }
 
 repositories {
@@ -11,6 +10,7 @@ repositories {
 
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android-extensions'
+apply from: rootProject.file('gradle/publish-mpp.gradle')
 
 android {
     compileSdkVersion 29
@@ -54,6 +54,86 @@ dependencies {
 //    implementation 'com.android.support:appcompat-v7:28.0.0'
 //    implementation 'com.android.support.constraint:constraint-layout:1.1.3'
 //    androidTestImplementation 'com.android.support.test:runner:1.0.2'
+}
+
+//task dokkaCommon(type: org.jetbrains.dokka.gradle.DokkaTask) {
+//    impliedPlatforms = ["Common"]
+//    kotlinTasks { [] }
+//    outputFormat = 'html'
+//    outputDirectory = "$buildDir/javadoc/common"
+//    sourceRoot {
+//        path = kotlin.sourceSets.commonMain.kotlin.srcDirs[0]
+//        platforms = ["Common"]
+//    }
+//}
+
+//tasks.register("dokkaJvm", org.jetbrains.dokka.gradle.DokkaTask) {
+//    outputDirectory = "$buildDir/javadoc/jvm"
+//    sourceRoot {
+//        path = kotlin.sourceSets.jvmMain.kotlin.srcDirs[0]
+//    }
+//    sourceRoot {
+//        path = kotlin.sourceSets.commonMain.kotlin.srcDirs[0]
+//    }
+//}
+
+//task dokkaJvm(type: org.jetbrains.dokka.gradle.DokkaTask) {
+//    outputFormat("html")
+//    outputDirectory("$buildDir/javadoc/jvm")
+//    sourceRoot {
+//        path = kotlin.sourceSets.commonMain.kotlin.srcDirs[0]
+//        platforms = ["Common"]
+//    }
+//    sourceRoot {
+//        path = kotlin.sourceSets.jvmMain.kotlin.srcDirs[0]
+//        platforms = ["JVM"]
+//    }
+//}
+//
+
+//val dokkaJar by tasks.creating(Jar::class) {
+//    group = JavaBasePlugin.DOCUMENTATION_GROUP
+//    description = "Assembles Kotlin docs with Dokka"
+//    classifier = "javadoc"
+//    from(tasks.dokka)
+//}
+
+//task dokkaJvm(type: org.jetbrains.dokka.gradle.DokkaTask) {
+//    impliedPlatforms = ["JVM", "Common"]
+//    kotlinTasks { [] }
+//    outputFormat = 'html'
+//    outputDirectory = "$buildDir/javadoc/jvm"
+//    sourceRoot {
+//        path = kotlin.sourceSets.commonMain.kotlin.srcDirs[0]
+//        platforms = ["Common"]
+//    }
+//    sourceRoot {
+//        path = kotlin.sourceSets.jvmMain.kotlin.srcDirs[0]
+//        platforms = ["JVM"]
+//    }
+//}
+//
+//task emptySourcesJar(type: Jar) {
+//    classifier 'sources'
+//}
+//task emptyJavadocJar(type: Jar) {
+//    classifier 'javadoc'
+//}
+//
+//task dokkaJavadocCommonJar(type: Jar, dependsOn: dokkaCommon) {
+//    classifier 'javadoc'
+//    from "$buildDir/javadoc/common"
+//}
+//
+//task dokkaJavadocJvmJar(type: Jar, dependsOn: dokkaJvm) {
+//    classifier 'javadoc'
+//    from "$buildDir/javadoc/jvm"
+//}
+
+task jvmDocsJar(type: org.gradle.jvm.tasks.Jar, dependsOn: dokkaHtml) {
+    classifier 'javadoc'
+//    from "$buildDir/javadoc/jvm"
+    from "$buildDir/dokka"
 }
 
 kotlin {
@@ -117,4 +197,110 @@ kotlin {
             dependsOn commonTest
         }
     }
+
+    configure([targets["metadata"], jvm(), android()]) {
+        mavenPublication {
+            groupId = project.group
+            version = project.version
+
+            artifact(jvmDocsJar)
+
+            pom {
+                name = 'Iteratively Segment Plugin'
+                description = 'Iteratively Analytics SDK for JVM'
+                url = 'https://iterative.ly'
+                licenses {
+                    license {
+                        name = 'The Apache License, Version 2.0'
+                        url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                    }
+                }
+                developers {
+                    developer {
+                        id = 'iteratively-justin'
+                        name = 'Justin Fiedler'
+                        email = 'justin@iterative.ly'
+                    }
+                }
+                scm {
+                    connection = 'scm:git:https://github.com/iterativelyhq/itly-sdk-jvm.git'
+                    developerConnection = 'scm:git:https://github.com/iterativelyhq/itly-sdk-jvm.git'
+                    url = 'https://github.com/iterativelyhq/itly-sdk-jvm'
+                }
+            }
+
+//            afterEvaluate {
+//                publications {
+//                    maven(MavenPublication) {
+//                        artifactId "arbor-android"
+//                        artifact 'android/build/outputs/aar/android-release.aar'
+//                        artifact dokkaJavadocAndroidJar
+//                        artifact androidSourcesJar
+//                    }
+//                }
+//                publications.getByName('jvm') {
+//                    artifact dokkaJavadocJvmJar
+//                }
+//                publications.getByName('kotlinMultiplatform') {
+//                    artifact dokkaJavadocCommonJar
+//                    artifact emptySourcesJar
+//                }
+//                publications.getByName('metadata') {
+//                    artifact dokkaJavadocCommonJar
+//                }
+//            }
+        }
+    }
+//
+//    dokkaHtml {
+//        outputDirectory = "$buildDir/dokka"
+//        dokkaSourceSets {
+//            create("jvmMain") {}
+//            create("androidMain") {}
+//        }
+//    }
 }
+
+//tasks.dokka {
+//    outputFormat = "html"
+//    outputDirectory = "$buildDir/javadoc"
+//}
+
+//task jvmDocsJar(type: Jar, dependsOn: dokkaHtml) {
+//    classifier 'javadoc'
+////    from "$buildDir/javadoc/jvm"
+//    from "$buildDir/dokka"
+//}
+//
+
+apply from: rootProject.file('gradle/dokka-mpp-android-jvm.gradle')
+
+//// WORKS
+//dokkaHtml {
+//    outputDirectory = "$buildDir/dokka"
+//
+//    dokkaSourceSets {
+////        jvmMain { // The same name as Kotlin Multiplatform plugin source set for `customName` platform, so the sources are fetched automatically
+////            includes = ['packages.md', 'extra.md']
+////            samples = ['samples/basic.kt', 'samples/advanced.kt']
+////        }
+//
+//        jvmMain { // Different name, so source roots, classpath and platform must be passed explicitly.
+//            sourceRoot {
+//                path = kotlin.sourceSets.jvmMain.kotlin.srcDirs[0]
+//            }
+//            sourceRoot {
+//                path = kotlin.sourceSets.commonMain.kotlin.srcDirs[0]
+//            }
+//        }
+//
+//        androidMain { // Different name, so source roots, classpath and platform must be passed explicitly.
+//            sourceRoot {
+//                path = kotlin.sourceSets.androidMain.kotlin.srcDirs[0]
+//            }
+//            sourceRoot {
+//                path = kotlin.sourceSets.commonMain.kotlin.srcDirs[0]
+//            }
+//        }
+//    }
+//}

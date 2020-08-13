@@ -1,8 +1,8 @@
 plugins {
     id 'org.jetbrains.kotlin.jvm'
-    id 'maven-publish'
-    id 'signing'
 }
+
+apply from: rootProject.file('gradle/publish-java.gradle')
 
 //java {
 //    withSourcesJar()
@@ -20,7 +20,7 @@ dependencies {
     testImplementation(project(":packages:test-fixtures"))
 }
 
-apply from: rootProject.file('gradle/publish-java.gradle')
+
 
 //signing {
 //    sign publishing.publications.maven

@@ -1,7 +1,8 @@
 plugins {
     id 'org.jetbrains.kotlin.jvm'
-    id 'maven-publish'
 }
+
+apply from: rootProject.file('gradle/publish-java.gradle')
 
 //test {
 //    testLogging.showStandardStreams = true
@@ -12,5 +13,3 @@ dependencies {
 
     testImplementation(project(":packages:test-fixtures"))
 }
-
-apply from: rootProject.file('gradle/publish-java.gradle')

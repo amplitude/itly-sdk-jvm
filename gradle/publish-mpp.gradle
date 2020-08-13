@@ -1,19 +1,12 @@
 apply plugin: 'maven-publish'
 apply plugin: 'signing'
 
-java {
-    withJavadocJar()
-    withSourcesJar()
-}
-
 publishing {
     publications {
-        maven(MavenPublication) {
+        kotlinMultiplatform {
             groupId = project.group
             artifactId = project.name
             version = project.version
-
-            from components.java
 
             pom {
                 name = 'Iteratively SDK'
@@ -53,5 +46,6 @@ publishing {
 }
 
 signing {
-    sign publishing.publications.maven
+    sign publishing.publications
 }
+
