@@ -19,18 +19,18 @@ plugins {
 
 allprojects {
     repositories {
-        jcenter()
-        mavenCentral()
-        google()
         mavenLocal()
+        mavenCentral()
+        jcenter()
+        google()
     }
 }
 
 repositories {
-    jcenter()
-    mavenCentral()
-    google()
     mavenLocal()
+    mavenCentral()
+    jcenter()
+    google()
 }
 
 subprojects {

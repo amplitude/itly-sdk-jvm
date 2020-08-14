@@ -1,13 +1,15 @@
 package ly.iterative.itly.iteratively
 
-import ly.iterative.itly.*
+import com.google.gson.Gson
 import com.segment.backo.Backo
+import ly.iterative.itly.*
 import ly.iterative.itly.core.Options
-import okhttp3.*
+import okhttp3.Interceptor
 import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.OkHttpClient
+import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
-import org.json.JSONArray
-import org.json.JSONObject
+import okhttp3.Response
 import java.io.IOException
 import java.lang.Thread.MIN_PRIORITY
 import java.net.ConnectException
@@ -46,6 +48,7 @@ class IterativelyPlugin(
     companion object {
         const val ID = "iteratively"
         const val LOG_TAG = "[plugin-$ID]"
+        private val GSON: Gson = Gson()
     }
 
     private val config: IterativelyOptions
@@ -211,8 +214,8 @@ class IterativelyPlugin(
         }
     }
 
-    private fun getTrackModelJson(trackModels: List<TrackModel>): JSONObject {
-        return JSONObject("{}").put("objects", JSONArray(trackModels))
+    private fun getTrackModelJson(trackModels: List<TrackModel>): String {
+        return "{\"objects\":${GSON.toJson(trackModels)}}"
     }
 
     /**
@@ -239,7 +242,7 @@ class IterativelyPlugin(
                     }
 
                     if (pending.size >= config.flushQueueSize || isPoisonPill) {
-                        logger.debug("Posting ${pending.size} track items.")
+                        logger.debug("$LOG_TAG Posting ${pending.size} track items to ${config.url}.")
 
                         // submit upload
                         networkExecutor.submit(Upload(pending))
@@ -249,7 +252,7 @@ class IterativelyPlugin(
                     }
                 }
             } catch (e: InterruptedException) {
-                logger.debug("Processing thread was interrupted.")
+                logger.debug("$LOG_TAG Processing thread was interrupted.")
             }
         }
     }
@@ -267,13 +270,13 @@ class IterativelyPlugin(
                     retryPolicy.sleep(attempt)
                 } catch (e: InterruptedException) {
                     logger.debug(
-                       "Thread interrupted waiting to retry upload after $attempt attempts."
+                       "$LOG_TAG Thread interrupted waiting to retry upload after $attempt attempts."
                     )
                     return
                 }
             }
 
-            logger.error("Failed to upload ${batch.size} events. Maximum attempts exceeded.");
+            logger.error("$LOG_TAG Failed to upload ${batch.size} events. Maximum attempts exceeded.");
         }
 
         /**
@@ -283,6 +286,10 @@ class IterativelyPlugin(
          */
         private fun upload(): Boolean {
             try {
+                logger.debug("$LOG_TAG Post (batch1): ${batch}")
+//                batch.forEach {
+//                    logger.debug("$LOG_TAG Post (item): ${OrgJsonProperties.toJsonString(it as Object)}")
+//                }
                 val response = postJson(config.url, getTrackModelJson(batch))
                 val code = response.code
                 if (response.isSuccessful) {
@@ -324,10 +331,13 @@ class IterativelyPlugin(
          * Posts @json to @url
          */
         @Throws(IOException::class)
-        private fun postJson(url: String, json: JSONObject): Response {
+        private fun postJson(url: String, json: String): Response {
+            logger.debug("$LOG_TAG Post JSON: $json")
+            val requestBody = json.toRequestBody(JSON_MEDIA_TYPE)
+            logger.debug("$LOG_TAG requestBody.contentLength: ${requestBody.contentLength()}")
             val request = Request.Builder().url(url)
                     .addHeader("Content-Type", "application/json")
-                    .post(json.toString().toRequestBody(JSON_MEDIA_TYPE))
+                    .post(requestBody)
                     .build()
             return client.newCall(request).execute()
         }

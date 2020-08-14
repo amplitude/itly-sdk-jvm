@@ -59,9 +59,9 @@ class AppKotlinTests {
     private fun assertValidTrackerRequest(trackType: TrackType, event: Event? = null) {
         val request: RecordedRequest = mockWebServer.takeRequest()
         Asserts.assertValidTrackerRequest(
-                request = request,
-                trackType = trackType,
-                event = event
+            request = request,
+            trackType = trackType,
+            event = event
         )
     }
 }
