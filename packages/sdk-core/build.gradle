@@ -4,10 +4,6 @@ plugins {
 
 apply from: rootProject.file('gradle/publish-java.gradle')
 
-//java {
-//    withSourcesJar()
-//}
-
 repositories {
     jcenter()
     mavenCentral()
@@ -19,16 +15,3 @@ dependencies {
 
     testImplementation(project(":packages:test-fixtures"))
 }
-
-
-
-//signing {
-//    sign publishing.publications.maven
-//}
-
-//javadoc {
-//    if(JavaVersion.current().isJava9Compatible()) {
-//        options.addBooleanOption('html5', true)
-//    }
-//}
-
