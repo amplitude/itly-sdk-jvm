@@ -48,17 +48,9 @@ actual class MParticlePlugin actual constructor(
         logger.debug("$LOG_TAG track(userId = $userId event=${event.name} properties=${event.properties})")
 
         val mpMetadata = event.metadata?.get(ID)
-
-//        meta?.eventType || Mparticle.EventType.Other,
-//        {
-//            $itly: this.$itly,
-//            ...event.properties,
-//        },
-//        meta?.customFlags,
         val metaEventType = mpMetadata?.get("eventType")
         val metaCustomFlags = mpMetadata?.get("customFlags")
 
-        logger.debug("$LOG_TAG HEHREHREHREHRHEREHRHERHEREREHRHEHRERE!!!")
         val mpeBuilder = MPEvent.Builder(
             event.name,
             if (metaEventType != null) metaEventType as MParticle.EventType
@@ -67,13 +59,12 @@ actual class MParticlePlugin actual constructor(
         .customAttributes(event.properties.mapValues { it.value.toString() }.plus(
             "\$itly" to "audit"
         ))
-//        .addCustomFlag("\$itly", "audit")
-//
-//        if (metaCustomFlags != null) {
-//            (metaCustomFlags as Map<String, String>).forEach{
-//                mpeBuilder.addCustomFlag(it.key, it.value)
-//            }
-//        }
+
+        if (metaCustomFlags != null) {
+            (metaCustomFlags as Map<String, String>).forEach{
+                mpeBuilder.addCustomFlag(it.key, it.value)
+            }
+        }
 
         val mpe = mpeBuilder.build()
         logger.debug("$LOG_TAG event=${mpe.eventName} type=${mpe.type} attr=${mpe.customAttributes} flags=${mpe.customFlags}")
