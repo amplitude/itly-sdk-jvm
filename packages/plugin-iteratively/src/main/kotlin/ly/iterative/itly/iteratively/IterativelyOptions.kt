@@ -10,7 +10,7 @@ data class IterativelyOptions @JvmOverloads constructor(
     val omitValues: Boolean = false,
     val batchSize: Int = 100,
     val flushQueueSize: Long = 10,
-    val flushIntervalMs: Long = 100,
+    val flushIntervalMs: Long = 10000,
 
     // TODO:
     //  Remove disabled here, use itly.disablePlugin() instead
