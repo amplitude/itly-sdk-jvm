@@ -3,16 +3,19 @@
  */
 package ly.iterative.itly.mparticle
 
+import android.content.Context
 import com.mparticle.MPEvent
 import ly.iterative.itly.*
 import com.mparticle.MParticle
 import ly.iterative.itly.core.Options
 
-typealias MP = com.mparticle.MParticle
-
-actual typealias MParticleOptions = com.mparticle.MParticleOptions
+actual open class MParticleOptions(
+    open val apiSecret: String,
+    open val androidContext: Context
+)
 
 actual class MParticlePlugin actual constructor(
+    private val apiKey: String,
     options: MParticleOptions
 ) : PluginBase() {
     companion object {
@@ -35,7 +38,10 @@ actual class MParticlePlugin actual constructor(
     override fun load(options: Options) {
         logger = options.logger
         logger.debug("$LOG_TAG load")
-        MParticle.start(config)
+        MParticle.start(com.mparticle.MParticleOptions
+                .builder(config.androidContext)
+                .credentials(apiKey, config.apiSecret)
+                .build())
     }
 
 //    fun screen() {
