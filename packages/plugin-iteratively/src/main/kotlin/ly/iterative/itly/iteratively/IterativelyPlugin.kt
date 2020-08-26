@@ -44,7 +44,7 @@ internal class AuthInterceptor(apiKey: String) : Interceptor {
 class IterativelyPlugin(
     apiKey: String,
     options: IterativelyOptions
-): PluginBase() {
+): PluginBase(ID) {
     companion object {
         const val ID = "iteratively"
         const val LOG_TAG = "[plugin-$ID]"
@@ -90,8 +90,6 @@ class IterativelyPlugin(
             .jitter(1)
             .build()
     }
-
-    override fun id(): String { return ID }
 
     override fun load(options: Options) {
         logger = options.logger

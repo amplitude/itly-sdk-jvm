@@ -17,7 +17,7 @@ actual open class MParticleOptions(
 actual class MParticlePlugin actual constructor(
     private val apiKey: String,
     options: MParticleOptions
-) : PluginBase() {
+) : PluginBase(ID) {
     companion object {
         @JvmField
         val ID = "mparticle"
@@ -30,10 +30,6 @@ actual class MParticlePlugin actual constructor(
 
     val client: MParticle
         get() = this.mParticle
-
-    override fun id(): String {
-        return ID
-    }
 
     override fun load(options: Options) {
         logger = options.logger

@@ -20,7 +20,7 @@ actual data class AmplitudeOptions(
 actual class AmplitudePlugin actual constructor(
     private val apiKey: String,
     options: AmplitudeOptions
-) : PluginBase() {
+) : PluginBase(ID) {
     companion object {
         @JvmField
         val ID = "amplitude"
@@ -32,10 +32,6 @@ actual class AmplitudePlugin actual constructor(
 
     val client: AmplitudeClient
         get() = this.amplitude
-
-    override fun id(): String {
-        return ID
-    }
 
     override fun load(options: Options) {
         logger = options.logger

@@ -18,7 +18,7 @@ actual data class SegmentOptions(
 actual class SegmentPlugin actual constructor(
     private val writeKey: String,
     options: SegmentOptions
-) : PluginBase() {
+) : PluginBase(ID) {
     companion object {
         @JvmField
         val ID = "segment"
@@ -30,10 +30,6 @@ actual class SegmentPlugin actual constructor(
 
     val client: Analytics
         get() = this.segment
-
-    override fun id(): String {
-        return ID
-    }
 
     override fun load(options: Options) {
         logger = options.logger

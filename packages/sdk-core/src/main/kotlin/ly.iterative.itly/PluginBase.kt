@@ -2,7 +2,12 @@ package ly.iterative.itly
 
 import ly.iterative.itly.core.Options
 
-abstract class PluginBase: Plugin {
+abstract class PluginBase(
+    private val id: String
+): Plugin {
+    override fun id(): String {
+        return id
+    }
     override fun load(options: Options) {}
     override fun alias(userId: String, previousId: String?) {}
     override fun identify(userId: String?, properties: Properties?) {}
@@ -12,7 +17,7 @@ abstract class PluginBase: Plugin {
     override fun validate(event: Event): ValidationResponse {
         return ValidationResponse(
             valid = true,
-            pluginId = this.id()
+            pluginId = id()
         )
     }
     override fun onValidationError(validation: ValidationResponse, event: Event) {}
