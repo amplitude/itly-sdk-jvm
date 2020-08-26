@@ -42,15 +42,13 @@ The `examples` directory contains sample apps for Kotlin and Java.
 # Build
 
 ### Setup `local.properties`
-To build for Android you need to set the `ANDROID_ROOT_SDK` path.
+To build you will need to set some additional properties.
 
-Create a `local.properties` and set `sdk.dir` to be the path to the Android SDK on your machine.
-```
-# local.properties
-sdk.dir=/Users/path/Library/Android/sdk
-``` 
+For Android you need to set the `ANDROID_ROOT_SDK` path, or `sdk.dir` in a `local.properties` file.
 
-There is a `local.properties.example` that can be used for reference.
+Signing and publishing also require user specific properties.
+
+There is a `local.properties.example` that can be used for reference. Rename this file `local.properties` and set the required values.
 
 ### Run `./gradlew build`
 ```
