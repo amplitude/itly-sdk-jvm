@@ -1,10 +1,11 @@
 package ly.iterative.itly.core
 
 import ly.iterative.itly.*
+import ly.iterative.itly.Properties
 import ly.iterative.itly.internal.OrgJsonProperties
-import java.lang.Error
-import java.util.HashMap
-import kotlin.IllegalStateException
+import java.util.*
+import java.util.concurrent.atomic.AtomicBoolean
+import kotlin.collections.ArrayList
 
 open class Itly {
     companion object {
@@ -13,14 +14,15 @@ open class Itly {
     }
 
     private lateinit var config: Options
-    private val pluginOptionsMap = HashMap<String, PluginOptions>()
-    private val enabledPlugins: ArrayList<Plugin> = arrayListOf()
-    private var isShutdown: Boolean = false
+
+    private val pluginOptionsMap = Collections.synchronizedMap(HashMap<String, PluginOptions>())
+    private val enabledPlugins = Collections.synchronizedList(ArrayList<Plugin>())
+    private var isShutdown: AtomicBoolean = AtomicBoolean(false)
 
     private val disabled: Boolean
         @Throws(IllegalStateException::class)
         get() {
-            if (isShutdown) {
+            if (isShutdown.get()) {
                 throw IllegalStateException("Itly is shutdown. No more requests are possible.")
             }
             if (this::config.isInitialized) {
@@ -34,8 +36,10 @@ open class Itly {
     }
 
     private fun enablePlugin(pluginId: String, enable: Boolean = true) {
-        pluginOptionsMap[pluginId] = pluginOptionsMap[pluginId]?.copy(disabled = !enable)
-                ?: PluginOptions(disabled = !enable)
+        synchronized(pluginOptionsMap) {
+            pluginOptionsMap[pluginId] = pluginOptionsMap[pluginId]?.copy(disabled = !enable)
+                    ?: PluginOptions(disabled = !enable)
+        }
         this.updateEnabledPlugins()
     }
 
@@ -44,14 +48,18 @@ open class Itly {
     }
 
     private fun isPluginEnabled(pluginId: String): Boolean {
-        return !(pluginOptionsMap[pluginId]?.disabled ?: false)
+        synchronized(pluginOptionsMap) {
+            return !(pluginOptionsMap[pluginId]?.disabled ?: false)
+        }
     }
 
     private fun updateEnabledPlugins() {
-        this.enabledPlugins.clear()
-        this.enabledPlugins.addAll(config.plugins.filter {
-            isPluginEnabled(it.id())
-        })
+        synchronized(enabledPlugins) {
+            enabledPlugins.clear()
+            enabledPlugins.addAll(config.plugins.filter {
+                isPluginEnabled(it.id())
+            })
+        }
     }
 
     @Throws(IllegalStateException::class)
@@ -72,11 +80,13 @@ open class Itly {
 
         config.logger.debug("$LOG_TAG ${enabledPlugins.size} plugins enabled")
 
-        enabledPlugins.forEach {
-            try {
-                it.load(config)
-            } catch (e: Exception) {
-                config.logger.error("$LOG_TAG Error in ${it.id()}.load(). ${e.message}.")
+        synchronized(enabledPlugins) {
+            enabledPlugins.forEach {
+                try {
+                    it.load(config)
+                } catch (e: Exception) {
+                    config.logger.error("$LOG_TAG Error in ${it.id()}.load(). ${e.message}.")
+                }
             }
         }
 
@@ -99,11 +109,13 @@ open class Itly {
             return
         }
 
-        enabledPlugins.forEach {
-            try{
-                it.alias(userId, previousId)
-            } catch (e: Exception) {
-                config.logger.error("$LOG_TAG Error in ${it.id()}.alias(). ${e.message}.")
+        synchronized(enabledPlugins) {
+            enabledPlugins.forEach {
+                try {
+                    it.alias(userId, previousId)
+                } catch (e: Exception) {
+                    config.logger.error("$LOG_TAG Error in ${it.id()}.alias(). ${e.message}.")
+                }
             }
         }
     }
@@ -120,11 +132,13 @@ open class Itly {
 
         val identify = Event("identify", properties?.properties)
         if (shouldBeTracked(identify)) {
-            enabledPlugins.forEach {
-                try {
-                    it.identify(userId, identify)
-                } catch (e: Exception) {
-                    config.logger.error("$LOG_TAG Error in ${it.id()}.identify(). ${e.message}.")
+            synchronized(enabledPlugins) {
+                enabledPlugins.forEach {
+                    try {
+                        it.identify(userId, identify)
+                    } catch (e: Exception) {
+                        config.logger.error("$LOG_TAG Error in ${it.id()}.identify(). ${e.message}.")
+                    }
                 }
             }
         }
@@ -142,11 +156,13 @@ open class Itly {
 
         val group = Event("group", properties?.properties)
         if(shouldBeTracked(group)) {
-            enabledPlugins.forEach {
-                try{
-                    it.group(userId, groupId, group)
-                } catch (e: Exception) {
-                    config.logger.error("$LOG_TAG Error in ${it.id()}.group(). ${e.message}.")
+            synchronized(enabledPlugins) {
+                enabledPlugins.forEach {
+                    try {
+                        it.group(userId, groupId, group)
+                    } catch (e: Exception) {
+                        config.logger.error("$LOG_TAG Error in ${it.id()}.group(). ${e.message}.")
+                    }
                 }
             }
         }
@@ -163,11 +179,13 @@ open class Itly {
         }
 
         if (shouldBeTracked(event)) {
-            enabledPlugins.forEach {
-                try {
-                    it.track(userId, event)
-                } catch (e: Exception) {
-                    config.logger.error("$LOG_TAG Error in ${it.id()}.track(${event.name}). ${e.message}.")
+            synchronized(enabledPlugins) {
+                enabledPlugins.forEach {
+                    try {
+                        it.track(userId, event)
+                    } catch (e: Exception) {
+                        config.logger.error("$LOG_TAG Error in ${it.id()}.track(${event.name}). ${e.message}.")
+                    }
                 }
             }
         }
@@ -178,11 +196,13 @@ open class Itly {
             return
         }
 
-        enabledPlugins.forEach {
-            try {
-                it.reset()
-            } catch (e: Exception) {
-                config.logger.error("$LOG_TAG Error in ${it.id()}.reset(). ${e.message}.")
+        synchronized(enabledPlugins) {
+            enabledPlugins.forEach {
+                try {
+                    it.reset()
+                } catch (e: Exception) {
+                    config.logger.error("$LOG_TAG Error in ${it.id()}.reset(). ${e.message}.")
+                }
             }
         }
     }
@@ -191,17 +211,19 @@ open class Itly {
     fun validate(event: Event): ValidationResponse {
         // Loop over plugins and stop if valid === false
         val validationResponses = arrayListOf<ValidationResponse>()
-        this.enabledPlugins.forEach {
-            val pluginValidation: ValidationResponse = try {
-                it.validate(event)
-            } catch (e: Error) {
-                ValidationResponse(
-                    valid = false,
-                    pluginId = it.id(),
-                    message = e.message
-                )
+        synchronized(enabledPlugins) {
+            enabledPlugins.forEach {
+                val pluginValidation: ValidationResponse = try {
+                    it.validate(event)
+                } catch (e: Error) {
+                    ValidationResponse(
+                            valid = false,
+                            pluginId = it.id(),
+                            message = e.message
+                    )
+                }
+                validationResponses.add(pluginValidation)
             }
-            validationResponses.add(pluginValidation)
         }
 
         // Get first invalid response or return valid=true
@@ -214,11 +236,13 @@ open class Itly {
 
         // If validation failed call validationError hook
         if (!validation.valid) {
-            enabledPlugins.forEach {
-                try {
-                    it.onValidationError(validation, event)
-                } catch (e: Exception) {
-                    config.logger.error("$LOG_TAG Error in ${it.id()}.validationError(). ${e.message}.")
+            synchronized(enabledPlugins) {
+                enabledPlugins.forEach {
+                    try {
+                        it.onValidationError(validation, event)
+                    } catch (e: Exception) {
+                        config.logger.error("$LOG_TAG Error in ${it.id()}.validationError(). ${e.message}.")
+                    }
                 }
             }
 
@@ -235,26 +259,30 @@ open class Itly {
             return
         }
 
-        enabledPlugins.forEach {
-            try {
-                it.flush()
-            } catch (e: Exception) {
-                config.logger.error("$LOG_TAG Error in ${it.id()}.flush(). ${e.message}.")
+        synchronized(enabledPlugins) {
+            enabledPlugins.forEach {
+                try {
+                    it.flush()
+                } catch (e: Exception) {
+                    config.logger.error("$LOG_TAG Error in ${it.id()}.flush(). ${e.message}.")
+                }
             }
         }
     }
 
-    fun shutdown() {
+    @Synchronized fun shutdown() {
         if (this.disabled) {
             return
         }
 
-        isShutdown = true
-        enabledPlugins.forEach {
-            try {
-                it.shutdown()
-            } catch (e: Exception) {
-                config.logger.error("$LOG_TAG Error in ${it.id()}.shutdown(). ${e.message}.")
+        isShutdown.getAndSet(true)
+        synchronized(enabledPlugins) {
+            enabledPlugins.forEach {
+                try {
+                    it.shutdown()
+                } catch (e: Exception) {
+                    config.logger.error("$LOG_TAG Error in ${it.id()}.shutdown(). ${e.message}.")
+                }
             }
         }
     }
