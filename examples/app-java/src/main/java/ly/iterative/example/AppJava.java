@@ -6,9 +6,9 @@ import ly.iterative.itly.jvm.Itly;
 import ly.iterative.itly.core.Options;
 import ly.iterative.itly.test.Schemas;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.ArrayList;
-import java.util.List;
 
 public class AppJava {
     public static void main(String[] args) {
@@ -24,7 +24,7 @@ public class AppJava {
         itly.load(new Options(
             new Properties(Collections.emptyMap()),
             Environment.PRODUCTION,
-            new ArrayList<>(List.<Plugin>of(
+            new ArrayList<>(Arrays.asList(
                 iterativelyPlugin,
                 new SchemaValidatorPlugin(Schemas.DEFAULT)
             )),
