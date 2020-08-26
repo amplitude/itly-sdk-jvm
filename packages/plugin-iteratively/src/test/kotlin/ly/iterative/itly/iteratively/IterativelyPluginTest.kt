@@ -1,5 +1,8 @@
 package ly.iterative.itly.iteratively
 
+import com.fasterxml.jackson.databind.DeserializationFeature
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import ly.iterative.itly.*
 import ly.iterative.itly.core.Options
 import okhttp3.mockwebserver.*
@@ -14,6 +17,10 @@ object TIMEOUTS {
     const val BACKOFF_MAXIMUM_MS: Long = 500
     const val FLUSH_INTERVAL_MS: Long = 500
 }
+
+val JSONObjectMapper: ObjectMapper = jacksonObjectMapper().configure(
+    DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false
+)
 
 class IterativelyPluginTest {
     // User info
@@ -112,6 +119,43 @@ class IterativelyPluginTest {
     fun tracker_group_madeValidRequest() {
         iterativelyPlugin.group(user.id, user.groupId)
         assertValidTrackerRequest(TrackType.group)
+    }
+
+    @Test
+    fun tracker_track_madeValidJson() {
+        val eventName = "Dummy event"
+        val props = mapOf(
+                "prop" to "A property value",
+                "anotherProp" to true
+        )
+
+        val event = Event(
+            name = eventName,
+            properties = props
+        )
+        iterativelyPlugin.track(user.id, event)
+
+        val request: RecordedRequest = mockWebServer.takeRequest()
+        val body = request.body.readUtf8()
+        val trackModelJson = body
+                .replace("{\"objects\":[", "")
+                .substringBeforeLast("]}")
+
+        val trackModel: TrackModel = JSONObjectMapper.readValue(trackModelJson, TrackModel::class.java)
+
+        // Path & Method
+        Assertions.assertEquals(
+            trackModel.eventName,
+            "Dummy event"
+        )
+        Assertions.assertEquals(
+            trackModel.properties!!.properties["prop"],
+            "A property value"
+        )
+        Assertions.assertEquals(
+            trackModel.properties!!.properties["anotherProp"],
+            true
+        )
     }
 
     @Test

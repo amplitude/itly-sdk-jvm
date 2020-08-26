@@ -66,9 +66,9 @@ actual class MParticlePlugin actual constructor(
             "\$itly" to "audit"
         ))
 
-        if (metaCustomFlags != null) {
-            (metaCustomFlags as Map<String, String>).forEach{
-                mpeBuilder.addCustomFlag(it.key, it.value)
+        if (metaCustomFlags != null && metaCustomFlags is Map<*, *>) {
+            metaCustomFlags.forEach{
+                mpeBuilder.addCustomFlag(it.key.toString(), it.value.toString())
             }
         }
 

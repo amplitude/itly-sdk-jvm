@@ -1,6 +1,6 @@
 package ly.iterative.itly.iteratively
 
-import com.google.gson.Gson
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.segment.backo.Backo
 import ly.iterative.itly.*
 import ly.iterative.itly.core.Options
@@ -48,7 +48,7 @@ class IterativelyPlugin(
     companion object {
         const val ID = "iteratively"
         const val LOG_TAG = "[plugin-$ID]"
-        private val GSON: Gson = Gson()
+        private val JSONObjectMapper = jacksonObjectMapper()
     }
 
     private val config: IterativelyOptions
@@ -215,7 +215,7 @@ class IterativelyPlugin(
     }
 
     private fun getTrackModelJson(trackModels: List<TrackModel>): String {
-        return "{\"objects\":${GSON.toJson(trackModels)}}"
+        return "{\"objects\":${JSONObjectMapper.writeValueAsString(trackModels)}}"
     }
 
     /**
