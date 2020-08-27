@@ -7,13 +7,13 @@ actual class MParticleOptions(
     val androidContext: Context
 ) {
     companion object {
+        @JvmStatic
         fun builder(): IApiSecret {
             return Builder()
         }
     }
 
     private constructor(builder: Builder) : this(builder.apiSecret, builder.androidContext)
-    private constructor(clone: MParticleOptions) : this(clone.apiSecret, clone.androidContext)
 
     // Inner Builder class with required properties
     class Builder internal constructor() : IApiSecret, IAndroidContext, IBuild {
@@ -35,11 +35,11 @@ actual class MParticleOptions(
     }
 
     interface IApiSecret {
-        fun apiSecret(apiSecret: String): IAndroidContext?
+        fun apiSecret(apiSecret: String): IAndroidContext
     }
 
     interface IAndroidContext {
-        fun androidContext(androidContext: Context): IBuild?
+        fun androidContext(androidContext: Context): IBuild
     }
 
     interface IBuild {
