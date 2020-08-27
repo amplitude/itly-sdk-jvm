@@ -9,11 +9,6 @@ import ly.iterative.itly.*
 import com.mparticle.MParticle
 import ly.iterative.itly.core.Options
 
-actual open class MParticleOptions(
-    open val apiSecret: String,
-    open val androidContext: Context
-)
-
 actual class MParticlePlugin actual constructor(
     private val apiKey: String,
     options: MParticleOptions
