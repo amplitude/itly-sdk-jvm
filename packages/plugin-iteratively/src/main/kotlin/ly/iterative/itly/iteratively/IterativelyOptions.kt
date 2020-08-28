@@ -21,4 +21,87 @@ data class IterativelyOptions @JvmOverloads constructor(
     val retryOptions: RetryOptions = RetryOptions(),
     val threadFactory: ThreadFactory = DEFAULT_THREAD_FACTORY,
     val networkExecutor: ExecutorService? = null
-)
+) {
+    companion object {
+        @JvmStatic
+        fun builder(): IUrl {
+            return Builder()
+        }
+    }
+
+    constructor(builder: Builder) : this(
+        url = builder.url,
+        environment = builder.environment,
+        omitValues = builder.omitValues,
+        batchSize = builder.batchSize,
+        flushQueueSize = builder.flushQueueSize,
+        flushIntervalMs = builder.flushIntervalMs,
+        disabled = builder.disabled,
+        threadFactory = builder.threadFactory,
+        networkExecutor = builder.networkExecutor,
+        retryOptions = builder.retryOptions
+    )
+
+    @JvmOverloads
+    constructor(url: String, environment: Environment, iterativelyOptions: ly.iterative.itly.IterativelyOptions) : this(
+        url = url,
+        environment = environment,
+        omitValues = iterativelyOptions.omitValues,
+        batchSize = iterativelyOptions.batchSize,
+        flushQueueSize = iterativelyOptions.flushQueueSize,
+        flushIntervalMs = iterativelyOptions.flushIntervalMs,
+        disabled = iterativelyOptions.disabled,
+        threadFactory = iterativelyOptions.threadFactory,
+        networkExecutor = iterativelyOptions.networkExecutor,
+        retryOptions = iterativelyOptions.retryOptions
+    )
+
+    // For Java :)
+    class Builder internal constructor (
+        internal var url: String = "",
+        internal var environment: Environment = DEFAULT_ITERATIVELY_OPTIONS.environment,
+        internal var omitValues: Boolean = DEFAULT_ITERATIVELY_OPTIONS.omitValues,
+        internal var batchSize: Int = DEFAULT_ITERATIVELY_OPTIONS.batchSize,
+        internal var flushQueueSize: Long = DEFAULT_ITERATIVELY_OPTIONS.flushQueueSize,
+        internal var flushIntervalMs: Long = DEFAULT_ITERATIVELY_OPTIONS.flushIntervalMs,
+        internal var disabled: Boolean = DEFAULT_ITERATIVELY_OPTIONS.disabled,
+        internal var threadFactory: ThreadFactory = DEFAULT_ITERATIVELY_OPTIONS.threadFactory,
+        internal var networkExecutor: ExecutorService? = DEFAULT_ITERATIVELY_OPTIONS.networkExecutor,
+        internal var retryOptions: RetryOptions = DEFAULT_ITERATIVELY_OPTIONS.retryOptions
+    ) : IUrl, IEnvironment, IBuild {
+        override fun url(url: String) = apply { this.url = url }
+        override fun environment(environment: Environment) = apply { this.environment = environment }
+        override fun omitValues(omitValues: Boolean) = apply { this.omitValues = omitValues }
+        override fun batchSize(batchSize: Int) = apply { this.batchSize = batchSize }
+        override fun flushQueueSize(flushQueueSize: Long) = apply { this.flushQueueSize = flushQueueSize }
+        override fun flushIntervalMs(flushIntervalMs: Long) = apply { this.flushIntervalMs = flushIntervalMs }
+        override fun disabled(disabled: Boolean) = apply { this.disabled = disabled }
+        override fun threadFactory(threadFactory: ThreadFactory) = apply { this.threadFactory = threadFactory }
+        override fun networkExecutor(networkExecutor: ExecutorService) = apply { this.networkExecutor = networkExecutor }
+        override fun retryOptions(retryOptions: RetryOptions) = apply { this.retryOptions = retryOptions }
+
+        override fun build(): IterativelyOptions {
+            return IterativelyOptions(this)
+        }
+    }
+
+    interface IUrl {
+        fun url(url: String): IEnvironment
+    }
+
+    interface IEnvironment {
+        fun environment(environment: Environment): IBuild
+    }
+
+    interface IBuild {
+        fun omitValues(omitValues: Boolean): IBuild
+        fun batchSize(batchSize: Int): IBuild
+        fun flushQueueSize(flushQueueSize: Long): IBuild
+        fun flushIntervalMs(flushIntervalMs: Long): IBuild
+        fun disabled(disabled: Boolean): IBuild
+        fun threadFactory(threadFactory: ThreadFactory): IBuild
+        fun networkExecutor(networkExecutor: ExecutorService): IBuild
+        fun retryOptions(retryOptions: RetryOptions): IBuild
+        fun build(): IterativelyOptions
+    }
+}

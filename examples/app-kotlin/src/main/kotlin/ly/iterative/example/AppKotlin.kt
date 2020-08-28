@@ -17,7 +17,7 @@ object AppKotlin {
 
         val iterativelyPlugin = IterativelyPlugin(
             user.apiKey,
-            IterativelyOptions(
+            ly.iterative.itly.iteratively.IterativelyOptions(
                 url = trackerUrl.url,
                 batchSize = 1,
                 flushQueueSize = 1

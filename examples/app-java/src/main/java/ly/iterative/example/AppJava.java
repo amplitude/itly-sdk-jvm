@@ -11,18 +11,23 @@ import java.util.ArrayList;
 
 public class AppJava {
     public static void main(String[] args) {
+        Environment environment = Environment.PRODUCTION;
+
         ValidationOptions validation = new ValidationOptions();
 
         Plugin iterativelyPlugin = new IterativelyPlugin(
             "itly-api-key",
-            new IterativelyOptions("https://iterative.ly/about")
+            ly.iterative.itly.iteratively.IterativelyOptions.builder()
+                .url("https://iterative.ly/about")
+                .environment(environment)
+                .build()
         );
 
         Itly itly = new Itly();
 
         itly.load(new Options(
             new Properties(Collections.emptyMap()),
-            Environment.PRODUCTION,
+            environment,
             new ArrayList<>(Arrays.asList(
                 iterativelyPlugin,
                 new SchemaValidatorPlugin(Schemas.DEFAULT)

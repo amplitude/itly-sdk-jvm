@@ -149,11 +149,11 @@ class IterativelyPluginTest {
             "Dummy event"
         )
         Assertions.assertEquals(
-            trackModel.properties!!.properties["prop"],
+            trackModel.properties!!["prop"],
             "A property value"
         )
         Assertions.assertEquals(
-            trackModel.properties!!.properties["anotherProp"],
+            trackModel.properties!!["anotherProp"],
             true
         )
     }

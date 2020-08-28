@@ -1,5 +1,8 @@
 package ly.iterative.itly.iteratively
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect
+import com.fasterxml.jackson.annotation.PropertyAccessor
+import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.segment.backo.Backo
 import ly.iterative.itly.*
@@ -48,7 +51,9 @@ class IterativelyPlugin(
     companion object {
         const val ID = "iteratively"
         const val LOG_TAG = "[plugin-$ID]"
-        private val JSONObjectMapper = jacksonObjectMapper()
+        private val JSONObjectMapper = jacksonObjectMapper().configure(
+                DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false
+            ).setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
     }
 
     private val config: IterativelyOptions
@@ -185,8 +190,8 @@ class IterativelyPlugin(
         val valid = validation?.valid ?: true
         // Get sanitized info
         val details = if (config.omitValues) "" else validation?.message ?: ""
-        val sanitizedProperties = if (config.omitValues && properties != null)
-            Properties.sanitizeValues(properties) else properties
+        val sanitizedProperties: Map<String, Any?>? = if (config.omitValues && properties != null)
+            sanitizeValues(properties.properties) else properties?.properties
 
         return TrackModel(
             type = type,
@@ -197,6 +202,10 @@ class IterativelyPlugin(
             valid = valid,
             validation = Validation(details)
         )
+    }
+
+    private fun sanitizeValues(properties: Map<String, Any?>): Map<String, Nothing?> {
+        return properties.keys.associateWith { null }
     }
 
     private fun push(trackModel: TrackModel) {

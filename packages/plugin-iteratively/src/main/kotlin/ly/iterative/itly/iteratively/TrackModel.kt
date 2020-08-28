@@ -35,7 +35,7 @@ data class TrackModel(
     val eventSchemaVersion: String?,
     val eventName: String?,
     // FIXME: properties aren't optional in JS/TS
-    val properties: Properties?,
+    val properties: Map<String, Any?>?,
     val valid: Boolean,
     val validation: Validation
 ) {
