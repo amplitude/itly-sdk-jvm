@@ -42,8 +42,11 @@ data class IterativelyOptions @JvmOverloads constructor(
         retryOptions = builder.retryOptions
     )
 
-    @JvmOverloads
-    constructor(url: String, environment: Environment, iterativelyOptions: ly.iterative.itly.IterativelyOptions) : this(
+    constructor(
+        url: String,
+        environment: Environment,
+        iterativelyOptions: ly.iterative.itly.IterativelyOptions
+    ) : this(
         url = url,
         environment = environment,
         omitValues = iterativelyOptions.omitValues,

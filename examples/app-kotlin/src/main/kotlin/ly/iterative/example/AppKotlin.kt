@@ -27,9 +27,12 @@ object AppKotlin {
         val itly = Itly()
 
         itly.load(Options(
+            context = Context(
+                requiredString = "Required string"
+            ),
             plugins = arrayListOf<Plugin>(
-                    schemaValidatorPlugin,
-                    iterativelyPlugin
+                schemaValidatorPlugin,
+                iterativelyPlugin
             ),
             logger = logger,
             validation = ValidationOptions(

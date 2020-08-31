@@ -3,7 +3,6 @@
  */
 package ly.iterative.itly.mparticle
 
-import android.content.Context
 import com.mparticle.MPEvent
 import ly.iterative.itly.*
 import com.mparticle.MParticle
@@ -64,7 +63,7 @@ actual class MParticlePlugin actual constructor(
         }
 
         val mpe = mpeBuilder.build()
-        logger.debug("$LOG_TAG event=${mpe.eventName} type=${mpe.type} attr=${mpe.customAttributes} flags=${mpe.customFlags}")
+        logger.debug("$LOG_TAG mpEvent=${mpe.eventName} type=${mpe.type} attr=${mpe.customAttributes} flags=${mpe.customFlags}")
 
         MParticle.getInstance()?.logEvent(mpe)
     }

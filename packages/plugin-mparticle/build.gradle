@@ -48,11 +48,11 @@ kotlin {
         androidMain {
             dependsOn commonMain
             dependencies {
-                implementation 'ly.iterative.mparticle:android-core:5.14.10'
+                implementation 'ly.iterative.mparticle:android-core:5.14.10-SNAPSHOT'
                 // Required for gathering Android Advertising ID
-                implementation 'com.google.android.gms:play-services-ads-identifier:16.0.0'
+                implementation 'com.google.android.gms:play-services-ads-identifier:17.0.0'
                 // Recommended to query the Google Play install referrer
-                implementation 'com.android.installreferrer:installreferrer:1.0'
+                implementation 'com.android.installreferrer:installreferrer:2.1'
             }
         }
         androidTest {

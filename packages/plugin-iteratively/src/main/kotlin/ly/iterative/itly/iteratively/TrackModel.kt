@@ -16,12 +16,11 @@ enum class TrackType {
     companion object {
         @JvmStatic
         fun fromEvent(event: Event): TrackType {
-            var eventType = track
-            try {
-                eventType = valueOf(event.name.toLowerCase())
-            } catch (error: Error) {
+            return when(event.name.toLowerCase()) {
+                "identify" -> identify
+                "group" -> group
+                else -> track
             }
-            return eventType
         }
     }
 }
