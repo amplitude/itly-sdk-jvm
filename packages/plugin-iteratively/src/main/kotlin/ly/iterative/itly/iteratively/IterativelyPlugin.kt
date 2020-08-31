@@ -213,7 +213,9 @@ class IterativelyPlugin(
             return
         }
 
-        logger.debug("$LOG_TAG Queueing '${trackModel.eventName}' type:'${trackModel.type}'")
+        if (trackModel.type != TrackType.POISON) {
+            logger.debug("$LOG_TAG Queueing '${trackModel.eventName}' type:'${trackModel.type}'")
+        }
         try {
             queue.put(trackModel)
         } catch (e: InterruptedException) {
@@ -244,7 +246,7 @@ class IterativelyPlugin(
                     if (!isPoisonPill) {
                         pending.add(track)
                     } else if (pending.size < 1) {
-                        logger.debug("Flush received. No pending items.")
+                        logger.debug("$LOG_TAG Flush received. No pending items.")
                         continue
                     }
 
@@ -298,6 +300,8 @@ class IterativelyPlugin(
 //                    logger.debug("$LOG_TAG Post (item): ${OrgJsonProperties.toJsonString(it as Object)}")
 //                }
                 val response = postJson(config.url, getTrackModelJson(batch))
+                response.close()
+
                 val code = response.code
                 if (response.isSuccessful) {
                     // Upload succeeded, no need to retry
@@ -341,7 +345,6 @@ class IterativelyPlugin(
         private fun postJson(url: String, json: String): Response {
             logger.debug("$LOG_TAG Post JSON: $json")
             val requestBody = json.toRequestBody(JSON_MEDIA_TYPE)
-            logger.debug("$LOG_TAG requestBody.contentLength: ${requestBody.contentLength()}")
             val request = Request.Builder().url(url)
                     .addHeader("Content-Type", "application/json")
                     .post(requestBody)
