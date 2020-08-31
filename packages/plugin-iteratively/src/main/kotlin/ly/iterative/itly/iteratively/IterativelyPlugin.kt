@@ -1,6 +1,9 @@
 package ly.iterative.itly.iteratively
 
-import com.google.gson.Gson
+import com.fasterxml.jackson.annotation.JsonAutoDetect
+import com.fasterxml.jackson.annotation.PropertyAccessor
+import com.fasterxml.jackson.databind.DeserializationFeature
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.segment.backo.Backo
 import ly.iterative.itly.*
 import ly.iterative.itly.core.Options
@@ -44,11 +47,13 @@ internal class AuthInterceptor(apiKey: String) : Interceptor {
 class IterativelyPlugin(
     apiKey: String,
     options: IterativelyOptions
-): PluginBase() {
+): PluginBase(ID) {
     companion object {
         const val ID = "iteratively"
         const val LOG_TAG = "[plugin-$ID]"
-        private val GSON: Gson = Gson()
+        private val JSONObjectMapper = jacksonObjectMapper().configure(
+                DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false
+            ).setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
     }
 
     private val config: IterativelyOptions
@@ -90,8 +95,6 @@ class IterativelyPlugin(
             .jitter(1)
             .build()
     }
-
-    override fun id(): String { return ID }
 
     override fun load(options: Options) {
         logger = options.logger
@@ -187,8 +190,8 @@ class IterativelyPlugin(
         val valid = validation?.valid ?: true
         // Get sanitized info
         val details = if (config.omitValues) "" else validation?.message ?: ""
-        val sanitizedProperties = if (config.omitValues && properties != null)
-            Properties.sanitizeValues(properties) else properties
+        val sanitizedProperties: Map<String, Any?>? = if (config.omitValues && properties != null)
+            sanitizeValues(properties.properties) else properties?.properties
 
         return TrackModel(
             type = type,
@@ -201,12 +204,18 @@ class IterativelyPlugin(
         )
     }
 
+    private fun sanitizeValues(properties: Map<String, Any?>): Map<String, Nothing?> {
+        return properties.keys.associateWith { null }
+    }
+
     private fun push(trackModel: TrackModel) {
         if (config.disabled) {
             return
         }
 
-        logger.debug("$LOG_TAG Queueing '${trackModel.eventName}' type:'${trackModel.type}'")
+        if (trackModel.type != TrackType.POISON) {
+            logger.debug("$LOG_TAG Queueing '${trackModel.eventName}' type:'${trackModel.type}'")
+        }
         try {
             queue.put(trackModel)
         } catch (e: InterruptedException) {
@@ -215,7 +224,7 @@ class IterativelyPlugin(
     }
 
     private fun getTrackModelJson(trackModels: List<TrackModel>): String {
-        return "{\"objects\":${GSON.toJson(trackModels)}}"
+        return "{\"objects\":${JSONObjectMapper.writeValueAsString(trackModels)}}"
     }
 
     /**
@@ -237,7 +246,7 @@ class IterativelyPlugin(
                     if (!isPoisonPill) {
                         pending.add(track)
                     } else if (pending.size < 1) {
-                        logger.debug("Flush received. No pending items.")
+                        logger.debug("$LOG_TAG Flush received. No pending items.")
                         continue
                     }
 
@@ -291,6 +300,8 @@ class IterativelyPlugin(
 //                    logger.debug("$LOG_TAG Post (item): ${OrgJsonProperties.toJsonString(it as Object)}")
 //                }
                 val response = postJson(config.url, getTrackModelJson(batch))
+                response.close()
+
                 val code = response.code
                 if (response.isSuccessful) {
                     // Upload succeeded, no need to retry
@@ -334,7 +345,6 @@ class IterativelyPlugin(
         private fun postJson(url: String, json: String): Response {
             logger.debug("$LOG_TAG Post JSON: $json")
             val requestBody = json.toRequestBody(JSON_MEDIA_TYPE)
-            logger.debug("$LOG_TAG requestBody.contentLength: ${requestBody.contentLength()}")
             val request = Request.Builder().url(url)
                     .addHeader("Content-Type", "application/json")
                     .post(requestBody)

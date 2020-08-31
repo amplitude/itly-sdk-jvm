@@ -19,7 +19,7 @@ actual data class SegmentOptions @JvmOverloads constructor(
 actual class SegmentPlugin actual constructor(
     private val writeKey: String,
     options: SegmentOptions
-) : PluginBase() {
+) : PluginBase(ID) {
     companion object {
         @JvmField
         val ID = "segment"
@@ -33,10 +33,6 @@ actual class SegmentPlugin actual constructor(
         get() = this.segment
 
     constructor(writeKey: String): this(writeKey, SegmentOptions())
-
-    override fun id(): String {
-        return ID
-    }
 
     override fun load(options: Options) {
         logger = options.logger

@@ -17,7 +17,7 @@ actual data class MixpanelOptions(
 actual class MixpanelPlugin actual constructor(
     private val token: String,
     options: MixpanelOptions
-) : PluginBase() {
+) : PluginBase(ID) {
     companion object {
         @JvmField
         val ID = "mixpanel"
@@ -29,10 +29,6 @@ actual class MixpanelPlugin actual constructor(
 
     val client: MixpanelAPI
         get() = this.mixpanel
-
-    override fun id(): String {
-        return ID
-    }
 
     override fun load(options: Options) {
         logger = options.logger

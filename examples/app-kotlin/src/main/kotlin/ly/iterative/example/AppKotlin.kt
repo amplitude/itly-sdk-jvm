@@ -2,8 +2,7 @@ package ly.iterative.example
 
 import ly.iterative.itly.*
 import ly.iterative.itly.iteratively.*
-import ly.iterative.itly.jvm.Itly
-import ly.iterative.itly.core.Options
+import ly.iterative.itly.jvm.*
 import ly.iterative.itly.test.*
 import ly.iterative.itly.test.events.*
 
@@ -18,7 +17,7 @@ object AppKotlin {
 
         val iterativelyPlugin = IterativelyPlugin(
             user.apiKey,
-            IterativelyOptions(
+            ly.iterative.itly.iteratively.IterativelyOptions(
                 url = trackerUrl.url,
                 batchSize = 1,
                 flushQueueSize = 1
@@ -28,9 +27,12 @@ object AppKotlin {
         val itly = Itly()
 
         itly.load(Options(
+            context = Context(
+                requiredString = "Required string"
+            ),
             plugins = arrayListOf<Plugin>(
-                    schemaValidatorPlugin,
-                    iterativelyPlugin
+                schemaValidatorPlugin,
+                iterativelyPlugin
             ),
             logger = logger,
             validation = ValidationOptions(

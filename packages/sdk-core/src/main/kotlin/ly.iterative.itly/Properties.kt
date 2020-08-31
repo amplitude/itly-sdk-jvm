@@ -12,11 +12,6 @@ open class Properties @JvmOverloads constructor(
         fun combine(properties: Map<String, Any?>): Properties {
             return Properties(properties)
         }
-
-        @JvmStatic
-        fun sanitizeValues(properties: Properties): Properties {
-            return Properties(properties.properties.keys.associateWith { null })
-        }
     }
 
     override fun equals(other: Any?): Boolean {

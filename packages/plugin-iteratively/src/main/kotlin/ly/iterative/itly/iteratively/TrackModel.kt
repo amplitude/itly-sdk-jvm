@@ -16,12 +16,11 @@ enum class TrackType {
     companion object {
         @JvmStatic
         fun fromEvent(event: Event): TrackType {
-            var eventType = track
-            try {
-                eventType = valueOf(event.name.toLowerCase())
-            } catch (error: Error) {
+            return when(event.name.toLowerCase()) {
+                "identify" -> identify
+                "group" -> group
+                else -> track
             }
-            return eventType
         }
     }
 }
@@ -35,7 +34,7 @@ data class TrackModel(
     val eventSchemaVersion: String?,
     val eventName: String?,
     // FIXME: properties aren't optional in JS/TS
-    val properties: Properties?,
+    val properties: Map<String, Any?>?,
     val valid: Boolean,
     val validation: Validation
 ) {

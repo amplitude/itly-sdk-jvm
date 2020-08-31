@@ -7,7 +7,7 @@ import ly.iterative.itly.core.Options
 
 class SchemaValidatorPlugin constructor(
     private val schemas: Map<String, String>
-): PluginBase() {
+): PluginBase(ID) {
     companion object {
         const val ID = "schema-validator"
         private const val LOG_TAG = "[plugin-$ID]"
@@ -15,8 +15,6 @@ class SchemaValidatorPlugin constructor(
 
     private lateinit var validators: Map<String, JsonSchema>
     private lateinit var logger: Logger
-
-    override fun id(): String { return ID }
 
     override fun load(options: Options) {
         // Get a reference to the SDK logger

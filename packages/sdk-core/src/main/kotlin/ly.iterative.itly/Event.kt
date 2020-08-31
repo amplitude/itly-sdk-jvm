@@ -7,7 +7,8 @@ open class Event @JvmOverloads constructor(
     val name: String,
     properties: Map<String, Any?>? = null,
     val id: String? = null,
-    val version: String? = null
+    val version: String? = null,
+    val metadata: Map<String, Map<String, Any>>? = null
 ) : Properties(
     properties
 ) {
