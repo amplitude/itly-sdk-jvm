@@ -43,7 +43,7 @@ actual class MParticlePlugin actual constructor(
     override fun track(userId: String?, event: Event) {
         logger.debug("$LOG_TAG track(userId = $userId event=${event.name} properties=${event.properties})")
 
-        val mpMetadata = event.metadata?.get(ID)
+        val mpMetadata = event.metadata[ID]
         val metaEventType = mpMetadata?.get("eventType")
         val metaCustomFlags = mpMetadata?.get("customFlags")
 

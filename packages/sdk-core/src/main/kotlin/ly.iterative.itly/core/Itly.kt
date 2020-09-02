@@ -91,14 +91,12 @@ open class Itly {
         }
 
         // Validate Context
-        try {
-            validate(Event("context", config.context?.properties))
-        } catch (e: NoSuchElementException) {
-            val contextPropertyCount = config.context?.properties?.size ?: 0
-            if (contextPropertyCount > 0) {
-                throw IllegalArgumentException(
-                    "Error validating 'context'. Schema not found but received context=${OrgJsonProperties.toOrgJson(config.context)}"
-                )
+        val processedContext = process(Event("context", config.context?.properties))
+        if (!processedContext.metadata.itly.validation.valid) {
+            val message = processedContext.metadata.itly.validation.message
+                    ?: "Invalid context=${OrgJsonProperties.toOrgJson(config.context)}"
+            if (!(message.contains("No schema found") && config.context == null)) {
+                throw IllegalArgumentException(message)
             }
         }
     }
@@ -131,17 +129,13 @@ open class Itly {
         }
 
         val identify = Event("identify", properties?.properties)
-        if (shouldBeTracked(identify)) {
-            synchronized(enabledPlugins) {
-                enabledPlugins.forEach {
-                    try {
-                        it.identify(userId, identify)
-                    } catch (e: Exception) {
-                        config.logger.error("$LOG_TAG Error in ${it.id()}.identify(). ${e.message}.")
-                    }
-                }
+        processAndTrack(identify) { plugin, processedIdentify -> run {
+            try {
+                plugin.identify(userId, processedIdentify)
+            } catch (e: Exception) {
+                config.logger.error("$LOG_TAG Error in ${plugin.id()}.identify(). ${e.message}.")
             }
-        }
+        }}
     }
     // NOTE: Can't use @JvmOverload above since it is an interface method
     // NOTE: Need to manually override method instead
@@ -155,17 +149,13 @@ open class Itly {
         }
 
         val group = Event("group", properties?.properties)
-        if(shouldBeTracked(group)) {
-            synchronized(enabledPlugins) {
-                enabledPlugins.forEach {
-                    try {
-                        it.group(userId, groupId, group)
-                    } catch (e: Exception) {
-                        config.logger.error("$LOG_TAG Error in ${it.id()}.group(). ${e.message}.")
-                    }
-                }
+        processAndTrack(group) { plugin, processedGroup -> run {
+            try {
+                plugin.group(userId, groupId, processedGroup)
+            } catch (e: Exception) {
+                config.logger.error("$LOG_TAG Error in ${plugin.id()}.group(). ${e.message}.")
             }
-        }
+        }}
     }
     // NOTE: Can't use @JvmOverload above since it is an interface method
     // NOTE: Need to manually override method instead
@@ -178,17 +168,13 @@ open class Itly {
             return
         }
 
-        if (shouldBeTracked(event)) {
-            synchronized(enabledPlugins) {
-                enabledPlugins.forEach {
-                    try {
-                        it.track(userId, event)
-                    } catch (e: Exception) {
-                        config.logger.error("$LOG_TAG Error in ${it.id()}.track(${event.name}). ${e.message}.")
-                    }
-                }
+        processAndTrack(event) { plugin, processedEvent -> run {
+            try {
+                plugin.track(userId, processedEvent)
+            } catch (e: Exception) {
+                config.logger.error("$LOG_TAG Error in ${plugin.id()}.track(${event.name}). ${e.message}.")
             }
-        }
+        }}
     }
 
     fun reset() {
@@ -207,51 +193,18 @@ open class Itly {
         }
     }
 
-    @Throws(IllegalArgumentException::class)
-    fun validate(event: Event): ValidationResponse {
-        // Loop over plugins and stop if valid === false
-        val validationResponses = arrayListOf<ValidationResponse>()
+    fun process(event: Event): Event {
+        var processedEvent = event
         synchronized(enabledPlugins) {
             enabledPlugins.forEach {
-                val pluginValidation: ValidationResponse = try {
-                    it.validate(event)
-                } catch (e: Error) {
-                    ValidationResponse(
-                            valid = false,
-                            pluginId = it.id(),
-                            message = e.message
-                    )
-                }
-                validationResponses.add(pluginValidation)
-            }
-        }
-
-        // Get first invalid response or return valid=true
-        val validation = validationResponses.firstOrNull {
-            !it.valid
-        } ?: ValidationResponse(
-            valid = true,
-            pluginId = this.id()
-        )
-
-        // If validation failed call validationError hook
-        if (!validation.valid) {
-            synchronized(enabledPlugins) {
-                enabledPlugins.forEach {
-                    try {
-                        it.onValidationError(validation, event)
-                    } catch (e: Exception) {
-                        config.logger.error("$LOG_TAG Error in ${it.id()}.validationError(). ${e.message}.")
-                    }
+                try {
+                    processedEvent = it.process(processedEvent)
+                } catch (e: Exception) {
+                    config.logger.error("$LOG_TAG Error in ${it.id()}.process(). ${e.message}.")
                 }
             }
-
-            if (config.validation.errorOnInvalid) {
-                throw IllegalArgumentException(validation.message)
-            }
         }
-
-        return validation;
+        return processedEvent
     }
 
     fun flush() {
@@ -287,15 +240,28 @@ open class Itly {
         }
     }
 
-    @Throws(IllegalStateException::class)
-    private fun shouldBeTracked(event: Event): Boolean {
-        var shouldTrack = true;
-        if (!config.validation.disabled) {
-            shouldTrack = validate(event).valid;
-            if (config.validation.trackInvalid) {
-                shouldTrack = true;
+    @Throws(IllegalArgumentException::class)
+    private fun processAndTrack(event: Event, trackMethod: (plugin: Plugin, processedEvent: Event) -> Unit) {
+        val processedEvent = process(event)
+
+        if (
+            config.validation.disabled
+            || processedEvent.metadata.itly.validation.valid
+            || config.validation.trackInvalid
+        ) {
+            synchronized(enabledPlugins) {
+                enabledPlugins.forEach {
+                    trackMethod(it, processedEvent)
+                }
             }
         }
-        return shouldTrack
+
+        if (
+            !config.validation.disabled
+            && !processedEvent.metadata.itly.validation.valid
+            && config.validation.errorOnInvalid
+        ) {
+            throw IllegalArgumentException(processedEvent.metadata.itly.validation.message)
+        }
     }
 }

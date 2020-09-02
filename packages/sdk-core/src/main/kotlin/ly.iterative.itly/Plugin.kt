@@ -13,9 +13,7 @@ interface Plugin {
     fun track(userId: String?, event: Event)
     fun reset()
 
-    // Validation methods
-    fun validate(event: Event): ValidationResponse
-    fun onValidationError(validation: ValidationResponse, event: Event)
+    fun process(event: Event): Event
 
     fun flush()
     fun shutdown()

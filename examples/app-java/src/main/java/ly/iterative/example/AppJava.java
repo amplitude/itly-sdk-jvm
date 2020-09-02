@@ -4,6 +4,7 @@ import ly.iterative.itly.*;
 import ly.iterative.itly.jvm.*;
 import ly.iterative.itly.iteratively.*;
 import ly.iterative.itly.test.Schemas;
+import ly.iterative.itly.test.events.Context;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -26,7 +27,7 @@ public class AppJava {
         Itly itly = new Itly();
 
         itly.load(new Options(
-            new Properties(Collections.emptyMap()),
+            Context.VALID_ONLY_REQUIRED_PROPS,
             environment,
             new ArrayList<>(Arrays.asList(
                 iterativelyPlugin,

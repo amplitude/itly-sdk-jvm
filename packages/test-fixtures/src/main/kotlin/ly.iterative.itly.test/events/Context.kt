@@ -13,15 +13,29 @@ class Context(
     )
 ) {
     companion object {
-        const val ERROR_MESSAGE_REQUIRED_STRING_MISSING = "Error validating event 'context'. \$.requiredString: is missing but it is required."
+        const val ERROR_MESSAGE_REQUIRED_STRING_MISSING = "Error validating 'context'. \$.requiredString: is missing but it is required."
 
+        @JvmField
         val VALID_ONLY_REQUIRED_PROPS = Context(
             requiredString = "Required context string"
         )
 
+        @JvmField
         val VALID_ALL_PROPS = Context(
             requiredString = "Required context string",
             optionalEnum = OptionalEnum.VALUE_1
+        )
+
+        @JvmField
+        val INVALID_WITH_INVALID_PROPS = Event(
+            name = "context",
+            properties = mapOf("invalidProp" to true)
+        )
+
+        @JvmField
+        val INVALID_NO_PROPS = Event(
+            name = "context",
+            properties = mapOf()
         )
     }
     enum class OptionalEnum(val value: String) {

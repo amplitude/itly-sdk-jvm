@@ -131,21 +131,27 @@ class IterativelyPlugin(
     }
 
     override fun track(userId: String?, event: Event) {
-        this.push(this.toTrackModel(
-            type = TrackType.track,
-            event = event,
-            properties = event
-        ))
+        if (event.metadata.itly.validation.valid) {
+            this.push(this.toTrackModel(
+                    type = TrackType.track,
+                    event = event,
+                    properties = event,
+                    validation = event.metadata.itly.validation
+            ))
+        }
     }
 
-    override fun onValidationError(validation: ValidationResponse, event: Event) {
-        val type = TrackType.fromEvent(event)
-        this.push(this.toTrackModel(
-            type = type,
-            event = if (type == TrackType.track) event else null,
-            properties = event,
-            validation = validation
-        ))
+    override fun process(event: Event): Event {
+        if (!event.metadata.itly.validation.valid) {
+            val type = TrackType.fromEvent(event)
+            this.push(this.toTrackModel(
+                type = type,
+                event = if (type == TrackType.track) event else null,
+                properties = event,
+                validation = event.metadata.itly.validation
+            ))
+        }
+        return super.process(event)
     }
 
     override fun flush() {
@@ -185,7 +191,7 @@ class IterativelyPlugin(
         type: TrackType,
         event: Event? = null,
         properties: Properties? = null,
-        validation: ValidationResponse? = null
+        validation: ly.iterative.itly.Validation? = null
     ): TrackModel {
         val valid = validation?.valid ?: true
         // Get sanitized info

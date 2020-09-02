@@ -14,13 +14,9 @@ abstract class PluginBase(
     override fun group(userId: String?, groupId: String, properties: Properties?) {}
     override fun track(userId: String?, event: Event) {}
     override fun reset() {}
-    override fun validate(event: Event): ValidationResponse {
-        return ValidationResponse(
-            valid = true,
-            pluginId = id()
-        )
+    override fun process(event: Event): Event {
+        return event
     }
-    override fun onValidationError(validation: ValidationResponse, event: Event) {}
     override fun flush() {}
     override fun shutdown() {}
 }
