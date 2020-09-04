@@ -64,6 +64,6 @@ class SchemaValidatorPlugin constructor(
     }
 
     fun getSchemaKey(event: Event): String {
-        return event.name;
+        return event.name
     }
 }

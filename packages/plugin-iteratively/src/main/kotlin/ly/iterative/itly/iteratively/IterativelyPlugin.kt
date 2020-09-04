@@ -53,7 +53,7 @@ class IterativelyPlugin(
         const val LOG_TAG = "[plugin-$ID]"
         private val JSONObjectMapper = jacksonObjectMapper().configure(
                 DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false
-            ).setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
+            ).setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY)
     }
 
     private val config: IterativelyOptions
@@ -276,7 +276,7 @@ class IterativelyPlugin(
                 }
             }
 
-            logger.error("$LOG_TAG Failed to upload ${batch.size} events. Maximum attempts exceeded.");
+            logger.error("$LOG_TAG Failed to upload ${batch.size} events. Maximum attempts exceeded.")
         }
 
         /**

@@ -10,8 +10,8 @@ abstract class PluginBase(
     }
     override fun load(options: Options) {}
 
-    override fun validate(event: Event): ValidationResponse? {
-        return null
+    override fun validate(event: Event): ValidationResponse {
+        return ValidationResponse.Valid
     }
 
     override fun alias(userId: String, previousId: String?) {}

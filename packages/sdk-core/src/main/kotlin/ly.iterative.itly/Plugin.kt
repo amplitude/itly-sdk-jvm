@@ -8,7 +8,7 @@ interface Plugin {
     fun load(options: Options)
 
     // Validation methods
-    fun validate(event: Event): ValidationResponse?
+    fun validate(event: Event): ValidationResponse
 
     // Tracking methods
     fun alias(userId: String, previousId: String? = null)

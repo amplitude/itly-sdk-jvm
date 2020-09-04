@@ -77,7 +77,7 @@ actual class SegmentPlugin actual constructor(
     }
 
     override fun shutdown() {
-        logger.info("[plugin-segment-jvm] shutdown");
+        logger.info("[plugin-segment-jvm] shutdown")
         segment.shutdown()
     }
 }

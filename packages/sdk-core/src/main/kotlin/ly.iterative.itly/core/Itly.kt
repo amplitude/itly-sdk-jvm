@@ -1,7 +1,6 @@
 package ly.iterative.itly.core
 
 import ly.iterative.itly.*
-import ly.iterative.itly.Properties
 import java.util.concurrent.atomic.AtomicBoolean
 
 open class Itly {
@@ -37,7 +36,7 @@ open class Itly {
             return
         }
 
-        config = options;
+        config = options
         context = Event("context", config.context?.properties)
 
         config.logger.debug("$LOG_TAG load")
@@ -153,12 +152,7 @@ open class Itly {
         val validationResponses: MutableList<ValidationResponse> = mutableListOf()
 
         if (!config.validation.disabled) {
-            runOnAllPlugins("validate") {
-                val response = it.validate(event)
-                if (response != null) {
-                    validationResponses.add(response)
-                }
-            }
+            runOnAllPlugins("validate") { validationResponses.add(it.validate(event)) }
         }
 
         return validationResponses
@@ -166,7 +160,8 @@ open class Itly {
 
     @Throws(IllegalArgumentException::class)
     private fun validateAndRunOnAllPlugins(
-        op: String, event: Event,
+        op: String,
+        event: Event,
         includeContext: Boolean,
         method: (plugin: Plugin, event: Event) -> Unit,
         postMethod: (plugin: Plugin, event: Event, validationResponses: List<ValidationResponse>) -> Unit
