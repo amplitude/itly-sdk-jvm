@@ -114,44 +114,29 @@ class IterativelyPlugin(
         )
     }
 
-    override fun group(userId: String?, groupId: String, properties: Properties?) {
+    override fun postGroup(userId: String?, groupId: String, properties: Properties?, validationResults: List<ValidationResponse>) {
         this.push(this.toTrackModel(
             type = TrackType.group,
             properties = properties,
-            validation = null
+            validation = validationResults.find { !it.valid }
         ))
     }
 
-    override fun identify(userId: String?, properties: Properties?) {
+    override fun postIdentify(userId: String?, properties: Properties?, validationResults: List<ValidationResponse>) {
         this.push(this.toTrackModel(
             type = TrackType.identify,
             properties = properties,
-            validation = null
+            validation = validationResults.find { !it.valid }
         ))
     }
 
-    override fun track(userId: String?, event: Event) {
-        if (event.metadata.itly.validation.valid) {
-            this.push(this.toTrackModel(
-                    type = TrackType.track,
-                    event = event,
-                    properties = event,
-                    validation = event.metadata.itly.validation
-            ))
-        }
-    }
-
-    override fun process(event: Event): Event {
-        if (!event.metadata.itly.validation.valid) {
-            val type = TrackType.fromEvent(event)
-            this.push(this.toTrackModel(
-                type = type,
-                event = if (type == TrackType.track) event else null,
-                properties = event,
-                validation = event.metadata.itly.validation
-            ))
-        }
-        return super.process(event)
+    override fun postTrack(userId: String?, event: Event, validationResults: List<ValidationResponse>) {
+        this.push(this.toTrackModel(
+            type = TrackType.track,
+            event = event,
+            properties = event,
+            validation = validationResults.find { !it.valid }
+        ))
     }
 
     override fun flush() {
@@ -191,7 +176,7 @@ class IterativelyPlugin(
         type: TrackType,
         event: Event? = null,
         properties: Properties? = null,
-        validation: ly.iterative.itly.Validation? = null
+        validation: ValidationResponse? = null
     ): TrackModel {
         val valid = validation?.valid ?: true
         // Get sanitized info

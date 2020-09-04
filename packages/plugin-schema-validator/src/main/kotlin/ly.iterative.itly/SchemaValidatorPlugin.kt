@@ -28,7 +28,7 @@ class SchemaValidatorPlugin constructor(
         }.toMap()
     }
 
-    override fun process(event: Event): Event {
+    override fun validate(event: Event): ValidationResponse {
         logger.debug("$LOG_TAG process(event=${event.name})")
 
         var errorMessage: String? = null
@@ -50,13 +50,17 @@ class SchemaValidatorPlugin constructor(
         }
 
         if (errorMessage != null) {
-            return event.apply {
-                metadata.itly.validation.valid = false
-                metadata.itly.validation.message = errorMessage
-            }
+            return ValidationResponse(
+                valid = false,
+                message = errorMessage,
+                pluginId = this.id()
+            )
         }
 
-        return event
+        return ValidationResponse(
+            valid = true,
+            pluginId = this.id()
+        )
     }
 
     fun getSchemaKey(event: Event): String {

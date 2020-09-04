@@ -29,39 +29,39 @@ fun loadDefaultSchemaValidator(options: Options? = null): SchemaValidatorPlugin 
 class SchemaValidatorPluginTest {
     @Test
     fun validate_contextWithProperties_valid() {
-        val context = loadDefaultSchemaValidator().process(Context.VALID_ALL_PROPS)
-        Assertions.assertEquals(context.metadata.itly.validation.valid, true)
+        val validation = loadDefaultSchemaValidator().validate(Context.VALID_ALL_PROPS)
+        Assertions.assertEquals(validation.valid, true)
     }
 
     @Test
     fun validate_groupWithProperties_valid() {
-        val group = loadDefaultSchemaValidator().process(Group.VALID_ALL_PROPS)
-        Assertions.assertEquals(group.metadata.itly.validation.valid, true)
+        val validation = loadDefaultSchemaValidator().validate(Group.VALID_ALL_PROPS)
+        Assertions.assertEquals(validation.valid, true)
     }
 
     @Test
     fun validate_identifyWithProperties_valid() {
-        val identify = loadDefaultSchemaValidator().process(Identify.VALID_ALL_PROPS)
-        Assertions.assertEquals(identify.metadata.itly.validation.valid, true)
+        val validation = loadDefaultSchemaValidator().validate(Identify.VALID_ALL_PROPS)
+        Assertions.assertEquals(validation.valid, true)
     }
 
     @Test
     fun validate_eventWithAllProperties_valid() {
-        val event = loadDefaultSchemaValidator().process(EventWithAllProperties.VALID_ALL_PROPS)
-        Assertions.assertEquals(event.metadata.itly.validation.valid, true)
+        val validation = loadDefaultSchemaValidator().validate(EventWithAllProperties.VALID_ALL_PROPS)
+        Assertions.assertEquals(validation.valid, true)
     }
 
     @Test
     fun validate_eventWithConstTypes_valid() {
-        val event = loadDefaultSchemaValidator().process(EventWithConstTypes.VALID);
-        Assertions.assertEquals(event.metadata.itly.validation.valid, true)
+        val validation = loadDefaultSchemaValidator().validate(EventWithConstTypes.VALID);
+        Assertions.assertEquals(validation.valid, true)
     }
 
     @Test
     fun validate_invalidEvent_notValid() {
-        val event = loadDefaultSchemaValidator().process(invalidEvent)
-        Assertions.assertEquals(event.metadata.itly.validation.valid, false)
-        Assertions.assertEquals(invalidEventExpectedErrorMessage, event.metadata.itly.validation.message)
+        val validation = loadDefaultSchemaValidator().validate(invalidEvent)
+        Assertions.assertEquals(validation.valid, false)
+        Assertions.assertEquals(invalidEventExpectedErrorMessage, validation.message)
     }
 
     @Test
@@ -76,21 +76,37 @@ class SchemaValidatorPluginTest {
             itly.track(null, invalidEvent)
         }
 
+        println("HERE!!!!!")
+        System.err.println("Hello standard error!")
+        println(exception.message)
+
         Assertions.assertEquals(invalidEventExpectedErrorMessage, exception.message)
     }
 
     @Test
-    fun itlyLoad_invalidContext_throwsError() {
-        val exception = Assertions.assertThrows(IllegalArgumentException::class.java) {
+    fun itlyLoad_invalidContext_succeeds() {
+        Assertions.assertDoesNotThrow {
             TestUtil.getItly(Options(
+                    context = Context.INVALID_NO_PROPS,
+                    plugins = arrayListOf(SchemaValidatorPlugin(Schemas.DEFAULT))
+            ))
+        }
+    }
+
+    @Test
+    fun itlyTrack_invalidContext_throwsError() {
+        val itly: Itly = TestUtil.getItly(Options(
                 context = Context.INVALID_NO_PROPS,
                 plugins = arrayListOf(SchemaValidatorPlugin(Schemas.DEFAULT))
-            ))
+        ))
+
+        val exception = Assertions.assertThrows(IllegalArgumentException::class.java) {
+            itly.track(user.id, EventNoProperties())
         }
 
         Assertions.assertEquals(
-            Context.ERROR_MESSAGE_REQUIRED_STRING_MISSING,
-            exception.message
+                Context.ERROR_MESSAGE_REQUIRED_STRING_MISSING,
+                exception.message
         )
     }
 
@@ -114,11 +130,13 @@ class SchemaValidatorPluginTest {
 
     @Test
     fun itly_withDefaultValidation_throwsErrorInDevelopment() {
+        val itly: Itly = TestUtil.getItly(Options(
+            environment = Environment.DEVELOPMENT,
+            plugins = arrayListOf(SchemaValidatorPlugin(Schemas.DEFAULT))
+        ))
+
         val exception = Assertions.assertThrows(IllegalArgumentException::class.java) {
-            TestUtil.getItly(Options(
-                environment = Environment.DEVELOPMENT,
-                plugins = arrayListOf(SchemaValidatorPlugin(Schemas.DEFAULT))
-            ))
+            itly.track(user.id, EventNoProperties())
         }
 
         Assertions.assertEquals(
@@ -138,8 +156,8 @@ class SchemaValidatorPluginTest {
     }
 
     @Test
-    fun itly_nullContextWithContextSchema_throwsError() {
-        Assertions.assertThrows(IllegalArgumentException::class.java) {
+    fun itly_nullContextWithContextSchema_succeed() {
+        Assertions.assertDoesNotThrow {
             TestUtil.getItly(Options(
                 context = null,
                 plugins = arrayListOf(SchemaValidatorPlugin(Schemas.DEFAULT))
@@ -147,16 +165,17 @@ class SchemaValidatorPluginTest {
         }
     }
 
-
     @Test
     fun itly_contextWithNoContextSchema_throwsError() {
+        val itly: Itly = TestUtil.getItly(Options(
+            context = Properties(mapOf(
+                "prop" to "value"
+            )),
+            plugins = arrayListOf(SchemaValidatorPlugin(Schemas.NO_CONTEXT))
+        ))
+
         val exception = Assertions.assertThrows(IllegalArgumentException::class.java) {
-            TestUtil.getItly(Options(
-                context = Properties(mapOf(
-                    "prop" to "value"
-                )),
-                plugins = arrayListOf(SchemaValidatorPlugin(Schemas.NO_CONTEXT))
-            ))
+            itly.track(user.id, EventNoProperties())
         }
 
         Assertions.assertEquals(
