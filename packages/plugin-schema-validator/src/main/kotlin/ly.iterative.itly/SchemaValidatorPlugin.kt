@@ -8,7 +8,7 @@ import java.lang.Exception
 
 class SchemaValidatorPlugin constructor(
     private val schemas: Map<String, String>
-): PluginBase(ID) {
+): Plugin(ID) {
     companion object {
         const val ID = "schema-validator"
         private const val LOG_TAG = "[plugin-$ID]"

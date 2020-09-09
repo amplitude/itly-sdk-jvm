@@ -76,10 +76,6 @@ class SchemaValidatorPluginTest {
             itly.track(null, invalidEvent)
         }
 
-        println("HERE!!!!!")
-        System.err.println("Hello standard error!")
-        println(exception.message)
-
         Assertions.assertEquals(invalidEventExpectedErrorMessage, exception.message)
     }
 

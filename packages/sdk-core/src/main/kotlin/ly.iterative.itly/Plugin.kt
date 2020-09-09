@@ -2,28 +2,32 @@ package ly.iterative.itly
 
 import ly.iterative.itly.core.Options
 
-interface Plugin {
-    // Plugin methods
-    fun id(): String
-    fun load(options: Options)
+abstract class Plugin(
+    private val id: String
+) {
+    fun id(): String {
+        return id
+    }
 
-    // Validation methods
-    fun validate(event: Event): ValidationResponse
+    open fun load(options: Options) {}
 
-    // Tracking methods
-    fun alias(userId: String, previousId: String? = null)
-    fun postAlias(userId: String, previousId: String? = null)
+    open fun validate(event: Event): ValidationResponse {
+        return ValidationResponse.Valid
+    }
 
-    fun identify(userId: String?, properties: Properties? = null)
-    fun postIdentify(userId: String?, properties: Properties? = null, validationResults: List<ValidationResponse>)
+    open fun alias(userId: String, previousId: String?) {}
+    open fun postAlias(userId: String, previousId: String?) {}
 
-    fun group(userId: String?, groupId: String, properties: Properties? = null)
-    fun postGroup(userId: String?, groupId: String, properties: Properties? = null, validationResults: List<ValidationResponse>)
+    open fun identify(userId: String?, properties: Properties?) {}
+    open fun postIdentify(userId: String?, properties: Properties?, validationResults: List<ValidationResponse>) {}
 
-    fun track(userId: String?, event: Event)
-    fun postTrack(userId: String?, event: Event, validationResults: List<ValidationResponse>)
+    open fun group(userId: String?, groupId: String, properties: Properties?) {}
+    open fun postGroup(userId: String?, groupId: String, properties: Properties?, validationResults: List<ValidationResponse>) {}
 
-    fun reset()
-    fun flush()
-    fun shutdown()
+    open fun track(userId: String?, event: Event) {}
+    open fun postTrack(userId: String?, event: Event, validationResults: List<ValidationResponse>) {}
+
+    open fun reset() {}
+    open fun flush() {}
+    open fun shutdown() {}
 }

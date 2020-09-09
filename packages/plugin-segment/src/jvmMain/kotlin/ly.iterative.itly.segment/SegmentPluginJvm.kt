@@ -19,7 +19,7 @@ actual data class SegmentOptions @JvmOverloads constructor(
 actual class SegmentPlugin actual constructor(
     private val writeKey: String,
     options: SegmentOptions
-) : PluginBase(ID) {
+) : Plugin(ID) {
     companion object {
         @JvmField
         val ID = "segment"

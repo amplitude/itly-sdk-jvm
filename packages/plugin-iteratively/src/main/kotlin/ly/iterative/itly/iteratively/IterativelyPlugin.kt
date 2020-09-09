@@ -47,7 +47,7 @@ internal class AuthInterceptor(apiKey: String) : Interceptor {
 class IterativelyPlugin(
     apiKey: String,
     options: IterativelyOptions
-): PluginBase(ID) {
+): Plugin(ID) {
     companion object {
         const val ID = "iteratively"
         const val LOG_TAG = "[plugin-$ID]"

@@ -125,8 +125,8 @@ class IterativelyPluginTest {
     fun tracker_track_madeValidJson() {
         val eventName = "Dummy event"
         val props = mapOf(
-                "prop" to "A property value",
-                "anotherProp" to true
+            "prop" to "A property value",
+            "anotherProp" to true
         )
 
         val event = Event(

@@ -20,7 +20,7 @@ actual data class AmplitudeOptions(
 actual class AmplitudePlugin actual constructor(
     private val apiKey: String,
     options: AmplitudeOptions
-) : PluginBase(ID) {
+) : Plugin(ID) {
     companion object {
         @JvmField
         val ID = "amplitude"

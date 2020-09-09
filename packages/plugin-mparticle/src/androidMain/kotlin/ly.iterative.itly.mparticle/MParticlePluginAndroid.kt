@@ -11,7 +11,7 @@ import ly.iterative.itly.core.Options
 actual class MParticlePlugin actual constructor(
     private val apiKey: String,
     options: MParticleOptions
-) : PluginBase(ID) {
+) : Plugin(ID) {
     companion object {
         @JvmField
         val ID = "mparticle"
