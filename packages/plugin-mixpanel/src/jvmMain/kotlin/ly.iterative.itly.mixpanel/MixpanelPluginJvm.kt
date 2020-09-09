@@ -13,7 +13,7 @@ actual data class MixpanelOptions @JvmOverloads constructor(
 actual class MixpanelPlugin actual constructor(
     private val token: String,
     options: MixpanelOptions
-) : PluginBase() {
+) : Plugin(ID) {
     companion object {
         @JvmField
         val ID = "mixpanel"

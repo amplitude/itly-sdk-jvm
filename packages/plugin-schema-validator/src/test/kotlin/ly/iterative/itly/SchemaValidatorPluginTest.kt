@@ -10,7 +10,7 @@ import java.lang.IllegalArgumentException
 val user = User.DEFAULT
 val invalidEvent = EventMaxIntForTest.INVALID_MAX_VALUE
 const val invalidEventExpectedErrorMessage = EventMaxIntForTest.INVALID_MAX_VALUE_ERROR_MESSAGE
-val OPTIONS_ERROR_ON_INVALID = ValidationOptions(
+val VALIDATION_OPTIONS_ERROR_ON_INVALID = ValidationOptions(
     errorOnInvalid = true
 )
 
@@ -47,13 +47,13 @@ class SchemaValidatorPluginTest {
 
     @Test
     fun validate_eventWithAllProperties_valid() {
-        val validation = loadDefaultSchemaValidator().validate(EventWithAllProperties.VALID_ALL_PROPS);
+        val validation = loadDefaultSchemaValidator().validate(EventWithAllProperties.VALID_ALL_PROPS)
         Assertions.assertEquals(validation.valid, true)
     }
 
     @Test
     fun validate_eventWithConstTypes_valid() {
-        val validation = loadDefaultSchemaValidator().validate(EventWithConstTypes.VALID);
+        val validation = loadDefaultSchemaValidator().validate(EventWithConstTypes.VALID)
         Assertions.assertEquals(validation.valid, true)
     }
 
@@ -69,28 +69,40 @@ class SchemaValidatorPluginTest {
         val itly: Itly = TestUtil.getItly(Options(
             context = Context.VALID_ALL_PROPS,
             plugins = arrayListOf(SchemaValidatorPlugin(Schemas.DEFAULT)),
-            validation = OPTIONS_ERROR_ON_INVALID
+            validation = VALIDATION_OPTIONS_ERROR_ON_INVALID
         ))
 
         val exception = Assertions.assertThrows(IllegalArgumentException::class.java) {
-            itly.validate(invalidEvent)
+            itly.track(null, invalidEvent)
         }
 
         Assertions.assertEquals(invalidEventExpectedErrorMessage, exception.message)
     }
 
     @Test
-    fun itlyLoad_invalidContextWithErrorOnInvalid_throwsError() {
-        val exception = Assertions.assertThrows(IllegalArgumentException::class.java) {
+    fun itlyLoad_invalidContext_succeeds() {
+        Assertions.assertDoesNotThrow {
             TestUtil.getItly(Options(
-                plugins = arrayListOf(SchemaValidatorPlugin(Schemas.DEFAULT)),
-                validation = OPTIONS_ERROR_ON_INVALID
+                    context = Context.INVALID_NO_PROPS,
+                    plugins = arrayListOf(SchemaValidatorPlugin(Schemas.DEFAULT))
             ))
+        }
+    }
+
+    @Test
+    fun itlyTrack_invalidContext_throwsError() {
+        val itly: Itly = TestUtil.getItly(Options(
+                context = Context.INVALID_NO_PROPS,
+                plugins = arrayListOf(SchemaValidatorPlugin(Schemas.DEFAULT))
+        ))
+
+        val exception = Assertions.assertThrows(IllegalArgumentException::class.java) {
+            itly.track(user.id, EventNoProperties())
         }
 
         Assertions.assertEquals(
-            Context.ERROR_MESSAGE_REQUIRED_STRING_MISSING,
-            exception.message
+                Context.ERROR_MESSAGE_REQUIRED_STRING_MISSING,
+                exception.message
         )
     }
 
@@ -98,7 +110,8 @@ class SchemaValidatorPluginTest {
     fun itlyTrack_invalidEventWithErrorOnInvalid_throwsError() {
         val itly: Itly = TestUtil.getItly(Options(
             context = Context.VALID_ALL_PROPS,
-            plugins = arrayListOf(SchemaValidatorPlugin(Schemas.DEFAULT))
+            plugins = arrayListOf(SchemaValidatorPlugin(Schemas.DEFAULT)),
+            validation = VALIDATION_OPTIONS_ERROR_ON_INVALID
         ))
 
         val exception = Assertions.assertThrows(IllegalArgumentException::class.java) {
@@ -113,11 +126,13 @@ class SchemaValidatorPluginTest {
 
     @Test
     fun itly_withDefaultValidation_throwsErrorInDevelopment() {
+        val itly: Itly = TestUtil.getItly(Options(
+            environment = Environment.DEVELOPMENT,
+            plugins = arrayListOf(SchemaValidatorPlugin(Schemas.DEFAULT))
+        ))
+
         val exception = Assertions.assertThrows(IllegalArgumentException::class.java) {
-            TestUtil.getItly(Options(
-                environment = Environment.DEVELOPMENT,
-                plugins = arrayListOf(SchemaValidatorPlugin(Schemas.DEFAULT))
-            ))
+            itly.track(user.id, EventNoProperties())
         }
 
         Assertions.assertEquals(
@@ -127,52 +142,40 @@ class SchemaValidatorPluginTest {
     }
 
     @Test
-    fun itly_withDefaultValidation_doesNotThrowErrorInProduction() {
+    fun itly_nullContextWithNoContextSchema_succeed() {
         Assertions.assertDoesNotThrow {
             TestUtil.getItly(Options(
-                environment = Environment.PRODUCTION,
+                context = null,
+                plugins = arrayListOf(SchemaValidatorPlugin(Schemas.NO_CONTEXT))
+            ))
+        }
+    }
+
+    @Test
+    fun itly_nullContextWithContextSchema_succeed() {
+        Assertions.assertDoesNotThrow {
+            TestUtil.getItly(Options(
+                context = null,
                 plugins = arrayListOf(SchemaValidatorPlugin(Schemas.DEFAULT))
             ))
         }
     }
 
     @Test
-    fun itly_nullContextWithNoContextSchema_succeed() {
-        Assertions.assertDoesNotThrow {
-            TestUtil.getItly(Options(
-                context = null,
-                plugins = arrayListOf(SchemaValidatorPlugin(Schemas.NO_CONTEXT)),
-                validation = OPTIONS_ERROR_ON_INVALID
-            ))
-        }
-    }
+    fun itly_contextWithNoContextSchema_throwsError() {
+        val itly: Itly = TestUtil.getItly(Options(
+            context = Properties(mapOf(
+                "prop" to "value"
+            )),
+            plugins = arrayListOf(SchemaValidatorPlugin(Schemas.NO_CONTEXT))
+        ))
 
-    @Test
-    fun itly_nullContextWithContextSchema_throwsError() {
-        Assertions.assertThrows(IllegalArgumentException::class.java) {
-            TestUtil.getItly(Options(
-                context = null,
-                plugins = arrayListOf(SchemaValidatorPlugin(Schemas.DEFAULT)),
-                validation = OPTIONS_ERROR_ON_INVALID
-            ))
-        }
-    }
-
-
-    @Test
-    fun itly_nonNullContextWithNoContextSchema_throwsError() {
         val exception = Assertions.assertThrows(IllegalArgumentException::class.java) {
-            TestUtil.getItly(Options(
-                context = Properties(mapOf(
-                    "prop" to "value"
-                )),
-                plugins = arrayListOf(SchemaValidatorPlugin(Schemas.NO_CONTEXT)),
-                validation = OPTIONS_ERROR_ON_INVALID
-            ))
+            itly.track(user.id, EventNoProperties())
         }
 
         Assertions.assertEquals(
-            "Error validating 'context'. Schema not found but received context={\"prop\":\"value\"}",
+            "No schema found for 'context'. Received context={\"prop\":\"value\"}",
             exception.message
         )
     }

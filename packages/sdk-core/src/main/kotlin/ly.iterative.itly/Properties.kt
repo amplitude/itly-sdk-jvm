@@ -5,7 +5,7 @@ import java.util.Arrays
 open class Properties @JvmOverloads constructor(
     properties: Map<String, Any?>? = null
 ) {
-    val properties: Map<String, Any?> = properties ?: mapOf();
+    val properties: Map<String, Any?> = properties ?: mapOf()
 
     companion object {
         @JvmStatic

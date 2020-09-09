@@ -79,8 +79,9 @@ kotlin {
         }
     }
 
-    android("android") {
-        publishLibraryVariants("release")
+    android() {
+        publishLibraryVariants("release", "debug")
+        publishLibraryVariantsGroupedByFlavor = true
     }
 
     targets.all {

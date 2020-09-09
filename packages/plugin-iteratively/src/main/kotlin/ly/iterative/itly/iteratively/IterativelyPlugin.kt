@@ -47,13 +47,13 @@ internal class AuthInterceptor(apiKey: String) : Interceptor {
 class IterativelyPlugin(
     apiKey: String,
     options: IterativelyOptions
-): PluginBase(ID) {
+): Plugin(ID) {
     companion object {
         const val ID = "iteratively"
         const val LOG_TAG = "[plugin-$ID]"
         private val JSONObjectMapper = jacksonObjectMapper().configure(
                 DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false
-            ).setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
+            ).setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY)
     }
 
     private val config: IterativelyOptions
@@ -114,37 +114,28 @@ class IterativelyPlugin(
         )
     }
 
-    override fun group(userId: String?, groupId: String, properties: Properties?) {
+    override fun postGroup(userId: String?, groupId: String, properties: Properties?, validationResults: List<ValidationResponse>) {
         this.push(this.toTrackModel(
             type = TrackType.group,
             properties = properties,
-            validation = null
+            validation = validationResults.find { !it.valid }
         ))
     }
 
-    override fun identify(userId: String?, properties: Properties?) {
+    override fun postIdentify(userId: String?, properties: Properties?, validationResults: List<ValidationResponse>) {
         this.push(this.toTrackModel(
             type = TrackType.identify,
             properties = properties,
-            validation = null
+            validation = validationResults.find { !it.valid }
         ))
     }
 
-    override fun track(userId: String?, event: Event) {
+    override fun postTrack(userId: String?, event: Event, validationResults: List<ValidationResponse>) {
         this.push(this.toTrackModel(
             type = TrackType.track,
             event = event,
-            properties = event
-        ))
-    }
-
-    override fun onValidationError(validation: ValidationResponse, event: Event) {
-        val type = TrackType.fromEvent(event)
-        this.push(this.toTrackModel(
-            type = type,
-            event = if (type == TrackType.track) event else null,
             properties = event,
-            validation = validation
+            validation = validationResults.find { !it.valid }
         ))
     }
 
@@ -285,7 +276,7 @@ class IterativelyPlugin(
                 }
             }
 
-            logger.error("$LOG_TAG Failed to upload ${batch.size} events. Maximum attempts exceeded.");
+            logger.error("$LOG_TAG Failed to upload ${batch.size} events. Maximum attempts exceeded.")
         }
 
         /**

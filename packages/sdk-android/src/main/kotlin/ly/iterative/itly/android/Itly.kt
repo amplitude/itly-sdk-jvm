@@ -59,11 +59,6 @@ class Itly {
         itly.reset()
     }
 
-    @Throws(IllegalArgumentException::class)
-    fun validate(event: Event): ValidationResponse {
-        return itly.validate(event)
-    }
-
     fun flush() {
         itly.flush()
     }

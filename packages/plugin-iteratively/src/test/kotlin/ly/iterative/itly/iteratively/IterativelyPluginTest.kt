@@ -111,13 +111,13 @@ class IterativelyPluginTest {
 
     @Test
     fun tracker_identity_madeValidRequest() {
-        iterativelyPlugin.identify(user.id)
+        iterativelyPlugin.postIdentify(user.id, null, listOf())
         assertValidTrackerRequest(TrackType.identify)
     }
 
     @Test
     fun tracker_group_madeValidRequest() {
-        iterativelyPlugin.group(user.id, user.groupId)
+        iterativelyPlugin.postGroup(user.id, user.groupId, null, listOf())
         assertValidTrackerRequest(TrackType.group)
     }
 
@@ -125,15 +125,15 @@ class IterativelyPluginTest {
     fun tracker_track_madeValidJson() {
         val eventName = "Dummy event"
         val props = mapOf(
-                "prop" to "A property value",
-                "anotherProp" to true
+            "prop" to "A property value",
+            "anotherProp" to true
         )
 
         val event = Event(
             name = eventName,
             properties = props
         )
-        iterativelyPlugin.track(user.id, event)
+        iterativelyPlugin.postTrack(user.id, event, listOf())
 
         val request: RecordedRequest = mockWebServer.takeRequest()
         val body = request.body.readUtf8()
@@ -167,7 +167,7 @@ class IterativelyPluginTest {
                 "anotherProp" to true
             )
         )
-        iterativelyPlugin.track(user.id, event)
+        iterativelyPlugin.postTrack(user.id, event, listOf())
         assertValidTrackerRequest(TrackType.track, event)
     }
 
@@ -176,7 +176,7 @@ class IterativelyPluginTest {
         val successOnTry = 3
         mockWebServer.dispatcher = TestDispatchers.FAIL_UNTIL_REQUEST_N(successOnTry)
 
-        iterativelyPlugin.identify(user.id)
+        iterativelyPlugin.postIdentify(user.id, null, listOf())
         for (i in 1..successOnTry) {
             mockWebServer.takeRequest(TIMEOUTS.BACKOFF_MAXIMUM_MS, MS)
         }
@@ -201,7 +201,7 @@ class IterativelyPluginTest {
         )
         iterativelyPlugin.load(ITLY_OPTIONS_DEFAULT)
 
-        iterativelyPlugin.identify(user.id)
+        iterativelyPlugin.postIdentify(user.id, null, listOf())
         for (i in 1..4) {
             mockWebServer.takeRequest(TIMEOUTS.BACKOFF_MAXIMUM_MS, MS)
         }
@@ -223,10 +223,10 @@ class IterativelyPluginTest {
         iterativelyPlugin.load(ITLY_OPTIONS_DEFAULT)
 
         val dummyProps = Properties()
-        iterativelyPlugin.identify(user.id)
-        iterativelyPlugin.group(user.id, user.groupId, dummyProps)
-        iterativelyPlugin.alias(user.id)
-        iterativelyPlugin.track(user.id, Event("event"))
+        iterativelyPlugin.postIdentify(user.id, null, listOf())
+        iterativelyPlugin.postGroup(user.id, user.groupId, dummyProps, listOf())
+        iterativelyPlugin.postAlias(user.id, null)
+        iterativelyPlugin.postTrack(user.id, Event("event"), listOf())
         for (i in 1..4) {
             mockWebServer.takeRequest(TIMEOUTS.BACKOFF_MAXIMUM_MS, MS)
         }

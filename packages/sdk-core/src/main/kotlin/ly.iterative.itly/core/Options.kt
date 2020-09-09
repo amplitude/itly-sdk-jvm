@@ -14,7 +14,7 @@ open class Options @JvmOverloads constructor(
     val environment: Environment = Environment.DEVELOPMENT,
 
     /**
-     * Extend the itly sdk by adding plugins for common analytics trackers, validation and more
+     * Extend the Itly SDK by adding plugins for common analytics trackers, validation and more.
      */
     val plugins: List<Plugin> = arrayListOf(),
 
@@ -24,9 +24,10 @@ open class Options @JvmOverloads constructor(
     val disabled: Boolean = false,
 
     /**
-     * Configure validation handling
+     * Configure validation handling. Default is to track invalid events in production, but throw in other environments.
      */
     val validation: ValidationOptions = ValidationOptions(
+        trackInvalid = environment == Environment.PRODUCTION,
         errorOnInvalid = environment != Environment.PRODUCTION
     ),
 

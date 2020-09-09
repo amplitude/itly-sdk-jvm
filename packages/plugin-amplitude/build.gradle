@@ -8,8 +8,9 @@ apply from: rootProject.file('gradle/publish-mpp.gradle')
 apply from: rootProject.file('gradle/android-library.gradle')
 
 kotlin {
-    android("android") {
-        publishLibraryVariants("release")
+    android() {
+        publishLibraryVariants("release", "debug")
+        publishLibraryVariantsGroupedByFlavor = true
     }
 
     sourceSets {

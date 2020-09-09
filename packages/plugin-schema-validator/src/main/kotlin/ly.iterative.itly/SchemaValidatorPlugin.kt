@@ -4,10 +4,11 @@ import com.networknt.schema.JsonSchema
 import com.networknt.schema.JsonSchemaFactory
 import com.networknt.schema.SpecVersion
 import ly.iterative.itly.core.Options
+import java.lang.Exception
 
 class SchemaValidatorPlugin constructor(
     private val schemas: Map<String, String>
-): PluginBase(ID) {
+): Plugin(ID) {
     companion object {
         const val ID = "schema-validator"
         private const val LOG_TAG = "[plugin-$ID]"
@@ -28,23 +29,30 @@ class SchemaValidatorPlugin constructor(
     }
 
     override fun validate(event: Event): ValidationResponse {
-        logger.debug("$LOG_TAG validate(event=${event.name})")
+        logger.debug("$LOG_TAG process(event=${event.name})")
 
-        val validator = this.validators.getValue(getSchemaKey(event))
-        logger.debug("$LOG_TAG validator=$validator")
-
-        val errors = validator.validate(JacksonProperties.toJackson(event))
-        logger.debug("$LOG_TAG errors=$errors")
-
-        if (errors.size > 0) {
-            val builder = StringBuilder()
-            errors.forEach {
-                builder.append(it.message)
+        var errorMessage: String? = null
+        try {
+            val validator = this.validators.getValue(getSchemaKey(event))
+            val errors = validator.validate(JacksonProperties.toJackson(event))
+            logger.debug("$LOG_TAG errors=$errors")
+            if (errors.size > 0) {
+                val builder = StringBuilder()
+                errors.forEach {
+                    builder.append(it.message)
+                }
+                errorMessage = "Error validating '${event.name}'. $builder."
             }
+        } catch (e: NoSuchElementException) {
+            errorMessage = "No schema found for '${event.name}'. Received ${event.name}=${JacksonProperties.toJackson(event)}"
+        } catch (e: Exception) {
+            errorMessage = "Unhandled exception validating '${event.name}'."
+        }
 
+        if (errorMessage != null) {
             return ValidationResponse(
                 valid = false,
-                message = "Error validating event '${event.name}'. $builder.",
+                message = errorMessage,
                 pluginId = this.id()
             )
         }
@@ -56,6 +64,6 @@ class SchemaValidatorPlugin constructor(
     }
 
     fun getSchemaKey(event: Event): String {
-        return event.name;
+        return event.name
     }
 }

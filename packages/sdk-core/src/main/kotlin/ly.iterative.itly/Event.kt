@@ -1,14 +1,12 @@
 package ly.iterative.itly
 
-import org.jetbrains.annotations.Nullable
-
 // TODO: Convert to data class?
 open class Event @JvmOverloads constructor(
     val name: String,
     properties: Map<String, Any?>? = null,
     val id: String? = null,
     val version: String? = null,
-    val metadata: Map<String, Map<String, Any>>? = null
+    val metadata: EventMetadata = EventMetadata()
 ) : Properties(
     properties
 ) {
@@ -23,9 +21,9 @@ open class Event @JvmOverloads constructor(
         other as Event
 
         return other.name == this.name &&
-                other.id == this.id &&
-                other.version == this.version &&
-                super.equals(other as Properties)
+            other.id == this.id &&
+            other.version == this.version &&
+            super.equals(other as Properties)
     }
 
     override fun hashCode(): Int {
