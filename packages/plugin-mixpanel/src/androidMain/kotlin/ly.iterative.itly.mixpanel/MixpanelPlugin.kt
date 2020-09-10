@@ -1,18 +1,10 @@
-/**
- * Android SegmentPlugin
- */
 package ly.iterative.itly.mixpanel
 
 import ly.iterative.itly.*
 
 import com.mixpanel.android.mpmetrics.MixpanelAPI
-import android.content.Context
 import ly.iterative.itly.core.Options
 import ly.iterative.itly.internal.OrgJsonProperties
-
-actual data class MixpanelOptions(
-    val androidContext: Context
-)
 
 actual class MixpanelPlugin actual constructor(
     private val token: String,

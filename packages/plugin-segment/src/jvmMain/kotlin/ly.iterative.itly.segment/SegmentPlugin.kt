@@ -12,10 +12,6 @@ import com.segment.analytics.messages.IdentifyMessage
 import com.segment.analytics.messages.TrackMessage
 import kotlin.collections.HashMap
 
-actual data class SegmentOptions @JvmOverloads constructor(
-    val builder: Analytics.Builder? = null
-)
-
 actual class SegmentPlugin actual constructor(
     private val writeKey: String,
     options: SegmentOptions

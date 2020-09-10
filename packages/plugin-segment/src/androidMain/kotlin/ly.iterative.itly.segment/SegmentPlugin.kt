@@ -6,14 +6,9 @@ package ly.iterative.itly.segment
 import ly.iterative.itly.*
 import com.segment.analytics.Analytics
 import com.segment.analytics.Traits
-import android.content.Context
 import ly.iterative.itly.core.Options
 
 typealias SegmentProperties = com.segment.analytics.Properties
-
-actual data class SegmentOptions(
-    val androidContext: Context
-)
 
 actual class SegmentPlugin actual constructor(
     private val writeKey: String,
