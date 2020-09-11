@@ -6,7 +6,7 @@ package ly.iterative.itly.android
 import ly.iterative.itly.*
 import ly.iterative.itly.core.Options
 
-class Itly {
+class Itly : IItly {
     companion object {
         const val ID = "itly-android"
         const val LOG_TAG = "[$ID]"
@@ -51,19 +51,19 @@ class Itly {
 
     // TRACK
     @Throws(IllegalArgumentException::class)
-    fun track(event: Event) {
+    override fun track(event: Event) {
         itly.track(null, event)
     }
 
-    fun reset() {
+    override fun reset() {
         itly.reset()
     }
 
-    fun flush() {
+    override fun flush() {
         itly.flush()
     }
 
-    fun shutdown() {
+    override fun shutdown() {
         itly.shutdown()
     }
 }
