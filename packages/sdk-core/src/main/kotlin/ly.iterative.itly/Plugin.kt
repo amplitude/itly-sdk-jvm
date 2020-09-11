@@ -11,8 +11,8 @@ abstract class Plugin(
 
     open fun load(options: Options) {}
 
-    open fun validate(event: Event): ValidationResponse {
-        return ValidationResponse.Valid
+    open fun validate(event: Event): ValidationResponse? {
+        return null
     }
 
     open fun alias(userId: String, previousId: String?) {}

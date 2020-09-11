@@ -152,7 +152,13 @@ open class Itly {
         val validationResponses: MutableList<ValidationResponse> = mutableListOf()
 
         if (!config.validation.disabled) {
-            runOnAllPlugins("validate") { validationResponses.add(it.validate(event)) }
+            runOnAllPlugins("validate") {
+                val validation = it.validate(event)
+                // Only add invalid validation responses
+                if (validation != null && !validation.valid) {
+                    validationResponses.add(validation)
+                }
+            }
         }
 
         return validationResponses

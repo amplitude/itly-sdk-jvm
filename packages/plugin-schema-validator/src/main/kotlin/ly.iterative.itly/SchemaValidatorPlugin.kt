@@ -29,7 +29,7 @@ class SchemaValidatorPlugin constructor(
     }
 
     override fun validate(event: Event): ValidationResponse {
-        logger.debug("$LOG_TAG process(event=${event.name})")
+        logger.debug("$LOG_TAG validate(event=${event.name})")
 
         var errorMessage: String? = null
         try {
