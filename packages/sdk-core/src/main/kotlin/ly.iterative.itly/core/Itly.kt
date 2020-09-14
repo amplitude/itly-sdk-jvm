@@ -31,15 +31,14 @@ open class Itly {
             throw Error("Itly is already initialized. Itly.load() should only be called once.")
         }
 
-        if (options.disabled) {
+        config = options
+        context = Event("context", config.context?.properties)
+        config.logger.debug("$LOG_TAG load")
+
+        if (config.disabled) {
             config.logger.info("$LOG_TAG disabled = true")
             return
         }
-
-        config = options
-        context = Event("context", config.context?.properties)
-
-        config.logger.debug("$LOG_TAG load")
 
         config.logger.debug("$LOG_TAG ${config.plugins.size} plugins enabled")
         runOnAllPlugins("load") { it.load(config) }
