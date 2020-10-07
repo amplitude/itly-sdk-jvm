@@ -3,7 +3,6 @@ package ly.iterative.itly.mixpanel
 import ly.iterative.itly.*
 
 import com.mixpanel.android.mpmetrics.MixpanelAPI
-import ly.iterative.itly.core.Options
 import ly.iterative.itly.internal.OrgJsonProperties
 
 actual class MixpanelPlugin actual constructor(
@@ -22,7 +21,7 @@ actual class MixpanelPlugin actual constructor(
     val client: MixpanelAPI
         get() = this.mixpanel
 
-    override fun load(options: Options) {
+    override fun load(options: PluginLoadOptions) {
         logger = options.logger
         logger.debug("[plugin-${id()}] load")
 

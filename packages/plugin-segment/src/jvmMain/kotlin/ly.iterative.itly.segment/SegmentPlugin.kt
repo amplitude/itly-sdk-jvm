@@ -30,7 +30,7 @@ actual class SegmentPlugin actual constructor(
 
     constructor(writeKey: String): this(writeKey, SegmentOptions())
 
-    override fun load(options: Options) {
+    override fun load(options: PluginLoadOptions) {
         logger = options.logger
         val builder = config.builder ?: Analytics.builder(writeKey)
         segment = builder.build()

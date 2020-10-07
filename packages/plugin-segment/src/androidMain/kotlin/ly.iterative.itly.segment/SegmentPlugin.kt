@@ -6,7 +6,6 @@ package ly.iterative.itly.segment
 import ly.iterative.itly.*
 import com.segment.analytics.Analytics
 import com.segment.analytics.Traits
-import ly.iterative.itly.core.Options
 
 typealias SegmentProperties = com.segment.analytics.Properties
 
@@ -26,7 +25,7 @@ actual class SegmentPlugin actual constructor(
     val client: Analytics
         get() = this.segment
 
-    override fun load(options: Options) {
+    override fun load(options: PluginLoadOptions) {
         logger = options.logger
         logger.debug("[plugin-segment] load")
 

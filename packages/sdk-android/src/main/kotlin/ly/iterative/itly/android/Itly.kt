@@ -4,7 +4,7 @@
 package ly.iterative.itly.android
 
 import ly.iterative.itly.*
-import ly.iterative.itly.core.Options
+import ly.iterative.itly.Options
 
 class Itly : IItly {
     companion object {
@@ -14,9 +14,25 @@ class Itly : IItly {
 
     private val itly = ly.iterative.itly.core.Itly()
 
+    /**
+     * Initialize the Itly instance
+     *
+     * @param options
+     */
     @Throws(IllegalStateException::class)
-    fun load(options: Options) {
-        itly.load(options)
+    fun load(options: Options = Options()) {
+        load(null, options)
+    }
+
+    /**
+     * Initialize the Itly instance
+     *
+     * @param context Additional context properties to add to all events. Default is none.
+     * @param options
+     */
+    @Throws(IllegalStateException::class)
+    fun load(context: Properties? = null, options: Options = Options()) {
+        itly.load(context, options)
     }
 
     //ALIAS

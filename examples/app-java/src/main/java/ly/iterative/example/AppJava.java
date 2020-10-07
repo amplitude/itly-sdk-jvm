@@ -20,22 +20,22 @@ public class AppJava {
             "itly-api-key",
             ly.iterative.itly.iteratively.IterativelyOptions.builder()
                 .url("https://iterative.ly/about")
-                .environment(environment)
                 .build()
         );
 
         Itly itly = new Itly();
 
-        itly.load(new Options(
+        itly.load(
             Context.VALID_ONLY_REQUIRED_PROPS,
-            environment,
-            new ArrayList<>(Arrays.asList(
-                iterativelyPlugin,
-                new SchemaValidatorPlugin(Schemas.DEFAULT)
-            )),
-            false,
-            validation
-        ));
+            new Options(
+                environment,
+                new ArrayList<>(Arrays.asList(
+                    iterativelyPlugin,
+                    new SchemaValidatorPlugin(Schemas.DEFAULT)
+                )),
+                false,
+                validation
+            ));
         String userId = "user-id";
 
         itly.identify(userId);

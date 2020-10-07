@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import ly.iterative.itly.*
-import ly.iterative.itly.core.Options
+import ly.iterative.itly.Options
 import okhttp3.mockwebserver.*
 import org.junit.jupiter.api.*
 import java.util.concurrent.TimeUnit
@@ -38,6 +38,8 @@ class IterativelyPluginTest {
         logger = Logger.STD_OUT_AND_ERR
     )
 
+    val PLUGIN_OPTIONS_DEFAULT = PluginLoadOptions(ITLY_OPTIONS_DEFAULT)
+
     val RETRY_OPTIONS_DEFAULT = RetryOptions(
         maxRetries = 10,
         delayInitialMillis = TIMEOUTS.BACKOFF_INITIAL_MS,
@@ -46,7 +48,6 @@ class IterativelyPluginTest {
 
     val ITERATIVELY_OPTIONS_DEFAULT = IterativelyOptions(
         url = trackerUrl.url,
-        environment = Environment.DEVELOPMENT,
         batchSize = 1,
         flushQueueSize = 1,
         flushIntervalMs = TIMEOUTS.FLUSH_INTERVAL_MS,
@@ -100,7 +101,7 @@ class IterativelyPluginTest {
             user.apiKey,
             ITERATIVELY_OPTIONS_DEFAULT
         )
-        iterativelyPlugin.load(ITLY_OPTIONS_DEFAULT)
+        iterativelyPlugin.load(PLUGIN_OPTIONS_DEFAULT)
     }
 
     @AfterEach
@@ -199,7 +200,7 @@ class IterativelyPluginTest {
                 )
             )
         )
-        iterativelyPlugin.load(ITLY_OPTIONS_DEFAULT)
+        iterativelyPlugin.load(PLUGIN_OPTIONS_DEFAULT)
 
         iterativelyPlugin.postIdentify(user.id, null, listOf())
         for (i in 1..4) {
@@ -220,7 +221,7 @@ class IterativelyPluginTest {
                 disabled = true
             )
         )
-        iterativelyPlugin.load(ITLY_OPTIONS_DEFAULT)
+        iterativelyPlugin.load(PLUGIN_OPTIONS_DEFAULT)
 
         val dummyProps = Properties()
         iterativelyPlugin.postIdentify(user.id, null, listOf())
@@ -249,7 +250,7 @@ class IterativelyPluginTest {
                 disabled = true
             )
         )
-        iterativelyPlugin.load(ITLY_OPTIONS_DEFAULT)
+        iterativelyPlugin.load(PLUGIN_OPTIONS_DEFAULT)
 
         Assertions.assertDoesNotThrow {
             iterativelyPlugin.shutdown()

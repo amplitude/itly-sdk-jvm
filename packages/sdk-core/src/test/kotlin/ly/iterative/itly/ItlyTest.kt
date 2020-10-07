@@ -3,7 +3,6 @@ package ly.iterative.itly
 import io.mockk.mockk
 import io.mockk.verify
 import ly.iterative.itly.core.Itly
-import ly.iterative.itly.core.Options
 import ly.iterative.itly.test.*
 import ly.iterative.itly.test.events.*
 import org.junit.jupiter.api.Assertions
