@@ -25,24 +25,39 @@ open class Itly {
             throw IllegalStateException("Itly is not initialized. Call Itly.load(Options(...))")
         }
 
+    /**
+     * Initialize the Itly instance
+     * @param options
+     */
     @Throws(IllegalStateException::class)
-    fun load(options: Options) {
+    fun load(options: Options = Options()) {
+        load(null, options)
+    }
+
+    /**
+     * Initialize the Itly instance
+     *
+     * @param context Additional context properties to add to all events. Default is none.
+     * @param options
+     */
+    @Throws(IllegalStateException::class)
+    fun load(context: Properties? = null, options: Options = Options()) {
         if (this::config.isInitialized) {
             throw Error("Itly is already initialized. Itly.load() should only be called once.")
         }
 
-        if (options.disabled) {
+        config = options
+        this.context = Event("context", context?.properties)
+        config.logger.debug("$LOG_TAG load")
+
+        if (config.disabled) {
             config.logger.info("$LOG_TAG disabled = true")
             return
         }
 
-        config = options
-        context = Event("context", config.context?.properties)
-
-        config.logger.debug("$LOG_TAG load")
-
         config.logger.debug("$LOG_TAG ${config.plugins.size} plugins enabled")
-        runOnAllPlugins("load") { it.load(config) }
+        val pluginLoadOptions = PluginLoadOptions(config)
+        runOnAllPlugins("load") { it.load(pluginLoadOptions) }
     }
 
     @Throws(IllegalStateException::class)
@@ -86,7 +101,7 @@ open class Itly {
 
         validateAndRunOnAllPlugins(
             "group",
-            Event("group", properties?.properties),
+            Event("group", properties?.properties, "0"),
             false,
             { plugin, data -> plugin.group(userId, groupId, data) },
             { plugin, data, validationResponses -> plugin.postGroup(userId, groupId, data, validationResponses) }
@@ -152,7 +167,13 @@ open class Itly {
         val validationResponses: MutableList<ValidationResponse> = mutableListOf()
 
         if (!config.validation.disabled) {
-            runOnAllPlugins("validate") { validationResponses.add(it.validate(event)) }
+            runOnAllPlugins("validate") {
+                val validation = it.validate(event)
+                // Only add invalid validation responses
+                if (validation != null && !validation.valid) {
+                    validationResponses.add(validation)
+                }
+            }
         }
 
         return validationResponses

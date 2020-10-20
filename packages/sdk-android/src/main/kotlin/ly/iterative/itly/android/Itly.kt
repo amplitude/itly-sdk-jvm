@@ -4,9 +4,9 @@
 package ly.iterative.itly.android
 
 import ly.iterative.itly.*
-import ly.iterative.itly.core.Options
+import ly.iterative.itly.Options
 
-class Itly {
+class Itly : IItly {
     companion object {
         const val ID = "itly-android"
         const val LOG_TAG = "[$ID]"
@@ -14,9 +14,25 @@ class Itly {
 
     private val itly = ly.iterative.itly.core.Itly()
 
+    /**
+     * Initialize the Itly instance
+     *
+     * @param options
+     */
     @Throws(IllegalStateException::class)
-    fun load(options: Options) {
-        itly.load(options)
+    fun load(options: Options = Options()) {
+        load(null, options)
+    }
+
+    /**
+     * Initialize the Itly instance
+     *
+     * @param context Additional context properties to add to all events. Default is none.
+     * @param options
+     */
+    @Throws(IllegalStateException::class)
+    fun load(context: Properties? = null, options: Options = Options()) {
+        itly.load(context, options)
     }
 
     //ALIAS
@@ -51,19 +67,19 @@ class Itly {
 
     // TRACK
     @Throws(IllegalArgumentException::class)
-    fun track(event: Event) {
+    override fun track(event: Event) {
         itly.track(null, event)
     }
 
-    fun reset() {
+    override fun reset() {
         itly.reset()
     }
 
-    fun flush() {
+    override fun flush() {
         itly.flush()
     }
 
-    fun shutdown() {
+    override fun shutdown() {
         itly.shutdown()
     }
 }

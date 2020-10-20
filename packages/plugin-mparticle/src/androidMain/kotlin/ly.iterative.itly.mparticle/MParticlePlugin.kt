@@ -6,7 +6,6 @@ package ly.iterative.itly.mparticle
 import com.mparticle.MPEvent
 import ly.iterative.itly.*
 import com.mparticle.MParticle
-import ly.iterative.itly.core.Options
 
 actual class MParticlePlugin actual constructor(
     private val apiKey: String,
@@ -25,7 +24,7 @@ actual class MParticlePlugin actual constructor(
     val client: MParticle
         get() = this.mParticle
 
-    override fun load(options: Options) {
+    override fun load(options: PluginLoadOptions) {
         logger = options.logger
         logger.debug("$LOG_TAG load")
         MParticle.start(com.mparticle.MParticleOptions
@@ -43,7 +42,7 @@ actual class MParticlePlugin actual constructor(
     override fun track(userId: String?, event: Event) {
         logger.debug("$LOG_TAG track(userId = $userId event=${event.name} properties=${event.properties})")
 
-        val mpMetadata = event.metadata[ID]
+        val mpMetadata = event.metadata?.get(ID)
         val metaEventType = mpMetadata?.get("eventType")
         val metaCustomFlags = mpMetadata?.get("customFlags")
 

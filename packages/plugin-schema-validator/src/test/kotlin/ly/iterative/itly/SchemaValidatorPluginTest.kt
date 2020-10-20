@@ -1,7 +1,6 @@
 package ly.iterative.itly
 
 import ly.iterative.itly.core.Itly
-import ly.iterative.itly.core.Options
 import ly.iterative.itly.test.*
 import ly.iterative.itly.test.events.*
 import org.junit.jupiter.api.*
@@ -17,11 +16,8 @@ val VALIDATION_OPTIONS_ERROR_ON_INVALID = ValidationOptions(
 fun loadDefaultSchemaValidator(options: Options? = null): SchemaValidatorPlugin {
     val schemaValidatorPlugin = SchemaValidatorPlugin(Schemas.DEFAULT)
 
-    val opts = options ?: Options(
-        environment = Environment.PRODUCTION,
-        context = Context.VALID_ONLY_REQUIRED_PROPS
-    )
-    schemaValidatorPlugin.load(opts)
+    val opts = options ?: Options(environment = Environment.PRODUCTION)
+    schemaValidatorPlugin.load(PluginLoadOptions(opts))
 
     return schemaValidatorPlugin
 }
@@ -66,8 +62,7 @@ class SchemaValidatorPluginTest {
 
     @Test
     fun validate_invalidEventWithErrorOnInvalid_throwsError() {
-        val itly: Itly = TestUtil.getItly(Options(
-            context = Context.VALID_ALL_PROPS,
+        val itly: Itly = TestUtil.getItly(Context.VALID_ALL_PROPS, Options(
             plugins = arrayListOf(SchemaValidatorPlugin(Schemas.DEFAULT)),
             validation = VALIDATION_OPTIONS_ERROR_ON_INVALID
         ))
@@ -82,18 +77,16 @@ class SchemaValidatorPluginTest {
     @Test
     fun itlyLoad_invalidContext_succeeds() {
         Assertions.assertDoesNotThrow {
-            TestUtil.getItly(Options(
-                    context = Context.INVALID_NO_PROPS,
-                    plugins = arrayListOf(SchemaValidatorPlugin(Schemas.DEFAULT))
+            TestUtil.getItly(Context.INVALID_NO_PROPS, Options(
+                plugins = arrayListOf(SchemaValidatorPlugin(Schemas.DEFAULT))
             ))
         }
     }
 
     @Test
     fun itlyTrack_invalidContext_throwsError() {
-        val itly: Itly = TestUtil.getItly(Options(
-                context = Context.INVALID_NO_PROPS,
-                plugins = arrayListOf(SchemaValidatorPlugin(Schemas.DEFAULT))
+        val itly: Itly = TestUtil.getItly(Context.INVALID_NO_PROPS, Options(
+            plugins = arrayListOf(SchemaValidatorPlugin(Schemas.DEFAULT))
         ))
 
         val exception = Assertions.assertThrows(IllegalArgumentException::class.java) {
@@ -108,8 +101,7 @@ class SchemaValidatorPluginTest {
 
     @Test
     fun itlyTrack_invalidEventWithErrorOnInvalid_throwsError() {
-        val itly: Itly = TestUtil.getItly(Options(
-            context = Context.VALID_ALL_PROPS,
+        val itly: Itly = TestUtil.getItly(Context.VALID_ALL_PROPS, Options(
             plugins = arrayListOf(SchemaValidatorPlugin(Schemas.DEFAULT)),
             validation = VALIDATION_OPTIONS_ERROR_ON_INVALID
         ))
@@ -145,7 +137,6 @@ class SchemaValidatorPluginTest {
     fun itly_nullContextWithNoContextSchema_succeed() {
         Assertions.assertDoesNotThrow {
             TestUtil.getItly(Options(
-                context = null,
                 plugins = arrayListOf(SchemaValidatorPlugin(Schemas.NO_CONTEXT))
             ))
         }
@@ -155,7 +146,6 @@ class SchemaValidatorPluginTest {
     fun itly_nullContextWithContextSchema_succeed() {
         Assertions.assertDoesNotThrow {
             TestUtil.getItly(Options(
-                context = null,
                 plugins = arrayListOf(SchemaValidatorPlugin(Schemas.DEFAULT))
             ))
         }
@@ -163,12 +153,14 @@ class SchemaValidatorPluginTest {
 
     @Test
     fun itly_contextWithNoContextSchema_throwsError() {
-        val itly: Itly = TestUtil.getItly(Options(
-            context = Properties(mapOf(
+        val itly: Itly = TestUtil.getItly(
+            Properties(mapOf(
                 "prop" to "value"
             )),
-            plugins = arrayListOf(SchemaValidatorPlugin(Schemas.NO_CONTEXT))
-        ))
+            Options(
+                plugins = arrayListOf(SchemaValidatorPlugin(Schemas.NO_CONTEXT))
+            )
+        )
 
         val exception = Assertions.assertThrows(IllegalArgumentException::class.java) {
             itly.track(user.id, EventNoProperties())

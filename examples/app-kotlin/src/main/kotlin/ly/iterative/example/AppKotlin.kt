@@ -26,20 +26,20 @@ object AppKotlin {
 
         val itly = Itly()
 
-        itly.load(Options(
-            context = Context(
-                requiredString = "Required string"
-            ),
-            plugins = arrayListOf<Plugin>(
-                schemaValidatorPlugin,
-                iterativelyPlugin
-            ),
-            logger = logger,
-            validation = ValidationOptions(
-                trackInvalid = true,
-                errorOnInvalid = false
+        itly.load(
+            Context(requiredString = "Required string"),
+            Options(
+                plugins = arrayListOf(
+                    schemaValidatorPlugin,
+                    iterativelyPlugin
+                ),
+                logger = logger,
+                validation = ValidationOptions(
+                    trackInvalid = true,
+                    errorOnInvalid = false
+                )
             )
-        ))
+        )
 
 
         itly.identify(user.id, Identify(

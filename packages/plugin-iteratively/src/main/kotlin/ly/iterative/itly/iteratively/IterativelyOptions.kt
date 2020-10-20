@@ -6,7 +6,6 @@ import java.util.concurrent.ThreadFactory
 
 data class IterativelyOptions @JvmOverloads constructor(
     val url: String,
-    val environment: Environment = Environment.DEVELOPMENT,
     val omitValues: Boolean = false,
     val batchSize: Int = 100,
     val flushQueueSize: Long = 10,
@@ -15,7 +14,7 @@ data class IterativelyOptions @JvmOverloads constructor(
     // TODO:
     //  Remove disabled here, use itly.disablePlugin() instead
     //  Do we need to stop anything else on disabled? Threads/scheduled tasks
-    val disabled: Boolean = false,
+    val disabled: Boolean? = null,
 
     // Java/Android specific
     val retryOptions: RetryOptions = RetryOptions(),
@@ -31,7 +30,6 @@ data class IterativelyOptions @JvmOverloads constructor(
 
     constructor(builder: Builder) : this(
         url = builder.url,
-        environment = builder.environment,
         omitValues = builder.omitValues,
         batchSize = builder.batchSize,
         flushQueueSize = builder.flushQueueSize,
@@ -42,38 +40,19 @@ data class IterativelyOptions @JvmOverloads constructor(
         retryOptions = builder.retryOptions
     )
 
-    constructor(
-        url: String,
-        environment: Environment,
-        iterativelyOptions: ly.iterative.itly.IterativelyOptions
-    ) : this(
-        url = url,
-        environment = environment,
-        omitValues = iterativelyOptions.omitValues,
-        batchSize = iterativelyOptions.batchSize,
-        flushQueueSize = iterativelyOptions.flushQueueSize,
-        flushIntervalMs = iterativelyOptions.flushIntervalMs,
-        disabled = iterativelyOptions.disabled,
-        threadFactory = iterativelyOptions.threadFactory,
-        networkExecutor = iterativelyOptions.networkExecutor,
-        retryOptions = iterativelyOptions.retryOptions
-    )
-
     // For Java :)
     class Builder internal constructor (
         internal var url: String = "",
-        internal var environment: Environment = DEFAULT_ITERATIVELY_OPTIONS.environment,
         internal var omitValues: Boolean = DEFAULT_ITERATIVELY_OPTIONS.omitValues,
         internal var batchSize: Int = DEFAULT_ITERATIVELY_OPTIONS.batchSize,
         internal var flushQueueSize: Long = DEFAULT_ITERATIVELY_OPTIONS.flushQueueSize,
         internal var flushIntervalMs: Long = DEFAULT_ITERATIVELY_OPTIONS.flushIntervalMs,
-        internal var disabled: Boolean = DEFAULT_ITERATIVELY_OPTIONS.disabled,
+        internal var disabled: Boolean? = DEFAULT_ITERATIVELY_OPTIONS.disabled,
         internal var threadFactory: ThreadFactory = DEFAULT_ITERATIVELY_OPTIONS.threadFactory,
         internal var networkExecutor: ExecutorService? = DEFAULT_ITERATIVELY_OPTIONS.networkExecutor,
         internal var retryOptions: RetryOptions = DEFAULT_ITERATIVELY_OPTIONS.retryOptions
-    ) : IUrl, IEnvironment, IBuild {
+    ) : IUrl, IBuild {
         override fun url(url: String) = apply { this.url = url }
-        override fun environment(environment: Environment) = apply { this.environment = environment }
         override fun omitValues(omitValues: Boolean) = apply { this.omitValues = omitValues }
         override fun batchSize(batchSize: Int) = apply { this.batchSize = batchSize }
         override fun flushQueueSize(flushQueueSize: Long) = apply { this.flushQueueSize = flushQueueSize }
@@ -89,11 +68,7 @@ data class IterativelyOptions @JvmOverloads constructor(
     }
 
     interface IUrl {
-        fun url(url: String): IEnvironment
-    }
-
-    interface IEnvironment {
-        fun environment(environment: Environment): IBuild
+        fun url(url: String): IBuild
     }
 
     interface IBuild {

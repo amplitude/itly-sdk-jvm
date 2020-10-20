@@ -3,19 +3,13 @@
  */
 package ly.iterative.itly.amplitude
 
-import android.content.Context
 import com.amplitude.api.Amplitude
 import com.amplitude.api.AmplitudeClient
 import com.amplitude.api.Identify
 import ly.iterative.itly.*
-import ly.iterative.itly.core.Options
 import ly.iterative.itly.internal.OrgJsonProperties
 import org.json.JSONArray
 import org.json.JSONObject
-
-actual data class AmplitudeOptions(
-    val androidContext: Context
-)
 
 actual class AmplitudePlugin actual constructor(
     private val apiKey: String,
@@ -33,7 +27,7 @@ actual class AmplitudePlugin actual constructor(
     val client: AmplitudeClient
         get() = this.amplitude
 
-    override fun load(options: Options) {
+    override fun load(options: PluginLoadOptions) {
         logger = options.logger
         logger.debug("[plugin-${id()}] load")
 

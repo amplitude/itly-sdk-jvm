@@ -3,7 +3,6 @@ package ly.iterative.itly
 import com.networknt.schema.JsonSchema
 import com.networknt.schema.JsonSchemaFactory
 import com.networknt.schema.SpecVersion
-import ly.iterative.itly.core.Options
 import java.lang.Exception
 
 class SchemaValidatorPlugin constructor(
@@ -17,7 +16,7 @@ class SchemaValidatorPlugin constructor(
     private lateinit var validators: Map<String, JsonSchema>
     private lateinit var logger: Logger
 
-    override fun load(options: Options) {
+    override fun load(options: PluginLoadOptions) {
         // Get a reference to the SDK logger
         logger = options.logger
         logger.debug("$LOG_TAG load")
@@ -29,7 +28,7 @@ class SchemaValidatorPlugin constructor(
     }
 
     override fun validate(event: Event): ValidationResponse {
-        logger.debug("$LOG_TAG process(event=${event.name})")
+        logger.debug("$LOG_TAG validate(event=${event.name})")
 
         var errorMessage: String? = null
         try {

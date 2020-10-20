@@ -1,7 +1,5 @@
 package ly.iterative.itly
 
-import ly.iterative.itly.core.Options
-
 abstract class Plugin(
     private val id: String
 ) {
@@ -9,10 +7,10 @@ abstract class Plugin(
         return id
     }
 
-    open fun load(options: Options) {}
+    open fun load(options: PluginLoadOptions) {}
 
-    open fun validate(event: Event): ValidationResponse {
-        return ValidationResponse.Valid
+    open fun validate(event: Event): ValidationResponse? {
+        return null
     }
 
     open fun alias(userId: String, previousId: String?) {}

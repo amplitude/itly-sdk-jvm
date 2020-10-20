@@ -1,7 +1,8 @@
 package ly.iterative.itly
 
+import io.mockk.mockk
+import io.mockk.verify
 import ly.iterative.itly.core.Itly
-import ly.iterative.itly.core.Options
 import ly.iterative.itly.test.*
 import ly.iterative.itly.test.events.*
 import org.junit.jupiter.api.Assertions
@@ -19,6 +20,20 @@ class ItlyTest {
         }
 
         Assertions.assertEquals(Unit, exception)
+    }
+
+    @Test
+    fun load_trackWhenDisabled_doesntCallPlugins() {
+        val plugin = mockk<Plugin>(relaxed = true)
+
+        val itly = TestUtil.getItly(Options(
+            plugins = listOf(plugin),
+            disabled = true
+        ))
+
+        itly.track(user.id, EventMaxIntForTest.VALID)
+
+        verify(exactly = 0) { plugin.track(user.id, EventMaxIntForTest.VALID) }
     }
 
     @Test

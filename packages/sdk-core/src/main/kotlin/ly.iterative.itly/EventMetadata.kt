@@ -1,4 +1,3 @@
 package ly.iterative.itly
 
-class EventMetadata(
-): HashMap<String, Map<String, Any>>()
+typealias EventMetadata = Map<String, Map<String, Any>>

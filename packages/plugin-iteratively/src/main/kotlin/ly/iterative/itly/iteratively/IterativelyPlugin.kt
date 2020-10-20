@@ -6,7 +6,6 @@ import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.segment.backo.Backo
 import ly.iterative.itly.*
-import ly.iterative.itly.core.Options
 import okhttp3.Interceptor
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
@@ -56,7 +55,8 @@ class IterativelyPlugin(
             ).setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY)
     }
 
-    private val config: IterativelyOptions
+    private val config: IterativelyOptions = options
+    private var disabled: Boolean = options.disabled ?: false
 
     private val client: OkHttpClient
     private val retryPolicy: Backo
@@ -64,19 +64,13 @@ class IterativelyPlugin(
     private val mainExecutor: ExecutorService
     private val networkExecutor: ExecutorService
     private val scheduledExecutor: ScheduledExecutorService
-    private var isShutdown: Boolean
     private val isExternalNetworkExecutor: Boolean
+    private var isShutdown: Boolean
 
     // Gets updated in load()
     private lateinit var logger: Logger
 
     init {
-        // adjusts config values in accordance with provided environment value
-        val disabled = if (options.environment === Environment.PRODUCTION) true
-            else options.disabled
-
-        this.config = options.copy(disabled = disabled)
-
         mainExecutor = newDefaultExecutorService(config.threadFactory)
         scheduledExecutor = Executors.newSingleThreadScheduledExecutor(config.threadFactory)
         networkExecutor = options.networkExecutor ?: newDefaultExecutorService(options.threadFactory)
@@ -96,11 +90,14 @@ class IterativelyPlugin(
             .build()
     }
 
-    override fun load(options: Options) {
+    override fun load(options: PluginLoadOptions) {
         logger = options.logger
         logger.info("$LOG_TAG load")
 
-        if (this.config.disabled) {
+        // adjusts config values in accordance with provided environment value
+        disabled = config.disabled ?: (options.environment === Environment.PRODUCTION)
+
+        if (disabled) {
             logger.info("$LOG_TAG disabled")
             return
         }
@@ -200,7 +197,7 @@ class IterativelyPlugin(
     }
 
     private fun push(trackModel: TrackModel) {
-        if (config.disabled) {
+        if (disabled) {
             return
         }
 

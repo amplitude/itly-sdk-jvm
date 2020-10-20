@@ -1,10 +1,13 @@
-package ly.iterative.itly.mparticle
+package ly.iterative.itly
 
 import android.content.Context
 
-actual open class MParticleOptions(
-    val apiSecret: String,
-    val androidContext: Context
+actual class MParticleOptions(
+    apiSecret: String,
+    androidContext: Context
+) : ly.iterative.itly.mparticle.MParticleOptions(
+    apiSecret,
+    androidContext
 ) {
     companion object {
         @JvmStatic
@@ -32,17 +35,5 @@ actual open class MParticleOptions(
         override fun build(): MParticleOptions {
             return MParticleOptions(this)
         }
-    }
-
-    interface IApiSecret<T : MParticleOptions> {
-        fun apiSecret(apiSecret: String): IAndroidContext<T>
-    }
-
-    interface IAndroidContext<T : MParticleOptions> {
-        fun androidContext(androidContext: Context): IBuild<T>
-    }
-
-    interface IBuild<T : MParticleOptions> {
-        fun build(): T
     }
 }

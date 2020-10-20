@@ -14,7 +14,7 @@ data class IterativelyOptions(
     val batchSize: Int = DEFAULT_ITERATIVELY_OPTIONS.batchSize,
     val flushQueueSize: Long = DEFAULT_ITERATIVELY_OPTIONS.flushQueueSize,
     val flushIntervalMs: Long = DEFAULT_ITERATIVELY_OPTIONS.flushIntervalMs,
-    val disabled: Boolean = DEFAULT_ITERATIVELY_OPTIONS.disabled,
+    val disabled: Boolean? = DEFAULT_ITERATIVELY_OPTIONS.disabled,
     val threadFactory: ThreadFactory = DEFAULT_ITERATIVELY_OPTIONS.threadFactory,
     val networkExecutor: ExecutorService? = DEFAULT_ITERATIVELY_OPTIONS.networkExecutor,
     val retryOptions: RetryOptions = DEFAULT_ITERATIVELY_OPTIONS.retryOptions
@@ -32,7 +32,7 @@ data class IterativelyOptions(
         private var batchSize: Int = DEFAULT_ITERATIVELY_OPTIONS.batchSize,
         private var flushQueueSize: Long = DEFAULT_ITERATIVELY_OPTIONS.flushQueueSize,
         private var flushIntervalMs: Long = DEFAULT_ITERATIVELY_OPTIONS.flushIntervalMs,
-        private var disabled: Boolean = DEFAULT_ITERATIVELY_OPTIONS.disabled,
+        private var disabled: Boolean? = DEFAULT_ITERATIVELY_OPTIONS.disabled,
         private var threadFactory: ThreadFactory = DEFAULT_ITERATIVELY_OPTIONS.threadFactory,
         private var networkExecutor: ExecutorService? = DEFAULT_ITERATIVELY_OPTIONS.networkExecutor,
         private var retryOptions: RetryOptions = DEFAULT_ITERATIVELY_OPTIONS.retryOptions
@@ -48,6 +48,20 @@ data class IterativelyOptions(
         fun retryOptions(retryOptions: RetryOptions) = apply { this.retryOptions = retryOptions }
 
         fun build() = IterativelyOptions(
+            omitValues = omitValues,
+            batchSize = batchSize,
+            flushQueueSize = flushQueueSize,
+            flushIntervalMs = flushIntervalMs,
+            disabled = disabled,
+            threadFactory = threadFactory,
+            networkExecutor = networkExecutor,
+            retryOptions = retryOptions
+        )
+    }
+
+    fun getPluginOptions(url: String): ly.iterative.itly.iteratively.IterativelyOptions {
+        return ly.iterative.itly.iteratively.IterativelyOptions(
+            url = url,
             omitValues = omitValues,
             batchSize = batchSize,
             flushQueueSize = flushQueueSize,
