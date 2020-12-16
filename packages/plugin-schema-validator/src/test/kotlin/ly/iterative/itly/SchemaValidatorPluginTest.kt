@@ -117,8 +117,8 @@ class SchemaValidatorPluginTest {
     }
 
     @Test
-    fun itly_withDefaultValidation_throwsErrorInDevelopment() {
-        val itly: Itly = TestUtil.getItly(Options(
+    fun itlyTrack_withDefaultValidationInDevelopment_throwsError() {
+        val itly: Itly = TestUtil.getItly(Context.INVALID_NO_PROPS, Options(
             environment = Environment.DEVELOPMENT,
             plugins = arrayListOf(SchemaValidatorPlugin(Schemas.DEFAULT))
         ))
@@ -135,24 +135,28 @@ class SchemaValidatorPluginTest {
 
     @Test
     fun itly_nullContextWithNoContextSchema_succeed() {
+        val itly: Itly = TestUtil.getItly(Options(
+            plugins = arrayListOf(SchemaValidatorPlugin(Schemas.NO_CONTEXT))
+        ))
+
         Assertions.assertDoesNotThrow {
-            TestUtil.getItly(Options(
-                plugins = arrayListOf(SchemaValidatorPlugin(Schemas.NO_CONTEXT))
-            ))
+            itly.track(user.id, EventNoProperties())
         }
     }
 
     @Test
-    fun itly_nullContextWithContextSchema_succeed() {
+    fun itlyTrack_nullContextWithContextSchema_succeed() {
+        val itly: Itly = TestUtil.getItly(Options(
+            plugins = arrayListOf(SchemaValidatorPlugin(Schemas.DEFAULT))
+        ))
+
         Assertions.assertDoesNotThrow {
-            TestUtil.getItly(Options(
-                plugins = arrayListOf(SchemaValidatorPlugin(Schemas.DEFAULT))
-            ))
+            itly.track(user.id, EventNoProperties())
         }
     }
 
     @Test
-    fun itly_contextWithNoContextSchema_throwsError() {
+    fun itlyTrack_contextWithNoContextSchema_throwsError() {
         val itly: Itly = TestUtil.getItly(
             Properties(mapOf(
                 "prop" to "value"
