@@ -145,7 +145,7 @@ class SchemaValidatorPluginTest {
     }
 
     @Test
-    fun itly_nullContextWithContextSchema_succeed() {
+    fun itlyTrack_nullContextWithContextSchema_succeed() {
         val itly: Itly = TestUtil.getItly(Options(
             plugins = arrayListOf(SchemaValidatorPlugin(Schemas.DEFAULT))
         ))
@@ -156,7 +156,7 @@ class SchemaValidatorPluginTest {
     }
 
     @Test
-    fun itly_contextWithNoContextSchema_throwsError() {
+    fun itlyTrack_contextWithNoContextSchema_throwsError() {
         val itly: Itly = TestUtil.getItly(
             Properties(mapOf(
                 "prop" to "value"
