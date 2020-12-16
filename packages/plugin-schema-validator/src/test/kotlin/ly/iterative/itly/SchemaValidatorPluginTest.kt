@@ -167,7 +167,7 @@ class SchemaValidatorPluginTest {
         )
 
         val exception = Assertions.assertThrows(IllegalArgumentException::class.java) {
-            itly.track(user.id, EventNoProperties())
+            // itly.track(user.id, EventNoProperties())
         }
 
         Assertions.assertEquals(
