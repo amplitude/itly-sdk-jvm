@@ -9,7 +9,7 @@ open class Itly {
     }
 
     private lateinit var config: Options
-    private lateinit var context: Event
+    private var context: Event? = null
 
     private var isShutdown: AtomicBoolean = AtomicBoolean(false)
 
@@ -47,12 +47,14 @@ open class Itly {
         }
 
         config = options
-        this.context = Event("context", context?.properties)
         config.logger.debug("$LOG_TAG load")
-
         if (config.disabled) {
             config.logger.info("$LOG_TAG disabled = true")
             return
+        }
+
+        if (context != null) {
+            this.context = Event("context", context.properties)
         }
 
         config.logger.debug("$LOG_TAG ${config.plugins.size} plugins enabled")
@@ -187,7 +189,7 @@ open class Itly {
         method: (plugin: Plugin, event: Event) -> Unit,
         postMethod: (plugin: Plugin, event: Event, validationResponses: List<ValidationResponse>) -> Unit
     ) {
-        val contextValidationResponses = if (includeContext) validate(context) else listOf()
+        val contextValidationResponses = if (includeContext && context != null) validate(context!!) else listOf()
         val isContextValid = contextValidationResponses.all { it.valid }
 
         val eventValidationResponses = validate(event)
@@ -196,7 +198,7 @@ open class Itly {
         val combinedEvent = if (includeContext)
             Event(
                 event.name,
-                context.properties + event.properties,
+                (context?.properties ?: mapOf()) + event.properties,
                 event.id,
                 event.version,
                 event.metadata

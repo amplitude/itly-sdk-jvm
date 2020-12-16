@@ -34,7 +34,6 @@ repositories {
 }
 
 subprojects {
-    version = "$itlySdkVersion"
     group = "ly.iterative.itly"
 }
 
