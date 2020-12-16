@@ -13,4 +13,7 @@ jobs:
         with:
           java-version: 1.8
       - name: Build with Gradle
-        run: ./gradlew build
+        run: bash ./gradlew build
+        env:
+          ORG_GRADLE_PROJECT_sonatypeUsername=
+          ORG_GRADLE_PROJECT_sonatypePassword=
