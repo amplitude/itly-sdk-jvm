@@ -5,19 +5,14 @@ import com.fasterxml.jackson.annotation.PropertyAccessor
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.segment.backo.Backo
-import ly.iterative.itly.*
-import okhttp3.Interceptor
-import okhttp3.MediaType.Companion.toMediaType
-import okhttp3.OkHttpClient
-import okhttp3.Request
-import okhttp3.RequestBody.Companion.toRequestBody
-import okhttp3.Response
 import java.io.IOException
 import java.lang.Thread.MIN_PRIORITY
 import java.net.ConnectException
 import java.util.concurrent.*
+import ly.iterative.itly.*
+import okhttp3.*
 
-val JSON_MEDIA_TYPE = "application/json; charset=utf-8".toMediaType()
+val JSON_MEDIA_TYPE = MediaType.parse("application/json; charset=utf-8")
 
 const val DEFAULT_THREAD_NAME = "plugin-iteratively-thread"
 val DEFAULT_THREAD_FACTORY: ThreadFactory = ThreadFactory { r ->
@@ -157,9 +152,9 @@ class IterativelyPlugin(
         queue.clear()
         mainExecutor.shutdownNow()
         scheduledExecutor.shutdownNow()
-        client.dispatcher.cancelAll()
-        client.dispatcher.executorService.shutdownNow()
-        client.connectionPool.evictAll()
+        client.dispatcher().cancelAll()
+        client.dispatcher().executorService().shutdownNow()
+        client.connectionPool().evictAll()
         if (!isExternalNetworkExecutor && !networkExecutor.isShutdown) {
             networkExecutor.shutdownNow()
         }
@@ -290,18 +285,18 @@ class IterativelyPlugin(
                 val response = postJson(config.url, getTrackModelJson(batch))
                 response.close()
 
-                val code = response.code
+                val code = response.code()
                 if (response.isSuccessful) {
                     // Upload succeeded, no need to retry
                     logger.debug("Upload complete.")
                     return false
                 }
 //                response.body?.close()
-                if (response.code in 500..599) {
+                if (code in 500..599) {
                     logger.debug("Upload received error response from server ($code).")
                     return true
                 }
-                if (response.code == 429) {
+                if (code == 429) {
                     logger.debug("Upload rejected due to rate limiting ($code).")
                     return true
                 }
@@ -332,7 +327,7 @@ class IterativelyPlugin(
         @Throws(IOException::class)
         private fun postJson(url: String, json: String): Response {
             logger.debug("$LOG_TAG Post JSON: $json")
-            val requestBody = json.toRequestBody(JSON_MEDIA_TYPE)
+            val requestBody = RequestBody.create(JSON_MEDIA_TYPE, json)
             val request = Request.Builder().url(url)
                     .addHeader("Content-Type", "application/json")
                     .post(requestBody)
