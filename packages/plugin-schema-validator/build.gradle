@@ -10,7 +10,7 @@ apply from: rootProject.file('gradle/publish-java.gradle')
 
 dependencies {
     implementation(project(":packages:sdk-core"))
-    implementation("com.networknt:json-schema-validator:1.0.42")
+    implementation("com.networknt:json-schema-validator:1.0.45")
 
     testImplementation(project(":packages:test-fixtures"))
 }
