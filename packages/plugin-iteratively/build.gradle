@@ -8,13 +8,17 @@ plugins {
 apply from: rootProject.file('gradle/publish-java.gradle')
 
 dependencies {
+    // WARNING: JSON is compileOnly here to make this module platform agnostic
+    // WARNING: JSON implementation is instead provided in sdk-jvm and sdk-android
+    // WARNING: If you use sdk-core directly you must include a JSON implementation in your project
+    compileOnly("$orgJsonImplementation")
+
     implementation(project(":packages:sdk-core"))
     implementation("com.segment.backo:backo:1.0.0")
     implementation("joda-time:joda-time:2.10.6")
     implementation("$jacksonImplementation")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:$jacksonVersion")
     implementation("$okHttpImplementation")
-    implementation("$orgJsonImplementation")
 
     testImplementation(project(":packages:test-fixtures"))
     testImplementation("$mockWebServerImplementation")

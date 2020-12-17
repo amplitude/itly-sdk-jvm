@@ -11,7 +11,10 @@ repositories {
 }
 
 dependencies {
-    implementation("$orgJsonImplementation")
+    // WARNING: JSON is compileOnly here to make this module platform agnostic
+    // WARNING: JSON implementation is instead provided in sdk-jvm and sdk-android
+    // WARNING: If you use sdk-core directly you must include a JSON implementation in your project
+    compileOnly("$orgJsonImplementation")
 
     testImplementation(project(":packages:test-fixtures"))
 
