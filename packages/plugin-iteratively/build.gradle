@@ -8,13 +8,21 @@ plugins {
 apply from: rootProject.file('gradle/publish-java.gradle')
 
 dependencies {
+    // WARNING WARNING WARNING
+    // org.json JSON is compileOnly here to make this module platform agnostic
+    // It is not recommended to use 'ly.iterative.itly:sdk-core' directly
+    // Instead use 'sdk-android' or 'sdk-jvm' which will provide the correct JSON implementation per platform
+    // For more information see:
+    // https://github.com/iterativelyhq/itly-sdk-jvm/blob/master/packages/sdk-core/build.gradle
+    // WARNING WARNING WARNING
+    compileOnly("$orgJsonImplementation")
+
     implementation(project(":packages:sdk-core"))
     implementation("com.segment.backo:backo:1.0.0")
     implementation("joda-time:joda-time:2.10.6")
     implementation("$jacksonImplementation")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:$jacksonVersion")
     implementation("$okHttpImplementation")
-    implementation("$orgJsonImplementation")
 
     testImplementation(project(":packages:test-fixtures"))
     testImplementation("$mockWebServerImplementation")
