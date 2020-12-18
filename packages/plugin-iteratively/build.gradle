@@ -8,9 +8,13 @@ plugins {
 apply from: rootProject.file('gradle/publish-java.gradle')
 
 dependencies {
-    // WARNING: JSON is compileOnly here to make this module platform agnostic
-    // WARNING: JSON implementation is instead provided in sdk-jvm and sdk-android
-    // WARNING: If you use sdk-core directly you must include a JSON implementation in your project
+    // WARNING WARNING WARNING
+    // org.json JSON is compileOnly here to make this module platform agnostic
+    // It is not recommended to use 'ly.iterative.itly:sdk-core' directly
+    // Instead use 'sdk-android' or 'sdk-jvm' which will provide the correct JSON implementation per platform
+    // For more information see:
+    // https://github.com/iterativelyhq/itly-sdk-jvm/blob/master/packages/sdk-core/build.gradle
+    // WARNING WARNING WARNING
     compileOnly("$orgJsonImplementation")
 
     implementation(project(":packages:sdk-core"))
