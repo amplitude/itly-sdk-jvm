@@ -32,7 +32,7 @@ kotlin {
         androidMain {
             dependsOn commonMain
             dependencies {
-                implementation 'com.amplitude:android-sdk:2.9.2'
+                implementation 'com.amplitude:android-sdk:2.30.0'
             }
         }
         androidTest {
