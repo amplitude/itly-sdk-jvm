@@ -60,7 +60,7 @@ kotlin {
             dependsOn commonMain
             dependencies {
                 // Android has it's own org.json included by default
-                implementation "$orgJsonImplementation"
+                api "$orgJsonImplementation"
             }
         }
         jvmTest {
