@@ -45,7 +45,7 @@ class SchemaValidatorPlugin constructor(
         } catch (e: NoSuchElementException) {
             errorMessage = "No schema found for '${event.name}'. Received ${event.name}=${JacksonProperties.toJackson(event)}"
         } catch (e: Exception) {
-            errorMessage = "Unhandled exception validating '${event.name}'."
+            errorMessage = "Unhandled exception validating '${event.name}'. ${e.message}"
         }
 
         if (errorMessage != null) {

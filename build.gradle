@@ -40,8 +40,6 @@ subprojects {
 
 def kotlinProjects = [
     'sdk-core',
-    'sdk-jvm',
-    'sdk-android',
     'plugin-iteratively',
     'plugin-schema-validator',
     'app-kotlin'

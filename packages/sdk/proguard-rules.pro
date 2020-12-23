@@ -1,0 +1,2 @@
+-keep class com.networknt.** { *; }
+-keepnames class ly.iterative.itly.iteratively.TrackModel { *; }
