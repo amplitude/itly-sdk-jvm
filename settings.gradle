@@ -11,8 +11,7 @@ rootProject.name = "itly-sdk-jvm"
 
 // Itly Sdk
 include("packages:sdk-core")
-include("packages:sdk-android")
-include("packages:sdk-jvm")
+include("packages:sdk")
 
 // Cross platform plugins
 include("packages:plugin-iteratively")

@@ -1,0 +1,105 @@
+plugins {
+    id 'org.jetbrains.kotlin.multiplatform'
+}
+
+apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android-extensions'
+apply from: rootProject.file('gradle/publish-mpp.gradle')
+apply from: rootProject.file('gradle/android-library.gradle')
+
+kotlin {
+    jvm("jvm") {
+        compilations.main.kotlinOptions {
+            // Setup the Kotlin compiler options for the 'main' compilation:
+            jvmTarget = "1.8"
+        }
+    }
+
+    android() {
+        publishLibraryVariants("release", "debug")
+        publishLibraryVariantsGroupedByFlavor = true
+    }
+
+    targets.all {
+        compilations.all {
+            kotlinOptions {
+                // jvmTarget = "1.8"
+                allWarningsAsErrors = false
+            }
+        }
+    }
+
+    sourceSets {
+        // COMMON
+        commonMain {
+            dependencies {
+                implementation kotlin('stdlib-jdk8')
+                api project(":packages:sdk-core")
+            }
+        }
+        commonTest {
+            dependencies {
+                implementation kotlin('test')
+                implementation kotlin('test-junit5')
+                implementation project(":packages:test-fixtures")
+            }
+        }
+
+        // ANDROID
+        androidMain {
+            dependsOn commonMain
+            dependencies {
+            }
+        }
+        androidTest {
+            dependsOn commonTest
+        }
+
+        // JVM
+        jvmMain {
+            dependsOn commonMain
+            dependencies {
+                // Android has it's own org.json included by default
+                api "$orgJsonImplementation"
+            }
+        }
+        jvmTest {
+            dependsOn commonTest
+        }
+    }
+
+    configure([targets["metadata"], jvm(), android()]) {
+        mavenPublication {
+            groupId = project.group
+            version = project.version
+
+            artifact(jvmDocsJar)
+
+            pom {
+                name = 'Iteratively SDK'
+                description = 'Iteratively Analytics SDK for JVM'
+                url = 'https://iterative.ly'
+                licenses {
+                    license {
+                        name = 'The Apache License, Version 2.0'
+                        url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                    }
+                }
+                developers {
+                    developer {
+                        id = 'iteratively-justin'
+                        name = 'Justin Fiedler'
+                        email = 'justin@iterative.ly'
+                    }
+                }
+                scm {
+                    connection = 'scm:git:https://github.com/iterativelyhq/itly-sdk-jvm.git'
+                    developerConnection = 'scm:git:https://github.com/iterativelyhq/itly-sdk-jvm.git'
+                    url = 'https://github.com/iterativelyhq/itly-sdk-jvm'
+                }
+            }
+        }
+    }
+}
+
+apply from: rootProject.file('gradle/dokka-mpp-android-jvm.gradle')

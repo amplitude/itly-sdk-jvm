@@ -8,6 +8,7 @@ android {
         versionCode 2
         versionName "$itlySdkVersion"
         testInstrumentationRunner 'android.support.test.runner.AndroidJUnitRunner'
+        consumerProguardFiles 'proguard-rules.pro'
     }
     sourceSets {
         main {

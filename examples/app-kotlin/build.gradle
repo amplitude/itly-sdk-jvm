@@ -10,7 +10,15 @@ application {
 }
 
 dependencies {
-    implementation(project(":packages:sdk-jvm"))
+    // FIXME: Find a way to include the local MPP sdk project as JVM
+    // FIXME: https://youtrack.jetbrains.com/issue/KT-30413
+    implementation("ly.iterative.itly:sdk-jvm:${examplesItlySdkVersion}")
+//    implementation(project(":packages:sdk"))
+//    includeBuild(":packages:sdk-jvm")
+    // tag::app_dependencies[]
+//    implementation "ly.iterative.itly:sdk-jvm:${itlySdkVersion}"
+    // end::app_dependencies[]
+
     implementation(project(":packages:plugin-iteratively"))
     implementation(project(":packages:plugin-schema-validator"))
     implementation(project(":packages:test-fixtures"))
