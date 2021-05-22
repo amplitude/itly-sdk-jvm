@@ -1,14 +1,50 @@
 package ly.iterative.itly.iteratively
 
-import ly.iterative.itly.*
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.ThreadFactory
 
+val DEFAULT_ITERATIVELY_OPTIONS = ly.iterative.itly.iteratively.IterativelyOptions()
+
 data class IterativelyOptions @JvmOverloads constructor(
-    val url: String,
+    /**
+     * The server endpoint to send messages.
+     * @default: https://data.us-east-2.iterative.ly/t
+     */
+    val url: String = "https://data.us-east2.iterative.ly/t",
+
+    /**
+     * Tracking plan branch name (e.g. feature/demo).
+     */
+    val branch: String? = null,
+
+    /**
+     * Tracking plan version number (e.g. 1.0.0).
+     */
+    val version: String? = null,
+
+    /**
+     * Remove all property values and validation error details from messages before enqueueing.
+     * @default: false
+     */
     val omitValues: Boolean = false,
+
+    /**
+     * The maximum number of messages grouped together into a single network request.
+     * @default: 100
+     */
     val batchSize: Int = 100,
+
+    /**
+     * The number of messages that triggers unconditional queue flushing.
+     * It works independently from flushInterval.
+     * @default: 10
+     */
     val flushQueueSize: Long = 10,
+
+    /**
+     * Time in milliseconds to wait before flushing the queue.
+     * @default: 10000
+     */
     val flushIntervalMs: Long = 10000,
 
     // TODO:
@@ -23,7 +59,7 @@ data class IterativelyOptions @JvmOverloads constructor(
 ) {
     companion object {
         @JvmStatic
-        fun builder(): IUrl {
+        fun builder(): IBuild {
             return Builder()
         }
     }
@@ -42,7 +78,7 @@ data class IterativelyOptions @JvmOverloads constructor(
 
     // For Java :)
     class Builder internal constructor (
-        internal var url: String = "",
+        internal var url: String = DEFAULT_ITERATIVELY_OPTIONS.url,
         internal var omitValues: Boolean = DEFAULT_ITERATIVELY_OPTIONS.omitValues,
         internal var batchSize: Int = DEFAULT_ITERATIVELY_OPTIONS.batchSize,
         internal var flushQueueSize: Long = DEFAULT_ITERATIVELY_OPTIONS.flushQueueSize,
@@ -51,7 +87,7 @@ data class IterativelyOptions @JvmOverloads constructor(
         internal var threadFactory: ThreadFactory = DEFAULT_ITERATIVELY_OPTIONS.threadFactory,
         internal var networkExecutor: ExecutorService? = DEFAULT_ITERATIVELY_OPTIONS.networkExecutor,
         internal var retryOptions: RetryOptions = DEFAULT_ITERATIVELY_OPTIONS.retryOptions
-    ) : IUrl, IBuild {
+    ) : IBuild {
         override fun url(url: String) = apply { this.url = url }
         override fun omitValues(omitValues: Boolean) = apply { this.omitValues = omitValues }
         override fun batchSize(batchSize: Int) = apply { this.batchSize = batchSize }
@@ -67,11 +103,8 @@ data class IterativelyOptions @JvmOverloads constructor(
         }
     }
 
-    interface IUrl {
-        fun url(url: String): IBuild
-    }
-
     interface IBuild {
+        fun url(url: String): IBuild
         fun omitValues(omitValues: Boolean): IBuild
         fun batchSize(batchSize: Int): IBuild
         fun flushQueueSize(flushQueueSize: Long): IBuild
@@ -81,5 +114,23 @@ data class IterativelyOptions @JvmOverloads constructor(
         fun networkExecutor(networkExecutor: ExecutorService): IBuild
         fun retryOptions(retryOptions: RetryOptions): IBuild
         fun build(): IterativelyOptions
+    }
+
+    /**
+     * For backwards compatibility with codgen for versions <= 1.2.5
+     */
+    @Deprecated("Update your source with `itly pull`", ReplaceWith("", ""))
+    fun getPluginOptions(url: String): IterativelyOptions {
+        return IterativelyOptions(
+                url = url,
+                omitValues = omitValues,
+                batchSize = batchSize,
+                flushQueueSize = flushQueueSize,
+                flushIntervalMs = flushIntervalMs,
+                disabled = disabled,
+                threadFactory = threadFactory,
+                networkExecutor = networkExecutor,
+                retryOptions = retryOptions
+        )
     }
 }
