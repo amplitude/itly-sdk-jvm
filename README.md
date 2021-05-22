@@ -50,6 +50,8 @@ Signing and publishing also require user specific properties.
 
 There is a `local.properties.example` that can be used for reference. Rename this file `local.properties` and set the required values.
 
+Some properties in the `local.properties.example` need to be set in the user `gradle.properties` to work correctly.
+
 ### Run `./gradlew build`
 ```
 # Build all projects
@@ -59,8 +61,28 @@ There is a `local.properties.example` that can be used for reference. Rename thi
 ./gradlew :packages:sdk:build
 ```
 
-# Publish To Maven
+# Set JAVA_HOME and MAVEN_LOCAL environment vars
+```shell
+export JAVA_HOME="/Users/<you>/Library/Java/JavaVirtualMachines/<jdk-X.Y.Z>/Contents/Home"
+export MAVEN_LOCAL="/Users/<you>/.m2/repository"
+export GRADLE_USER_HOME="/Users/<you>/.gradle/"
 ```
+
+# Install Maven
+```shell
+brew install maven
+mvn --version
+```
+
+# Publish To Maven
+```shell
 # Local
 ./gradlew clean build publishToMavenLocal
+```
+
+# Known Errors
+Sometimes the `dokkaHtml` task fails. The workaround is to disable it for a run, which will fix it on subsequent runs.
+```shell
+./gradlew build -x dokkaHtml
+./gradlew build
 ```

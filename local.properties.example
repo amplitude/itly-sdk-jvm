@@ -1,12 +1,14 @@
 ## This file must *NOT* be checked into Version Control Systems,
 # as it contains information specific to your local configuration.
-#
+
 # Location of the SDK. This is only used by Gradle.
 # For customization when using a Version Control System, please read the
 # header note.
 # sdk.dir=/Users/<you>/Library/Android/sdk
 
 # For signing and publishing to Sonatype
+# The following properties need to be set in the user `gradle.properties` file
+# E.g. GRADLE_USER_HOME/gradle.properties, ~/.gradle/gradle.properties on mac
 # signing.keyId=<your-key-id>
 # signing.password=<your-signing-password>
 # signing.secretKeyRingFile=/Users/<you>/.gnupg/secring.gpg
