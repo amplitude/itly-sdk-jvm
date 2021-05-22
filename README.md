@@ -61,7 +61,8 @@ Some properties in the `local.properties.example` need to be set in the user `gr
 ./gradlew :packages:sdk:build
 ```
 
-# Set JAVA_HOME and MAVEN_LOCAL environment vars
+# Set JAVA_HOME, MAVEN_LOCAL, GRADLE_USER_HOME environment vars
+You can get the value of JAVA_HOME on osx by running `$ /usr/libexec/java_home`
 ```shell
 export JAVA_HOME="/Users/<you>/Library/Java/JavaVirtualMachines/<jdk-X.Y.Z>/Contents/Home"
 export MAVEN_LOCAL="/Users/<you>/.m2/repository"

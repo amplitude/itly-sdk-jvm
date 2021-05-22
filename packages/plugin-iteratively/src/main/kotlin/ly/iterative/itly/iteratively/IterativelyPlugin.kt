@@ -207,7 +207,10 @@ class IterativelyPlugin(
     }
 
     private fun getTrackModelJson(trackModels: List<TrackModel>): String {
-        return "{\"objects\":${JSONObjectMapper.writeValueAsString(trackModels)}}"
+        val tp = if (config.version != null) "\"trackingPlanVersion\":${config.version}," else ""
+        val bn = if (config.branch != null) "\"branchName\":${config.branch}," else ""
+
+        return "{${tp}${bn}\"objects\":${JSONObjectMapper.writeValueAsString(trackModels)}}"
     }
 
     /**
