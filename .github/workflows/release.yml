@@ -1,4 +1,4 @@
-name: Release itly-sdk-jvm
+name: Publish to Sonatype
 
 on:
   workflow_dispatch:
@@ -67,16 +67,12 @@ jobs:
 
       - name: Configure Sonatype
         run: |
-          echo $GRADLE_USER_HOME
-          ls -la $GRADLE_USER_HOME
-          export GRADLE_PROP_FILE = $GRADLE_USER_HOME/gradle.properties
-          echo $GRADLE_PROP_FILE
+          export GRADLE_PROP_FILE=$GRADLE_USER_HOME/gradle.properties
           echo "sonatypeUsername=${{ secrets.SONATYPE_USERNAME }}" > $GRADLE_PROP_FILE
           echo "sonatypePassword=${{ secrets.SONATYPE_PASSWORD }}" >> $GRADLE_PROP_FILE
           echo "signing.keyId=${{ secrets.SIGNING_KEY_ID }}" >> $GRADLE_PROP_FILE
           echo "signing.password=${{ secrets.SIGNING_PASSWORD }}" >> $GRADLE_PROP_FILE
           echo "signing.secretKeyRingFile=${{ secrets.SIGNING_SECRET_KEY_RING_FILE }}" >> $GRADLE_PROP_FILE
-          ls -la $GRADLE_USER_HOME
 
       - name: Set Release Version
         run: |
