@@ -10,7 +10,7 @@ data class IterativelyOptions @JvmOverloads constructor(
      * The server endpoint to send messages.
      * @default: https://data.us-east-2.iterative.ly/t
      */
-    val url: String = "https://data.us-east2.iterative.ly/t",
+    val url: String? = null,
 
     /**
      * Tracking plan branch name (e.g. feature/demo).
@@ -78,7 +78,7 @@ data class IterativelyOptions @JvmOverloads constructor(
 
     // For Java :)
     class Builder internal constructor (
-        internal var url: String = DEFAULT_ITERATIVELY_OPTIONS.url,
+        internal var url: String? = DEFAULT_ITERATIVELY_OPTIONS.url,
         internal var omitValues: Boolean = DEFAULT_ITERATIVELY_OPTIONS.omitValues,
         internal var batchSize: Int = DEFAULT_ITERATIVELY_OPTIONS.batchSize,
         internal var flushQueueSize: Long = DEFAULT_ITERATIVELY_OPTIONS.flushQueueSize,

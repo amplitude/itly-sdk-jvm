@@ -15,7 +15,7 @@ import okhttp3.*
 import java.util.*
 
 val JSON_MEDIA_TYPE = MediaType.parse("application/json; charset=utf-8")
-
+const val DEFAULT_DATAPLANE_URL = "https://data.us-east2.iterative.ly/t"
 const val DEFAULT_THREAD_NAME = "plugin-iteratively-thread"
 val DEFAULT_THREAD_FACTORY: ThreadFactory = ThreadFactory { r ->
     Thread({
@@ -53,6 +53,7 @@ class IterativelyPlugin(
     }
 
     private val config: IterativelyOptions = options
+    private val url: String = options.url ?: DEFAULT_DATAPLANE_URL
     private var disabled: Boolean = options.disabled ?: false
 
     private val client: OkHttpClient
@@ -216,6 +217,10 @@ class IterativelyPlugin(
         return "{${tp}${bn}\"objects\":${JSONObjectMapper.writeValueAsString(trackModels)}}"
     }
 
+    fun url(): String {
+        return url
+    }
+
     /**
      * Continually polls queue for new TrackModels.
      *
@@ -288,7 +293,7 @@ class IterativelyPlugin(
 //                batch.forEach {
 //                    logger.debug("$LOG_TAG Post (item): ${OrgJsonProperties.toJsonString(it as Object)}")
 //                }
-                val response = postJson(config.url, getTrackModelJson(batch))
+                val response = postJson(url, getTrackModelJson(batch))
                 response.close()
 
                 val code = response.code()
