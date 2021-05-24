@@ -10,7 +10,9 @@ import java.lang.Thread.MIN_PRIORITY
 import java.net.ConnectException
 import java.util.concurrent.*
 import ly.iterative.itly.*
+import ly.iterative.itly.Properties
 import okhttp3.*
+import java.util.*
 
 val JSON_MEDIA_TYPE = MediaType.parse("application/json; charset=utf-8")
 
@@ -40,7 +42,7 @@ internal class AuthInterceptor(apiKey: String) : Interceptor {
 
 class IterativelyPlugin(
     apiKey: String,
-    options: IterativelyOptions
+    options: IterativelyOptions = DEFAULT_ITERATIVELY_OPTIONS
 ): Plugin(ID) {
     companion object {
         const val ID = "iteratively"
@@ -178,6 +180,7 @@ class IterativelyPlugin(
 
         return TrackModel(
             type = type,
+            messageId = UUID.randomUUID().toString(),
             eventId = event?.id,
             eventSchemaVersion = event?.version,
             eventName = event?.name,

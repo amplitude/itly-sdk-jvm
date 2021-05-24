@@ -27,6 +27,7 @@ enum class TrackType {
 
 data class TrackModel(
     val type: TrackType,
+    val messageId: String,
     val dateSent: String = ISODateTimeFormat.dateTime().print(
         DateTime().withZone(DateTimeZone.UTC)
     ),
@@ -43,6 +44,7 @@ data class TrackModel(
         fun newPoisonPill(): TrackModel {
             return TrackModel(
                 type = TrackType.POISON,
+                messageId = "poison",
                 eventName = "POISON",
                 eventId = "POISON",
                 eventSchemaVersion = "POISON",
