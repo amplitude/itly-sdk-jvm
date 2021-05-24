@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: "The new version (e.g. 1\.2\.3)"
+        description: "The new version (e.g. 1.2.3)"
         required: true
       dryRun:
         description: "Do a dry run to preview instead of a real release (true/false)"
