@@ -119,7 +119,8 @@ data class IterativelyOptions @JvmOverloads constructor(
     /**
      * For backwards compatibility with codgen for versions <= 1.2.5
      */
-    @Deprecated("Update your source with `itly pull`", ReplaceWith("", ""))
+    // TODO: Mark Deprecated after dataplane goes GA
+    // @Deprecated("Update your source with `itly pull`", ReplaceWith("", ""))
     fun getPluginOptions(url: String): IterativelyOptions {
         return IterativelyOptions(
                 url = url,
