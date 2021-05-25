@@ -1,0 +1,61 @@
+name: Tag Release in Github
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "The new version (e.g. 1.2.3)"
+        required: true
+
+jobs:
+  authorize:
+    name: Authorize
+    runs-on: ubuntu-latest
+    steps:
+      - name: ${{ github.actor }} permission check to do a release
+        uses: octokit/request-action@v2.0.0
+        id: permission_check
+        with:
+          route: GET /repos/${{ github.repository }}/collaborators/${{ github.actor }}/permission
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: "Auth Success"
+        if: ${{ fromJson(steps.permission_check.outputs.data).permission == 'admin' }}
+        run: echo "${{ github.actor }} is authorized."
+
+      - name: "Auth Failed"
+        if: ${{ failure() || fromJson(steps.permission_check.outputs.data).permission != 'admin' }}
+        run: |
+          echo "Unable to authorize ${{ github.actor }}. You must have admin permission to run this workflow."
+          exit 1
+
+  release:
+    name: Tag v${{ github.event.inputs.version }}
+    runs-on: ubuntu-latest
+    needs: [authorize]
+    env:
+      RELEASE_VERSION: ${{ github.event.inputs.version }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          persist-credentials: false
+
+      - name: Configure Git User
+        run: |
+          git config --global user.name iteratively-sdk-bot
+          git config --global user.email support@iterative.ly
+          git remote set-url origin https://x-access-token:${{ secrets.GH_PUBLISH_TOKEN }}@github.com/${{ github.repository }}
+
+      - name: Set SDK Version to ${{ github.event.inputs.version }}
+        run: |
+          SED_RELEASE_VERSION="${RELEASE_VERSION//./\.}"
+          sed -i -e "s/itlySdkVersion=.*/itlySdkVersion=$SED_RELEASE_VERSION/" gradle.properties
+
+      - name: Push Version and Tags to Github
+        run: |
+          git commit -m "chore(release): version $RELEASE_VERSION"
+          git tag -a "v$RELEASE_VERSION" -m "Release $RELEASE_VERSION"
+          git push origin HEAD
+          git push origin "v$RELEASE_VERSION"

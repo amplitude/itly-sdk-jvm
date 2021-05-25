@@ -1,0 +1,73 @@
+name: Publish to Sonatype
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "The new version (e.g. 1.2.3)"
+        required: true
+
+jobs:
+  authorize:
+    name: Authorize
+    runs-on: ubuntu-latest
+    steps:
+      - name: ${{ github.actor }} permission check to do a release
+        uses: octokit/request-action@v2.0.0
+        id: permission_check
+        with:
+          route: GET /repos/${{ github.repository }}/collaborators/${{ github.actor }}/permission
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: "Auth Success"
+        if: ${{ fromJson(steps.permission_check.outputs.data).permission == 'admin' }}
+        run: echo "${{ github.actor }} is authorized."
+
+      - name: "Auth Failed"
+        if: ${{ failure() || fromJson(steps.permission_check.outputs.data).permission != 'admin' }}
+        run: |
+          echo "Unable to authorize ${{ github.actor }}. You must have admin permission to run this workflow."
+          exit 1
+
+  release:
+    name: Release ${{ github.event.inputs.version }}
+    runs-on: ubuntu-latest
+    needs: [authorize]
+    env:
+      RELEASE_VERSION: ${{ github.event.inputs.version }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Set up JDK 1.8
+        uses: actions/setup-java@v1
+        with:
+          java-version: 1.8
+
+      - name: Configure GPG
+        env:
+          GPG_KEY_CONTENTS: ${{ secrets.SIGNING_GPG_CONTENTS }}
+          SIGNING_SECRET_KEY_RING_FILE: ${{ secrets.SIGNING_SECRET_KEY_RING_FILE }}
+        run: |
+          sudo bash -c "echo '$GPG_KEY_CONTENTS' | base64 -d > '$SIGNING_SECRET_KEY_RING_FILE'"
+
+      - name: Configure Sonatype
+        env:
+          GRADLE_PROP_FILE: local.properties
+        run: |
+          echo "sonatypeUsername=${{ secrets.SONATYPE_USERNAME }}" >> $GRADLE_PROP_FILE
+          echo "sonatypePassword=${{ secrets.SONATYPE_PASSWORD }}" >> $GRADLE_PROP_FILE
+          echo "signing.keyId=${{ secrets.SIGNING_KEY_ID }}" >> $GRADLE_PROP_FILE
+          echo "signing.password=${{ secrets.SIGNING_PASSWORD }}" >> $GRADLE_PROP_FILE
+          echo "signing.secretKeyRingFile=${{ secrets.SIGNING_SECRET_KEY_RING_FILE }}" >> $GRADLE_PROP_FILE
+
+      - name: Set SDK Version to ${{ github.event.inputs.version }}
+        run: |
+          SED_RELEASE_VERSION="${RELEASE_VERSION//./\.}"
+          sed -i -e "s/itlySdkVersion=.*/itlySdkVersion=$SED_RELEASE_VERSION/" gradle.properties
+
+      - name: Build & Publish
+        run: |
+          bash ./gradlew build -x dokkaHtml -x test -x lint
+          bash ./gradlew build publishAllPublicationsToStagingRepository --max-workers 1
