@@ -75,11 +75,11 @@ jobs:
           echo "signing.password=${{ secrets.SIGNING_PASSWORD }}" >> $GRADLE_PROP_FILE
           echo "signing.secretKeyRingFile=${{ secrets.SIGNING_SECRET_KEY_RING_FILE }}" >> $GRADLE_PROP_FILE
 
-      - name: Set Release Version
-        run: |
-          SED_RELEASE_VERSION="${RELEASE_VERSION//./\.}"
-          echo "::debug:: $SED_RELEASE_VERSION"
-          sed -i -e 's/itlySdkVersion=.*/itlySdkVersion=${{ env.SED_RELEASE_VERSION }}/' gradle.properties
+#      - name: Set Release Version
+#        run: |
+#          SED_RELEASE_VERSION="${RELEASE_VERSION//./\.}"
+#          echo "::debug:: $SED_RELEASE_VERSION"
+#          sed -i -e 's/itlySdkVersion=.*/itlySdkVersion=${{ env.SED_RELEASE_VERSION }}/' gradle.properties
 
       - name: Build & Publish
         run: |
