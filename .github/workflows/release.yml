@@ -31,14 +31,13 @@ jobs:
           exit 1
 
   release:
-    name: Release
+    name: Release ${{ github.event.inputs.version }}
     runs-on: ubuntu-latest
     needs: [authorize]
     env:
-      DRY_RUN: ${{ github.event.inputs.dryRun }}
       RELEASE_VERSION: ${{ github.event.inputs.version }}
     steps:
-      - name: Checkout for v${{ env.RELEASE_VERSION }}
+      - name: Checkout
         uses: actions/checkout@v2
         with:
           persist-credentials: false
@@ -71,7 +70,7 @@ jobs:
           echo "signing.password=${{ secrets.SIGNING_PASSWORD }}" >> $GRADLE_PROP_FILE
           echo "signing.secretKeyRingFile=${{ secrets.SIGNING_SECRET_KEY_RING_FILE }}" >> $GRADLE_PROP_FILE
 
-      - name: Set Release Version
+      - name: Set SDK Version to ${{ github.event.inputs.version }}
         run: |
           SED_RELEASE_VERSION="${RELEASE_VERSION//./\.}"
           sed -i -e "s/itlySdkVersion=.*/itlySdkVersion=$SED_RELEASE_VERSION/" gradle.properties
