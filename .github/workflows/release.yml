@@ -80,7 +80,7 @@ jobs:
         run: |
           SED_RELEASE_VERSION="${RELEASE_VERSION//./\.}"
           echo "::debug:: $SED_RELEASE_VERSION"
-          sed -i -e 's/itlySdkVersion=.*/itlySdkVersion=${{ env.RELEASE_VERSION }}/' gradle.properties
+          sed -i -e 's/itlySdkVersion=.*/itlySdkVersion=${{ env.SED_RELEASE_VERSION }}/' gradle.properties
 
       - name: Build & Publish
         env:
