@@ -67,7 +67,7 @@ jobs:
 
       - name: Configure Sonatype
         env:
-          GRADLE_PROP_FILE: local.properties
+          GRADLE_PROP_FILE: ~/.gradle/gradle.properties
         run: |
           echo "::debug::GRADLE_USER_HOME=$GRADLE_USER_HOME"
           echo "sonatypeUsername=${{ secrets.SONATYPE_USERNAME }}" >> $GRADLE_PROP_FILE
@@ -87,5 +87,5 @@ jobs:
           ORG_GRADLE_PROJECT_sonatypeUsername: ${{ secrets.SONATYPE_USERNAME }}
           ORG_GRADLE_PROJECT_sonatypePassword: ${{ secrets.SONATYPE_PASSWORD }}
         run: |
-          bash ./gradlew build -x dokkaHtml
-          bash ./gradlew build publishAllPublicationsToStagingRepository
+          bash ./gradlew build -x dokkaHtml -x test -x lint
+          bash ./gradlew build publishAllPublicationsToStagingRepository --max-workers 1
