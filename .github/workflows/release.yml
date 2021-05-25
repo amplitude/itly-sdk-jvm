@@ -65,6 +65,16 @@ jobs:
         run: |
           sudo bash -c "echo '$GPG_KEY_CONTENTS' | base64 -d > '$SIGNING_SECRET_KEY_RING_FILE'"
 
+      - name: Configure Sonatype
+        env:
+          GRADLE_PROP_FILE: local.properties
+        run: |
+          echo "sonatypeUsername=${{ secrets.SONATYPE_USERNAME }}" >> $GRADLE_PROP_FILE
+          echo "sonatypePassword=${{ secrets.SONATYPE_PASSWORD }}" >> $GRADLE_PROP_FILE
+          echo "signing.keyId=${{ secrets.SIGNING_KEY_ID }}" >> $GRADLE_PROP_FILE
+          echo "signing.password=${{ secrets.SIGNING_PASSWORD }}" >> $GRADLE_PROP_FILE
+          echo "signing.secretKeyRingFile=${{ secrets.SIGNING_SECRET_KEY_RING_FILE }}" >> $GRADLE_PROP_FILE
+
       - name: Set Release Version
         run: |
           SED_RELEASE_VERSION="${RELEASE_VERSION//./\.}"
@@ -72,9 +82,6 @@ jobs:
           sed -i -e 's/itlySdkVersion=.*/itlySdkVersion=${{ env.SED_RELEASE_VERSION }}/' gradle.properties
 
       - name: Build & Publish
-        env:
-          ORG_GRADLE_PROJECT_sonatypeUsername: ${{ secrets.SONATYPE_USERNAME }}
-          ORG_GRADLE_PROJECT_sonatypePassword: ${{ secrets.SONATYPE_PASSWORD }}
         run: |
           bash ./gradlew build -x dokkaHtml -x test -x lint
           bash ./gradlew build publishAllPublicationsToStagingRepository --max-workers 1
