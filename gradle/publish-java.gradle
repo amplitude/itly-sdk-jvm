@@ -1,5 +1,6 @@
 apply plugin: 'maven-publish'
 apply plugin: 'signing'
+apply from: "${rootDir}/gradle/publishing-properties.gradle"
 
 java {
     withJavadocJar()
