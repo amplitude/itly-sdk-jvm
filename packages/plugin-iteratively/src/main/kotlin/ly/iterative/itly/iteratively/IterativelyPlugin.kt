@@ -42,7 +42,7 @@ internal class AuthInterceptor(apiKey: String) : Interceptor {
 
 class IterativelyPlugin(
     apiKey: String,
-    options: IterativelyOptions = DEFAULT_ITERATIVELY_OPTIONS
+    options: IterativelyOptions = IterativelyOptions.DEFAULT
 ): Plugin(ID) {
     companion object {
         const val ID = "iteratively"
