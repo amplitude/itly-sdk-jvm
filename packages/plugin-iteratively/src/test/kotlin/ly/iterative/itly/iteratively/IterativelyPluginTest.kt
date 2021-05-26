@@ -54,6 +54,14 @@ class IterativelyPluginTest {
         retryOptions = RETRY_OPTIONS_DEFAULT
     )
 
+    val TEST_EVENT = Event(
+        name = "Test event",
+        properties = mapOf(
+            "prop" to "A property value",
+            "anotherProp" to true
+        )
+    )
+
     object TestDispatchers {
         // Returns success for all 't/version/company-id' call, 404 otherwise
         val DEFAULT = object : Dispatcher() {
@@ -124,17 +132,7 @@ class IterativelyPluginTest {
 
     @Test
     fun tracker_track_madeValidJson() {
-        val eventName = "Dummy event"
-        val props = mapOf(
-            "prop" to "A property value",
-            "anotherProp" to true
-        )
-
-        val event = Event(
-            name = eventName,
-            properties = props
-        )
-        iterativelyPlugin.postTrack(user.id, event, listOf())
+        iterativelyPlugin.postTrack(user.id, TEST_EVENT, listOf())
 
         val request: RecordedRequest = mockWebServer.takeRequest()
         val body = request.body.readUtf8()
@@ -145,31 +143,42 @@ class IterativelyPluginTest {
         val trackModel: TrackModel = JSONObjectMapper.readValue(trackModelJson, TrackModel::class.java)
 
         // Path & Method
-        Assertions.assertEquals(
-            trackModel.eventName,
-            "Dummy event"
-        )
-        Assertions.assertEquals(
-            trackModel.properties!!["prop"],
-            "A property value"
-        )
-        Assertions.assertEquals(
-            trackModel.properties!!["anotherProp"],
-            true
-        )
+        Assertions.assertEquals("Test event", trackModel.eventName)
+        Assertions.assertEquals("A property value", trackModel.properties!!["prop"])
+        Assertions.assertEquals(true, trackModel.properties!!["anotherProp"])
     }
 
     @Test
-    fun tracker_track_madeValidRequest() {
-        val event = Event(
-            name = "Dummy event",
-            properties = mapOf(
-                "prop" to "A property value",
-                "anotherProp" to true
-            )
-        )
-        iterativelyPlugin.postTrack(user.id, event, listOf())
-        assertValidTrackerRequest(TrackType.track, event)
+    fun postTrack_event_makesValidRequest() {
+        iterativelyPlugin.postTrack(user.id, TEST_EVENT, listOf())
+        assertValidTrackerRequest(TrackType.track, TEST_EVENT)
+    }
+
+    @Test
+    fun postTrack_eventWithVersionAndBranch_makesValidRequest() {
+        val options = ITERATIVELY_OPTIONS_DEFAULT.copy(IterativelyOptions(
+            branch = "main",
+            version = "1.0.0"
+        ))
+
+        iterativelyPlugin = IterativelyPlugin(user.apiKey, options)
+        iterativelyPlugin.load(PLUGIN_OPTIONS_DEFAULT)
+        iterativelyPlugin.postTrack(user.id, TEST_EVENT, listOf())
+
+        assertValidTrackerRequest(TrackType.track, TEST_EVENT, options)
+    }
+
+    @Test
+    fun trackerUrl_noUrlInOptions_usesDefaultDataplaneUrl() {
+        iterativelyPlugin = IterativelyPlugin(user.apiKey)
+        Assertions.assertEquals("https://data.us-east2.iterative.ly/t", iterativelyPlugin.config.url)
+    }
+
+    @Test
+    fun trackerUrl_urlSetInOptions_usesSetUrl() {
+        val testUrl = "https://localhost:1234/t"
+        iterativelyPlugin = IterativelyPlugin(user.apiKey, IterativelyOptions(url = testUrl))
+        Assertions.assertEquals(testUrl, iterativelyPlugin.config.url)
     }
 
     @Test
@@ -194,11 +203,11 @@ class IterativelyPluginTest {
 
         iterativelyPlugin = IterativelyPlugin(
             user.apiKey,
-            ITERATIVELY_OPTIONS_DEFAULT.copy(
+            ITERATIVELY_OPTIONS_DEFAULT.copy(IterativelyOptions(
                 retryOptions = RETRY_OPTIONS_DEFAULT.copy(
                     maxRetries = 1
                 )
-            )
+            ))
         )
         iterativelyPlugin.load(PLUGIN_OPTIONS_DEFAULT)
 
@@ -217,9 +226,9 @@ class IterativelyPluginTest {
     fun tracker_whenDisabled_doesntMakeRequests() {
         iterativelyPlugin = IterativelyPlugin(
             user.apiKey,
-            ITERATIVELY_OPTIONS_DEFAULT.copy(
+            ITERATIVELY_OPTIONS_DEFAULT.copy(IterativelyOptions(
                 disabled = true
-            )
+            ))
         )
         iterativelyPlugin.load(PLUGIN_OPTIONS_DEFAULT)
 
@@ -246,9 +255,9 @@ class IterativelyPluginTest {
 
         iterativelyPlugin = IterativelyPlugin(
             user.apiKey,
-            ITERATIVELY_OPTIONS_DEFAULT.copy(
+            ITERATIVELY_OPTIONS_DEFAULT.copy(IterativelyOptions(
                 disabled = true
-            )
+            ))
         )
         iterativelyPlugin.load(PLUGIN_OPTIONS_DEFAULT)
 
@@ -257,12 +266,17 @@ class IterativelyPluginTest {
         }
     }
 
-    private fun assertValidTrackerRequest(trackType: TrackType, event: Event? = null) {
+    private fun assertValidTrackerRequest(
+        trackType: TrackType,
+        event: Event? = null,
+        options: IterativelyOptions? = null
+    ) {
         val request: RecordedRequest = mockWebServer.takeRequest()
         Asserts.assertValidTrackerRequest(
             request = request,
             trackType = trackType,
-            event = event
+            event = event,
+            options = options
         )
     }
 
