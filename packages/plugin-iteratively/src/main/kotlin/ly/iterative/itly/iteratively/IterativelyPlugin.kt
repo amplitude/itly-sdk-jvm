@@ -15,7 +15,6 @@ import okhttp3.*
 import java.util.*
 
 val JSON_MEDIA_TYPE = MediaType.parse("application/json; charset=utf-8")
-const val DEFAULT_DATAPLANE_URL = "https://data.us-east2.iterative.ly/t"
 const val DEFAULT_THREAD_NAME = "plugin-iteratively-thread"
 val DEFAULT_THREAD_FACTORY: ThreadFactory = ThreadFactory { r ->
     Thread({
@@ -42,7 +41,7 @@ internal class AuthInterceptor(apiKey: String) : Interceptor {
 
 class IterativelyPlugin(
     apiKey: String,
-    options: IterativelyOptions = IterativelyOptions.DEFAULT
+    options: IterativelyOptions = IterativelyOptions()
 ): Plugin(ID) {
     companion object {
         const val ID = "iteratively"
@@ -50,17 +49,46 @@ class IterativelyPlugin(
         private val JSONObjectMapper = jacksonObjectMapper().configure(
                 DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false
             ).setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY)
+
+        @JvmField
+        val DEFAULT_DATAPLANE_URL = "https://data.us-east2.iterative.ly/t"
     }
 
-    private val config: IterativelyOptions = options
-    private val url: String = options.url ?: DEFAULT_DATAPLANE_URL
-    private var disabled: Boolean = options.disabled ?: false
+    class Config(
+        val url: String,
+        val branch: String?,
+        val version: String?,
+        val omitValues: Boolean,
+        val batchSize: Int,
+        val flushQueueSize: Long,
+        val flushIntervalMs: Long,
+        var disabled: Boolean?,
+        val threadFactory: ThreadFactory,
+        val networkExecutor: ExecutorService,
+        val retryOptions: RetryOptions
+    )
 
+    val config: Config = Config(
+        url = options.url ?: DEFAULT_DATAPLANE_URL,
+        branch = options.branch,
+        version = options.version,
+        omitValues = options.omitValues ?: false,
+        batchSize = options.batchSize ?: 10,
+        flushQueueSize = options.flushQueueSize ?: 10,
+        flushIntervalMs = options.flushIntervalMs ?: 10000,
+        disabled = options.disabled,
+        threadFactory = options.threadFactory ?: DEFAULT_THREAD_FACTORY,
+        networkExecutor = options.networkExecutor ?: newDefaultExecutorService(
+            options.threadFactory ?: DEFAULT_THREAD_FACTORY
+        ),
+        retryOptions = options.retryOptions ?: RetryOptions()
+    )
+
+    private var disabled: Boolean = config.disabled ?: false
     private val client: OkHttpClient
     private val retryPolicy: Backo
     private val queue: BlockingQueue<TrackModel>
     private val mainExecutor: ExecutorService
-    private val networkExecutor: ExecutorService
     private val scheduledExecutor: ScheduledExecutorService
     private val isExternalNetworkExecutor: Boolean
     private var isShutdown: Boolean
@@ -71,7 +99,6 @@ class IterativelyPlugin(
     init {
         mainExecutor = newDefaultExecutorService(config.threadFactory)
         scheduledExecutor = Executors.newSingleThreadScheduledExecutor(config.threadFactory)
-        networkExecutor = options.networkExecutor ?: newDefaultExecutorService(options.threadFactory)
 
         queue = LinkedBlockingQueue<TrackModel>()
         isExternalNetworkExecutor = (options.networkExecutor != null)
@@ -102,7 +129,7 @@ class IterativelyPlugin(
 
         mainExecutor.submit(PollTrackingQueue())
         scheduledExecutor.scheduleAtFixedRate(
-            Runnable { flush() },
+            { flush() },
             config.flushIntervalMs,
             config.flushIntervalMs,
             TimeUnit.MILLISECONDS
@@ -158,8 +185,8 @@ class IterativelyPlugin(
         client.dispatcher().cancelAll()
         client.dispatcher().executorService().shutdownNow()
         client.connectionPool().evictAll()
-        if (!isExternalNetworkExecutor && !networkExecutor.isShutdown) {
-            networkExecutor.shutdownNow()
+        if (!isExternalNetworkExecutor && !config.networkExecutor.isShutdown) {
+            config.networkExecutor.shutdownNow()
         }
     }
 
@@ -217,10 +244,6 @@ class IterativelyPlugin(
         return "{${tp}${bn}\"objects\":${JSONObjectMapper.writeValueAsString(trackModels)}}"
     }
 
-    fun url(): String {
-        return url
-    }
-
     /**
      * Continually polls queue for new TrackModels.
      *
@@ -248,7 +271,7 @@ class IterativelyPlugin(
                         logger.debug("$LOG_TAG Posting ${pending.size} track items to ${config.url}.")
 
                         // submit upload
-                        networkExecutor.submit(Upload(pending))
+                        config.networkExecutor.submit(Upload(pending))
 
                         // create a new batch
                         pending = mutableListOf()
@@ -293,7 +316,7 @@ class IterativelyPlugin(
 //                batch.forEach {
 //                    logger.debug("$LOG_TAG Post (item): ${OrgJsonProperties.toJsonString(it as Object)}")
 //                }
-                val response = postJson(url, getTrackModelJson(batch))
+                val response = postJson(config.url, getTrackModelJson(batch))
                 response.close()
 
                 val code = response.code()

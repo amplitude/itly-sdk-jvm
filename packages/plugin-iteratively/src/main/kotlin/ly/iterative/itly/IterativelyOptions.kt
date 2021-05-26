@@ -4,57 +4,58 @@ import ly.iterative.itly.iteratively.RetryOptions
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.ThreadFactory
 
-class IterativelyOptions(
+open class IterativelyOptions(
     /**
      * The server endpoint to send messages.
      * @default: https://data.us-east-2.iterative.ly/t
      */
-    url: String? = DEFAULT.url,
+    url: String? = null,
 
     /**
      * Tracking plan branch name (e.g. feature/demo).
      */
-    branch: String? = DEFAULT.branch,
+    branch: String? = null,
 
     /**
      * Tracking plan version number (e.g. 1.0.0).
      */
-    version: String? = DEFAULT.version,
+    version: String? = null,
 
     /**
      * Remove all property values and validation error details from messages before enqueueing.
      * @default: false
      */
-    omitValues: Boolean = DEFAULT.omitValues,
+    omitValues: Boolean? = null,
 
     /**
      * The maximum number of messages grouped together into a single network request.
      * @default: 100
      */
-    batchSize: Int = DEFAULT.batchSize,
+    batchSize: Int? = null,
 
     /**
      * The number of messages that triggers unconditional queue flushing.
      * It works independently from flushInterval.
      * @default: 10
      */
-    flushQueueSize: Long = DEFAULT.flushQueueSize,
+    flushQueueSize: Long? = null,
 
     /**
      * Time in milliseconds to wait before flushing the queue.
      * @default: 10000
      */
-    flushIntervalMs: Long = DEFAULT.flushIntervalMs,
+    flushIntervalMs: Long? = null,
 
-    disabled: Boolean? = DEFAULT.disabled,
+    disabled: Boolean? = null,
 
     // Java/Android specific
-    retryOptions: RetryOptions = DEFAULT.retryOptions,
-    threadFactory: ThreadFactory = DEFAULT.threadFactory,
-    networkExecutor: ExecutorService? = DEFAULT.networkExecutor
+    retryOptions: RetryOptions? = null,
+    threadFactory: ThreadFactory? = null,
+    networkExecutor: ExecutorService? = null
 ): ly.iterative.itly.iteratively.IterativelyOptions(
-    url, branch, version, omitValues, batchSize, flushQueueSize,
-    flushIntervalMs, disabled, retryOptions, threadFactory, networkExecutor
+    url = url, branch = branch, version = version, omitValues = omitValues, batchSize = batchSize,
+    flushQueueSize = flushQueueSize, flushIntervalMs = flushIntervalMs, disabled = disabled,
+    retryOptions = retryOptions, threadFactory = threadFactory, networkExecutor = networkExecutor
 ) {
     companion object {
         @JvmStatic
@@ -63,6 +64,10 @@ class IterativelyOptions(
                 IterativelyOptions(b)
             })
         }
+    }
+
+    constructor(other: ly.iterative.itly.iteratively.IterativelyOptions) : this() {
+        applyOverrides(other)
     }
 
     constructor(builder: Builder<IterativelyOptions>) : this(
@@ -79,31 +84,7 @@ class IterativelyOptions(
         retryOptions = builder.retryOptions
     )
 
-    override fun copy(
-        url: String?,
-        branch: String?,
-        version: String?,
-        omitValues: Boolean?,
-        batchSize: Int?,
-        flushQueueSize: Long?,
-        flushIntervalMs: Long?,
-        disabled: Boolean?,
-        threadFactory: ThreadFactory?,
-        networkExecutor: ExecutorService?,
-        retryOptions: RetryOptions?
-    ): IterativelyOptions {
-        return IterativelyOptions(
-            url = url ?: this.url,
-            branch = branch ?: this.branch,
-            version = version ?: this.version,
-            omitValues = omitValues ?: this.omitValues,
-            batchSize = batchSize ?: this.batchSize,
-            flushQueueSize = flushQueueSize ?: this.flushQueueSize,
-            flushIntervalMs = flushIntervalMs  ?: this.flushIntervalMs,
-            disabled = disabled  ?: this.disabled,
-            threadFactory = threadFactory ?: this.threadFactory,
-            networkExecutor = networkExecutor ?: this.networkExecutor,
-            retryOptions = retryOptions ?: this.retryOptions
-        )
+    override fun copy(overrides: ly.iterative.itly.iteratively.IterativelyOptions): IterativelyOptions {
+        return IterativelyOptions(IterativelyOptions(this).applyOverrides(overrides))
     }
 }

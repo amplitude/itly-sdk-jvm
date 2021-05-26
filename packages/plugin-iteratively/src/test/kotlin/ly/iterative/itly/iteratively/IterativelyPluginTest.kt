@@ -156,10 +156,10 @@ class IterativelyPluginTest {
 
     @Test
     fun postTrack_eventWithVersionAndBranch_makesValidRequest() {
-        val options = ITERATIVELY_OPTIONS_DEFAULT.copy(
+        val options = ITERATIVELY_OPTIONS_DEFAULT.copy(IterativelyOptions(
             branch = "main",
             version = "1.0.0"
-        )
+        ))
 
         iterativelyPlugin = IterativelyPlugin(user.apiKey, options)
         iterativelyPlugin.load(PLUGIN_OPTIONS_DEFAULT)
@@ -171,14 +171,14 @@ class IterativelyPluginTest {
     @Test
     fun trackerUrl_noUrlInOptions_usesDefaultDataplaneUrl() {
         iterativelyPlugin = IterativelyPlugin(user.apiKey)
-        Assertions.assertEquals("https://data.us-east2.iterative.ly/t", iterativelyPlugin.url())
+        Assertions.assertEquals("https://data.us-east2.iterative.ly/t", iterativelyPlugin.config.url)
     }
 
     @Test
     fun trackerUrl_urlSetInOptions_usesSetUrl() {
         val testUrl = "https://localhost:1234/t"
         iterativelyPlugin = IterativelyPlugin(user.apiKey, IterativelyOptions(url = testUrl))
-        Assertions.assertEquals(testUrl, iterativelyPlugin.url())
+        Assertions.assertEquals(testUrl, iterativelyPlugin.config.url)
     }
 
     @Test
@@ -203,11 +203,11 @@ class IterativelyPluginTest {
 
         iterativelyPlugin = IterativelyPlugin(
             user.apiKey,
-            ITERATIVELY_OPTIONS_DEFAULT.copy(
+            ITERATIVELY_OPTIONS_DEFAULT.copy(IterativelyOptions(
                 retryOptions = RETRY_OPTIONS_DEFAULT.copy(
                     maxRetries = 1
                 )
-            )
+            ))
         )
         iterativelyPlugin.load(PLUGIN_OPTIONS_DEFAULT)
 
@@ -226,9 +226,9 @@ class IterativelyPluginTest {
     fun tracker_whenDisabled_doesntMakeRequests() {
         iterativelyPlugin = IterativelyPlugin(
             user.apiKey,
-            ITERATIVELY_OPTIONS_DEFAULT.copy(
+            ITERATIVELY_OPTIONS_DEFAULT.copy(IterativelyOptions(
                 disabled = true
-            )
+            ))
         )
         iterativelyPlugin.load(PLUGIN_OPTIONS_DEFAULT)
 
@@ -255,9 +255,9 @@ class IterativelyPluginTest {
 
         iterativelyPlugin = IterativelyPlugin(
             user.apiKey,
-            ITERATIVELY_OPTIONS_DEFAULT.copy(
+            ITERATIVELY_OPTIONS_DEFAULT.copy(IterativelyOptions(
                 disabled = true
-            )
+            ))
         )
         iterativelyPlugin.load(PLUGIN_OPTIONS_DEFAULT)
 
