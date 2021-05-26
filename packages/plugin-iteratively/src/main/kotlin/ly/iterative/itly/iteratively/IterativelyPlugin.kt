@@ -73,7 +73,7 @@ class IterativelyPlugin(
         branch = options.branch,
         version = options.version,
         omitValues = options.omitValues ?: false,
-        batchSize = options.batchSize ?: 10,
+        batchSize = options.batchSize ?: 100,
         flushQueueSize = options.flushQueueSize ?: 10,
         flushIntervalMs = options.flushIntervalMs ?: 10000,
         disabled = options.disabled,
