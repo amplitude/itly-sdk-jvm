@@ -182,6 +182,30 @@ class IterativelyPluginTest {
     }
 
     @Test
+    fun enabled_inDevelopmentByDefault_true() {
+        iterativelyPlugin = IterativelyPlugin(user.apiKey)
+        iterativelyPlugin.load(PluginLoadOptions(Environment.DEVELOPMENT, Logger.NONE));
+
+        Assertions.assertEquals(false, iterativelyPlugin.disabled())
+    }
+
+    @Test
+    fun enabled_inProductionByDefault_false() {
+        iterativelyPlugin = IterativelyPlugin(user.apiKey)
+        iterativelyPlugin.load(PluginLoadOptions(Environment.PRODUCTION, Logger.NONE));
+
+        Assertions.assertEquals(true, iterativelyPlugin.disabled())
+    }
+
+    @Test
+    fun enabled_inProductionWithDisabledFalse_true() {
+        iterativelyPlugin = IterativelyPlugin(user.apiKey, IterativelyOptions(disabled = false))
+        iterativelyPlugin.load(PluginLoadOptions(Environment.PRODUCTION, Logger.NONE));
+
+        Assertions.assertEquals(false, iterativelyPlugin.disabled())
+    }
+
+    @Test
     fun tracker_retryUploadOnError_retryUntilSuccess() {
         val successOnTry = 3
         mockWebServer.dispatcher = TestDispatchers.FAIL_UNTIL_REQUEST_N(successOnTry)
@@ -249,10 +273,6 @@ class IterativelyPluginTest {
 
     @Test
     fun tracker_shutdownWhenDisabled_doesntCrash() {
-//        val itly: Itly = TestUtil.getItly(ITLY_OPTIONS_DEFAULT.copy(
-//                plugins = arrayListOf(iterativelyPlugin)
-//        ))
-
         iterativelyPlugin = IterativelyPlugin(
             user.apiKey,
             ITERATIVELY_OPTIONS_DEFAULT.copy(IterativelyOptions(
