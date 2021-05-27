@@ -369,4 +369,8 @@ class IterativelyPlugin(
             return client.newCall(request).execute()
         }
     }
+
+    fun disabled(): Boolean {
+        return disabled
+    }
 }
