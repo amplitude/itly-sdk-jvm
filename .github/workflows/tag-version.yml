@@ -55,7 +55,7 @@ jobs:
 
       - name: Push Version and Tags to Github
         run: |
-          git commit -m "chore(release): version $RELEASE_VERSION"
+          git commit -am "chore(release): version $RELEASE_VERSION"
           git tag -a "v$RELEASE_VERSION" -m "Release $RELEASE_VERSION"
           git push origin HEAD
           git push origin "v$RELEASE_VERSION"
