@@ -51,7 +51,7 @@ class IterativelyPlugin(
             ).setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY)
 
         @JvmField
-        val DEFAULT_DATAPLANE_URL = "https://data.us-east2.iterative.ly/t"
+        val DEFAULT_DATAPLANE_URL = "https://data.us-east-2.iterative.ly/t"
     }
 
     class Config(
