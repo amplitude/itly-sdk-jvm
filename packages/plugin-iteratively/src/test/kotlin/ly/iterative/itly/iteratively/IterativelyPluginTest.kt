@@ -171,7 +171,7 @@ class IterativelyPluginTest {
     @Test
     fun trackerUrl_noUrlInOptions_usesDefaultDataplaneUrl() {
         iterativelyPlugin = IterativelyPlugin(user.apiKey)
-        Assertions.assertEquals("https://data.us-east2.iterative.ly/t", iterativelyPlugin.config.url)
+        Assertions.assertEquals("https://data.us-east-2.iterative.ly/t", iterativelyPlugin.config.url)
     }
 
     @Test
