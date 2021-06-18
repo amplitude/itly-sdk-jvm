@@ -8,6 +8,7 @@ import ly.iterative.itly.*
 import com.snowplowanalytics.snowplow.Snowplow;
 import com.snowplowanalytics.snowplow.controller.TrackerController
 import com.snowplowanalytics.snowplow.event.SelfDescribing
+import com.snowplowanalytics.snowplow.network.HttpMethod
 import com.snowplowanalytics.snowplow.payload.SelfDescribingJson
 
 actual class SnowplowPlugin actual constructor(
@@ -28,20 +29,12 @@ actual class SnowplowPlugin actual constructor(
     override fun load(options: PluginLoadOptions) {
         logger = options.logger
         logger.debug("[plugin-snowplow] load")
-
-        if (config.tracker != null) {
-            this.snowplow = config.tracker
-        }
-        else {
-            this.snowplow = Snowplow.getDefaultTracker()
-        }
+        this.snowplow = config.tracker ?: Snowplow.createTracker(config.androidContext,
+                "appTracker", config.trackerUrl, HttpMethod.POST);
     }
 
     override fun identify(userId: String?, properties: Properties?) {
         logger.debug("[plugin-snowplow] identify(userId=$userId, properties=${properties?.properties})")
-        if (userId == null) {
-            return
-        }
         val subject = this.snowplow?.subject
         subject?.userId = userId
     }
@@ -49,7 +42,7 @@ actual class SnowplowPlugin actual constructor(
     override fun track(userId: String?, event: Event) {
         logger.debug("[plugin-snowplow] track(userId = $userId event=${event.name} properties=${event.properties})")
         val schemaVer = event.version?.replace(Regex("/\\./g"), "-")
-        val schema = "iglu:com.snowplowanalytics/${event.name}/jsonschema/${schemaVer}"
+        val schema = "iglu:${config.vendor}/${event.name}/jsonschema/${schemaVer}"
         val selfDescribingEvent = SelfDescribingJson(schema, event.properties)
         this.snowplow?.track(SelfDescribing.builder().eventData(selfDescribingEvent).build())
     }

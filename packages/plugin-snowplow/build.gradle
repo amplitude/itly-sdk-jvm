@@ -7,78 +7,7 @@ apply plugin: 'kotlin-android-extensions'
 apply from: rootProject.file('gradle/publish-mpp.gradle')
 apply from: rootProject.file('gradle/android-library.gradle')
 
-//task dokkaCommon(type: org.jetbrains.dokka.gradle.DokkaTask) {
-//    impliedPlatforms = ["Common"]
-//    kotlinTasks { [] }
-//    outputFormat = 'html'
-//    outputDirectory = "$buildDir/javadoc/common"
-//    sourceRoot {
-//        path = kotlin.sourceSets.commonMain.kotlin.srcDirs[0]
-//        platforms = ["Common"]
-//    }
-//}
-
-//task dokkaJvm(type: org.jetbrains.dokka.gradle.DokkaTask) {
-//    outputFormat("html")
-//    outputDirectory("$buildDir/javadoc/jvm")
-//    sourceRoot {
-//        path = kotlin.sourceSets.commonMain.kotlin.srcDirs[0]
-//        platforms = ["Common"]
-//    }
-//    sourceRoot {
-//        path = kotlin.sourceSets.jvmMain.kotlin.srcDirs[0]
-//        platforms = ["JVM"]
-//    }
-//}
-//
-
-//val dokkaJar by tasks.creating(Jar::class) {
-//    group = JavaBasePlugin.DOCUMENTATION_GROUP
-//    description = "Assembles Kotlin docs with Dokka"
-//    classifier = "javadoc"
-//    from(tasks.dokka)
-//}
-
-//task dokkaJvm(type: org.jetbrains.dokka.gradle.DokkaTask) {
-//    impliedPlatforms = ["JVM", "Common"]
-//    kotlinTasks { [] }
-//    outputFormat = 'html'
-//    outputDirectory = "$buildDir/javadoc/jvm"
-//    sourceRoot {
-//        path = kotlin.sourceSets.commonMain.kotlin.srcDirs[0]
-//        platforms = ["Common"]
-//    }
-//    sourceRoot {
-//        path = kotlin.sourceSets.jvmMain.kotlin.srcDirs[0]
-//        platforms = ["JVM"]
-//    }
-//}
-//
-//task emptySourcesJar(type: Jar) {
-//    classifier 'sources'
-//}
-//task emptyJavadocJar(type: Jar) {
-//    classifier 'javadoc'
-//}
-//
-//task dokkaJavadocCommonJar(type: Jar, dependsOn: dokkaCommon) {
-//    classifier 'javadoc'
-//    from "$buildDir/javadoc/common"
-//}
-//
-//task dokkaJavadocJvmJar(type: Jar, dependsOn: dokkaJvm) {
-//    classifier 'javadoc'
-//    from "$buildDir/javadoc/jvm"
-//}
-
 kotlin {
-    jvm("jvm") {
-        compilations.main.kotlinOptions {
-            // Setup the Kotlin compiler options for the 'main' compilation:
-            jvmTarget = "1.8"
-        }
-    }
-
     android() {
         publishLibraryVariants("release", "debug")
         publishLibraryVariantsGroupedByFlavor = true
@@ -121,7 +50,7 @@ kotlin {
         }
     }
 
-    configure([targets["metadata"], jvm(), android()]) {
+    configure([targets["metadata"], android()]) {
         mavenPublication {
             groupId = project.group
             version = project.version
@@ -151,76 +80,8 @@ kotlin {
                     url = 'https://github.com/iterativelyhq/itly-sdk-jvm'
                 }
             }
-
-//            if (pub.artifactId == "plugin-segment-android") {
-//                def dependenciesNode = asNode().appendNode('dependencies')
-//                appendDepNode(dependenciesNode, 'org.jetbrains.kotlin', 'kotlin-stdlib', kotlin_version, 'runtime')
-//            }
-
-//            afterEvaluate {
-//                publications {
-//                    maven(MavenPublication) {
-//                        artifactId "arbor-android"
-//                        artifact 'android/build/outputs/aar/android-release.aar'
-//                        artifact dokkaJavadocAndroidJar
-//                        artifact androidSourcesJar
-//                    }
-//                }
-//                publications.getByName('jvm') {
-//                    artifact dokkaJavadocJvmJar
-//                }
-//                publications.getByName('kotlinMultiplatform') {
-//                    artifact dokkaJavadocCommonJar
-//                    artifact emptySourcesJar
-//                }
-//                publications.getByName('metadata') {
-//                    artifact dokkaJavadocCommonJar
-//                }
-//            }
         }
     }
 }
 
 apply from: rootProject.file('gradle/dokka-mpp-android-jvm.gradle')
-
-//tasks.dokka {
-//    outputFormat = "html"
-//    outputDirectory = "$buildDir/javadoc"
-//}
-
-//task jvmDocsJar(type: Jar, dependsOn: dokkaHtml) {
-//    classifier 'javadoc'
-////    from "$buildDir/javadoc/jvm"
-//    from "$buildDir/dokka"
-//}
-//
-
-//// WORKS
-//dokkaHtml {
-//    outputDirectory = "$buildDir/dokka"
-//
-//    dokkaSourceSets {
-////        jvmMain { // The same name as Kotlin Multiplatform plugin source set for `customName` platform, so the sources are fetched automatically
-////            includes = ['packages.md', 'extra.md']
-////            samples = ['samples/basic.kt', 'samples/advanced.kt']
-////        }
-//
-//        jvmMain { // Different name, so source roots, classpath and platform must be passed explicitly.
-//            sourceRoot {
-//                path = kotlin.sourceSets.jvmMain.kotlin.srcDirs[0]
-//            }
-//            sourceRoot {
-//                path = kotlin.sourceSets.commonMain.kotlin.srcDirs[0]
-//            }
-//        }
-//
-//        androidMain { // Different name, so source roots, classpath and platform must be passed explicitly.
-//            sourceRoot {
-//                path = kotlin.sourceSets.androidMain.kotlin.srcDirs[0]
-//            }
-//            sourceRoot {
-//                path = kotlin.sourceSets.commonMain.kotlin.srcDirs[0]
-//            }
-//        }
-//    }
-//}
