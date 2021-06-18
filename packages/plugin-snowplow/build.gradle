@@ -84,4 +84,4 @@ kotlin {
     }
 }
 
-apply from: rootProject.file('gradle/dokka-mpp-android-jvm.gradle')
+apply from: rootProject.file('gradle/dokka-mpp-android.gradle')

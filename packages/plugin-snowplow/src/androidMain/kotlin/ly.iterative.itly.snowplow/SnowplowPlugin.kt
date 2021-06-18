@@ -30,7 +30,7 @@ actual class SnowplowPlugin actual constructor(
         logger = options.logger
         logger.debug("[plugin-snowplow] load")
         this.snowplow = config.tracker ?: Snowplow.createTracker(config.androidContext,
-                "appTracker", config.trackerUrl, HttpMethod.POST);
+                "itly", config.trackerUrl, HttpMethod.POST);
     }
 
     override fun identify(userId: String?, properties: Properties?) {
