@@ -32,6 +32,8 @@ actual class SegmentPlugin actual constructor(
 
     override fun load(options: PluginLoadOptions) {
         logger = options.logger
+        logger.info("[plugin-segment-jvm] load")
+
         val builder = config.builder ?: Analytics.builder(writeKey)
         segment = builder.build()
     }
@@ -70,6 +72,11 @@ actual class SegmentPlugin actual constructor(
             message.properties(properties)
         }
         segment.enqueue(message)
+    }
+
+    override fun flush() {
+        logger.info("[plugin-segment-jvm] flush")
+        segment.flush()
     }
 
     override fun shutdown() {
