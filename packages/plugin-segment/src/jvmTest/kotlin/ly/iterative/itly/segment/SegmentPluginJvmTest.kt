@@ -17,4 +17,10 @@ class SegmentPluginTest {
         val segmentPlugin = SegmentPlugin("write-key", SegmentOptions())
         Assertions.assertNotNull(segmentPlugin)
     }
+
+    @Test
+    fun SegmentPluginJvm_instantiationWithAnonymousIdAndSegmentOptions_succeeds() {
+        val segmentPlugin = SegmentPlugin("write-key", "", SegmentOptions())
+        Assertions.assertNotNull(segmentPlugin)
+    }
 }

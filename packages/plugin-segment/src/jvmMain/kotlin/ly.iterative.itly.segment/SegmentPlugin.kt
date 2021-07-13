@@ -14,6 +14,7 @@ import kotlin.collections.HashMap
 
 actual class SegmentPlugin actual constructor(
     private val writeKey: String,
+    private val anonymousId: String,
     options: SegmentOptions
 ) : Plugin(ID) {
     companion object {
@@ -28,7 +29,8 @@ actual class SegmentPlugin actual constructor(
     val client: Analytics
         get() = this.segment
 
-    constructor(writeKey: String): this(writeKey, SegmentOptions())
+    constructor(writeKey: String): this(writeKey, "", SegmentOptions())
+    constructor(writeKey: String, options: SegmentOptions): this(writeKey, "", options)
 
     override fun load(options: PluginLoadOptions) {
         logger = options.logger
@@ -65,9 +67,12 @@ actual class SegmentPlugin actual constructor(
     }
 
     override fun track(userId: String?, event: Event) {
-        logger.info("[plugin-segment-jvm] track(userId=$userId, event=${event.name}, properties=${event.properties})")
+        logger.info("[plugin-segment-jvm] track(userId=$userId, anonymousId=$anonymousId, event=${event.name}, properties=${event.properties})")
         val properties = HashMap(event.properties)
         val message = TrackMessage.builder(event.name).userId(userId)
+        if (anonymousId.isNotEmpty()) {
+            message.anonymousId(anonymousId)
+        }
         if (properties.isNotEmpty()) {
             message.properties(properties)
         }

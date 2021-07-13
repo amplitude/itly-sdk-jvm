@@ -11,6 +11,7 @@ typealias SegmentProperties = com.segment.analytics.Properties
 
 actual class SegmentPlugin actual constructor(
     private val writeKey: String,
+    private val anonymousId: String,
     options: SegmentOptions
 ) : Plugin(ID) {
     companion object {
