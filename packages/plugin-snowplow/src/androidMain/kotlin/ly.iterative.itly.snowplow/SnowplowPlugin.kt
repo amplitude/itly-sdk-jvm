@@ -11,14 +11,17 @@ import com.snowplowanalytics.snowplow.event.SelfDescribing
 import com.snowplowanalytics.snowplow.network.HttpMethod
 import com.snowplowanalytics.snowplow.payload.SelfDescribingJson
 
-open class SnowplowCallOptions : PluginCallOptions() {
-    var callback: (() -> Unit)? = null;
-    var context: MutableList<SelfDescribingJson>? = null;
-}
+open class SnowplowCallOptions : PluginCallOptions() {}
 class SnowplowAliasOptions : SnowplowCallOptions() {}
 class SnowplowGroupOptions : SnowplowCallOptions() {}
 class SnowplowIdentifyOptions : SnowplowCallOptions() {}
-class SnowplowTrackOptions : SnowplowCallOptions() {}
+class SnowplowTrackOptions constructor(
+        callback: (() -> Unit)?,
+        context: MutableList<SelfDescribingJson>?
+) : SnowplowCallOptions() {
+    var callback: (() -> Unit)? = callback;
+    var context: MutableList<SelfDescribingJson>? = context;
+}
 
 actual class SnowplowPlugin actual constructor(
     options: SnowplowOptions
@@ -46,7 +49,6 @@ actual class SnowplowPlugin actual constructor(
         logger.debug("[plugin-snowplow] identify(userId=$userId, properties=${properties?.properties})")
         val subject = this.snowplow.subject
         subject?.userId = userId
-        pluginCallOptions?.callback?.let { it() }
     }
 
     override fun track(userId: String?, event: Event, pluginCallOptions: SnowplowTrackOptions?) {
@@ -58,6 +60,7 @@ actual class SnowplowPlugin actual constructor(
             this.snowplow.track(SelfDescribing.builder().contexts(pluginCallOptions.context!!).eventData(selfDescribingEvent).build())
         else
             this.snowplow.track(SelfDescribing.builder().eventData(selfDescribingEvent).build())
+        pluginCallOptions?.callback?.let { it() }
     }
 
 }
