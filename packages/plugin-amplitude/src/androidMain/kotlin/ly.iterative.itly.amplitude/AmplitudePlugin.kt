@@ -11,10 +11,28 @@ import ly.iterative.itly.internal.OrgJsonProperties
 import org.json.JSONArray
 import org.json.JSONObject
 
+open class AmplitudeCallOptions : PluginCallOptions() {}
+class AmplitudeAliasOptions : AmplitudeCallOptions() {}
+class AmplitudeGroupOptions : AmplitudeCallOptions() {}
+class AmplitudeIdentifyOptions constructor(
+        deviceId: String?,
+        callback: (() -> Unit)?
+) : AmplitudeCallOptions() {
+    var deviceId: String? = deviceId
+    var callback: (() -> Unit)? = callback
+}
+class AmplitudeTrackOptions constructor(
+        insertId: String?,
+        callback: (() -> Unit)?
+) : AmplitudeCallOptions() {
+    var insertId: String? = insertId
+    var callback: (() -> Unit)? = callback
+}
+
 actual class AmplitudePlugin actual constructor(
     private val apiKey: String,
     options: AmplitudeOptions
-) : Plugin(ID) {
+) : Plugin<AmplitudeAliasOptions, AmplitudeIdentifyOptions, AmplitudeGroupOptions, AmplitudeTrackOptions>(ID) {
     companion object {
         @JvmField
         val ID = "amplitude"
@@ -35,11 +53,14 @@ actual class AmplitudePlugin actual constructor(
         amplitude.initialize(config.androidContext, apiKey)
     }
 
-    override fun identify(userId: String?, properties: Properties?) {
+    override fun identify(userId: String?, properties: Properties?, pluginCallOptions: AmplitudeIdentifyOptions?) {
         logger.debug("[plugin-${id()}] identify(userId=$userId, properties=${properties?.properties})")
 
         userId?.let {
             this.amplitude.userId = it
+        }
+        pluginCallOptions?.deviceId?.let {
+            this.amplitude.deviceId = it
         }
 
         properties?.let {
@@ -99,11 +120,18 @@ actual class AmplitudePlugin actual constructor(
             }
             this.amplitude.identify(identify)
         }
+
+        pluginCallOptions?.callback?.let { it() }
     }
 
-    override fun track(userId: String?, event: Event) {
+    override fun track(userId: String?, event: Event, pluginCallOptions: AmplitudeTrackOptions?) {
         logger.debug("[plugin-${id()}] track(userId = $userId event=${event.name} properties=${event.properties})")
-        amplitude.logEvent(event.name, OrgJsonProperties.toOrgJson(event))
+        var eventProps = OrgJsonProperties.toOrgJson(event)
+        pluginCallOptions?.insertId?.let {
+            eventProps?.put("insert_id", it)
+        }
+        amplitude.logEvent(event.name, eventProps)
+        pluginCallOptions?.callback?.let { it() }
     }
 
     override fun reset() {

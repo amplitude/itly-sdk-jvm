@@ -19,8 +19,8 @@ class SnowplowTrackOptions constructor(
         callback: (() -> Unit)?,
         context: MutableList<SelfDescribingJson>?
 ) : SnowplowCallOptions() {
-    var callback: (() -> Unit)? = callback;
-    var context: MutableList<SelfDescribingJson>? = context;
+    var callback: (() -> Unit)? = callback
+    var context: MutableList<SelfDescribingJson>? = context
 }
 
 actual class SnowplowPlugin actual constructor(
