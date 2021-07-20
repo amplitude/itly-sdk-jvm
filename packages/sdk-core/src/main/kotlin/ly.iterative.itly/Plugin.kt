@@ -1,6 +1,6 @@
 package ly.iterative.itly
 
-abstract class Plugin(
+abstract class Plugin<A: PluginCallOptions, I: PluginCallOptions, G: PluginCallOptions, T: PluginCallOptions> (
     private val id: String
 ) {
     fun id(): String {
@@ -13,16 +13,16 @@ abstract class Plugin(
         return null
     }
 
-    open fun alias(userId: String, previousId: String?) {}
+    open fun alias(userId: String, previousId: String?, pluginCallOptions: A?) {}
     open fun postAlias(userId: String, previousId: String?) {}
 
-    open fun identify(userId: String?, properties: Properties?) {}
+    open fun identify(userId: String?, properties: Properties?, pluginCallOptions: I?) {}
     open fun postIdentify(userId: String?, properties: Properties?, validationResults: List<ValidationResponse>) {}
 
-    open fun group(userId: String?, groupId: String, properties: Properties?) {}
+    open fun group(userId: String?, groupId: String, properties: Properties?, pluginCallOptions: G?) {}
     open fun postGroup(userId: String?, groupId: String, properties: Properties?, validationResults: List<ValidationResponse>) {}
 
-    open fun track(userId: String?, event: Event) {}
+    open fun track(userId: String?, event: Event, pluginCallOptions: T?) {}
     open fun postTrack(userId: String?, event: Event, validationResults: List<ValidationResponse>) {}
 
     open fun reset() {}
