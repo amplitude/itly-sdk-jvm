@@ -9,10 +9,16 @@ import com.segment.analytics.Traits
 
 typealias SegmentProperties = com.segment.analytics.Properties
 
+open class SegmentCallOptions : PluginCallOptions()
+class SegmentAliasOptions : SegmentCallOptions()
+class SegmentGroupOptions : SegmentCallOptions()
+class SegmentIdentifyOptions : SegmentCallOptions()
+class SegmentTrackOptions : SegmentCallOptions()
+
 actual class SegmentPlugin actual constructor(
     private val writeKey: String,
     options: SegmentOptions
-) : Plugin(ID) {
+) : Plugin<SegmentAliasOptions, SegmentIdentifyOptions, SegmentGroupOptions, SegmentTrackOptions>(ID) {
     companion object {
         @JvmField
         val ID = "segment"
@@ -33,12 +39,12 @@ actual class SegmentPlugin actual constructor(
         Analytics.setSingletonInstance(this.segment)
     }
 
-    override fun alias(userId: String, previousId: String?) {
+    override fun alias(userId: String, previousId: String?, pluginCallOptions: SegmentAliasOptions?) {
         logger.debug("[plugin-segment] alias(userId=$userId previousId=$previousId)")
         this.segment.alias(userId)
     }
 
-    override fun identify(userId: String?, properties: Properties?) {
+    override fun identify(userId: String?, properties: Properties?, pluginCallOptions: SegmentIdentifyOptions?) {
         logger.debug("[plugin-segment] identify(userId=$userId, properties=${properties?.properties})")
         if (userId == null) {
             return
@@ -59,7 +65,7 @@ actual class SegmentPlugin actual constructor(
         }
     }
 
-    override fun group(userId: String?, groupId: String, properties: Properties?) {
+    override fun group(userId: String?, groupId: String, properties: Properties?, pluginCallOptions: SegmentGroupOptions?) {
         logger.debug("[plugin-segment] group(userId = $userId, groupdId=$groupId properties=${properties?.properties})")
         var segmentTraits: Traits? = null
         if (properties != null && properties.properties.isNotEmpty()) {
@@ -72,7 +78,7 @@ actual class SegmentPlugin actual constructor(
         this.segment.group(groupId, segmentTraits, null)
     }
 
-    override fun track(userId: String?, event: Event) {
+    override fun track(userId: String?, event: Event, pluginCallOptions: SegmentTrackOptions?) {
         logger.debug("[plugin-segment] track(userId = $userId event=${event.name} properties=${event.properties})")
         var segmentProperties: SegmentProperties? = null
         if (event.properties.isNotEmpty()) {

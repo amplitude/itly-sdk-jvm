@@ -12,10 +12,16 @@ import com.segment.analytics.messages.IdentifyMessage
 import com.segment.analytics.messages.TrackMessage
 import kotlin.collections.HashMap
 
+open class SegmentCallOptions : PluginCallOptions()
+class SegmentAliasOptions : SegmentCallOptions()
+class SegmentGroupOptions : SegmentCallOptions()
+class SegmentIdentifyOptions : SegmentCallOptions()
+class SegmentTrackOptions : SegmentCallOptions()
+
 actual class SegmentPlugin actual constructor(
     private val writeKey: String,
     options: SegmentOptions
-) : Plugin(ID) {
+) : Plugin<SegmentAliasOptions, SegmentIdentifyOptions, SegmentGroupOptions, SegmentTrackOptions>(ID) {
     companion object {
         @JvmField
         val ID = "segment"

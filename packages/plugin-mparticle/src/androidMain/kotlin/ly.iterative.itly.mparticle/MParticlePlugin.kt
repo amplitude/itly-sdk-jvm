@@ -7,10 +7,16 @@ import com.mparticle.MPEvent
 import ly.iterative.itly.*
 import com.mparticle.MParticle
 
+open class MParticleCallOptions : PluginCallOptions()
+class MParticleAliasOptions : MParticleCallOptions()
+class MParticleGroupOptions : MParticleCallOptions()
+class MParticleIdentifyOptions : MParticleCallOptions()
+class MParticleTrackOptions : MParticleCallOptions()
+
 actual class MParticlePlugin actual constructor(
     private val apiKey: String,
     options: MParticleOptions
-) : Plugin(ID) {
+) : Plugin<MParticleAliasOptions, MParticleIdentifyOptions, MParticleGroupOptions, MParticleTrackOptions>(ID) {
     companion object {
         @JvmField
         val ID = "mparticle"
@@ -39,7 +45,7 @@ actual class MParticlePlugin actual constructor(
 //        MParticle.getInstance().logScreen(mpEvent)
 //    }
 
-    override fun track(userId: String?, event: Event) {
+    override fun track(userId: String?, event: Event, pluginCallOptions: MParticleTrackOptions?) {
         logger.debug("$LOG_TAG track(userId = $userId event=${event.name} properties=${event.properties})")
 
         val mpMetadata = event.metadata?.get(ID)

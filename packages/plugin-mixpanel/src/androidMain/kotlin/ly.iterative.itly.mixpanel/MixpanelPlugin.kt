@@ -5,10 +5,16 @@ import ly.iterative.itly.*
 import com.mixpanel.android.mpmetrics.MixpanelAPI
 import ly.iterative.itly.internal.OrgJsonProperties
 
+open class MixpanelCallOptions : PluginCallOptions()
+class MixpanelAliasOptions : MixpanelCallOptions()
+class MixpanelGroupOptions : MixpanelCallOptions()
+class MixpanelIdentifyOptions : MixpanelCallOptions()
+class MixpanelTrackOptions : MixpanelCallOptions()
+
 actual class MixpanelPlugin actual constructor(
     private val token: String,
     options: MixpanelOptions
-) : Plugin(ID) {
+) : Plugin<MixpanelAliasOptions, MixpanelIdentifyOptions, MixpanelGroupOptions, MixpanelTrackOptions>(ID) {
     companion object {
         @JvmField
         val ID = "mixpanel"
@@ -28,12 +34,12 @@ actual class MixpanelPlugin actual constructor(
         mixpanel = MixpanelAPI.getInstance(config.androidContext, token)
     }
 
-    override fun alias(userId: String, previousId: String?) {
+    override fun alias(userId: String, previousId: String?, pluginCallOptions: MixpanelAliasOptions?) {
         logger.debug("[plugin-${id()}] alias(userId=$userId previousId=$previousId)")
         mixpanel.alias(userId, previousId)
     }
 
-    override fun identify(userId: String?, properties: Properties?) {
+    override fun identify(userId: String?, properties: Properties?, pluginCallOptions: MixpanelIdentifyOptions?) {
         logger.debug("[plugin-${id()}] identify(userId=$userId, properties=${properties?.properties})")
 
         mixpanel.identify(userId)
@@ -43,7 +49,7 @@ actual class MixpanelPlugin actual constructor(
         }
     }
 
-    override fun track(userId: String?, event: Event) {
+    override fun track(userId: String?, event: Event, pluginCallOptions: MixpanelTrackOptions?) {
         logger.debug("[plugin-${id()}] track(userId = $userId event=${event.name} properties=${event.properties})")
         mixpanel.track(event.name, OrgJsonProperties.toOrgJson(event))
     }
