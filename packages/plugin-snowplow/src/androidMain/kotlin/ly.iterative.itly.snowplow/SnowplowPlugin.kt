@@ -57,8 +57,9 @@ actual class SnowplowPlugin actual constructor(
         val schema = "iglu:${config.vendor}/${event.name}/jsonschema/${schemaVer}"
         val selfDescribingEvent = SelfDescribingJson(schema, event.properties)
         val builder = SelfDescribing.builder()
-        if (pluginCallOptions?.context != null)
+        if (pluginCallOptions?.context != null) {
             builder.contexts(pluginCallOptions.context!!)
+        }
         this.snowplow.track(builder.eventData(selfDescribingEvent).build())
         pluginCallOptions?.callback?.let { it() }
     }
