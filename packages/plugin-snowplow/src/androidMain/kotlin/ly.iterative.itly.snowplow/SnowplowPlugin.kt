@@ -11,10 +11,10 @@ import com.snowplowanalytics.snowplow.event.SelfDescribing
 import com.snowplowanalytics.snowplow.network.HttpMethod
 import com.snowplowanalytics.snowplow.payload.SelfDescribingJson
 
-open class SnowplowCallOptions : PluginCallOptions() {}
-class SnowplowAliasOptions : SnowplowCallOptions() {}
-class SnowplowGroupOptions : SnowplowCallOptions() {}
-class SnowplowIdentifyOptions : SnowplowCallOptions() {}
+open class SnowplowCallOptions : PluginCallOptions()
+class SnowplowAliasOptions : SnowplowCallOptions()
+class SnowplowGroupOptions : SnowplowCallOptions()
+class SnowplowIdentifyOptions : SnowplowCallOptions()
 class SnowplowTrackOptions constructor(
         callback: (() -> Unit)?,
         context: MutableList<SelfDescribingJson>?
@@ -25,7 +25,7 @@ class SnowplowTrackOptions constructor(
 
 actual class SnowplowPlugin actual constructor(
     options: SnowplowOptions
-) : Plugin<SnowplowAliasOptions, SnowplowGroupOptions, SnowplowIdentifyOptions, SnowplowTrackOptions>(ID) {
+) : Plugin<SnowplowAliasOptions, SnowplowIdentifyOptions, SnowplowGroupOptions, SnowplowTrackOptions>(ID) {
     companion object {
         @JvmField
         val ID = "snowplow"
@@ -45,7 +45,7 @@ actual class SnowplowPlugin actual constructor(
                 "itly", config.trackerUrl, HttpMethod.POST);
     }
 
-    override fun identify(userId: String?, properties: Properties?, pluginCallOptions: SnowplowGroupOptions?) {
+    override fun identify(userId: String?, properties: Properties?, pluginCallOptions: SnowplowIdentifyOptions?) {
         logger.debug("[plugin-snowplow] identify(userId=$userId, properties=${properties?.properties})")
         val subject = this.snowplow.subject
         subject?.userId = userId
@@ -56,10 +56,10 @@ actual class SnowplowPlugin actual constructor(
         val schemaVer = event.version?.replace(Regex("/\\./g"), "-")
         val schema = "iglu:${config.vendor}/${event.name}/jsonschema/${schemaVer}"
         val selfDescribingEvent = SelfDescribingJson(schema, event.properties)
+        val builder = SelfDescribing.builder()
         if (pluginCallOptions?.context != null)
-            this.snowplow.track(SelfDescribing.builder().contexts(pluginCallOptions.context!!).eventData(selfDescribingEvent).build())
-        else
-            this.snowplow.track(SelfDescribing.builder().eventData(selfDescribingEvent).build())
+            builder.contexts(pluginCallOptions.context!!)
+        this.snowplow.track(builder.eventData(selfDescribingEvent).build())
         pluginCallOptions?.callback?.let { it() }
     }
 

@@ -126,7 +126,7 @@ actual class AmplitudePlugin actual constructor(
 
     override fun track(userId: String?, event: Event, pluginCallOptions: AmplitudeTrackOptions?) {
         logger.debug("[plugin-${id()}] track(userId = $userId event=${event.name} properties=${event.properties})")
-        var eventProps = OrgJsonProperties.toOrgJson(event)
+        val eventProps = OrgJsonProperties.toOrgJson(event)
         pluginCallOptions?.insertId?.let {
             eventProps?.put("insert_id", it)
         }

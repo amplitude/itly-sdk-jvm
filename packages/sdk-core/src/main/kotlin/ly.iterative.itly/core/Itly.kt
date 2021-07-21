@@ -68,7 +68,7 @@ open class Itly {
             return
         }
 
-        runOnAllPlugins("alias") { plugin -> plugin.alias(userId, previousId, callOptions?.pluginToOptions?.get(plugin.id())) }
+        runOnAllPlugins("alias") { plugin -> plugin.alias(userId, previousId, callOptions?.get(plugin.id())) }
         runOnAllPlugins("postAlias") { it.postAlias(userId, previousId) }
     }
     // NOTE: Can't use @JvmOverload above since it is an interface method
@@ -86,7 +86,7 @@ open class Itly {
             "identify",
             Event("identify", properties?.properties),
             false,
-            { plugin, data -> plugin.identify(userId, data, callOptions?.pluginToOptions?.get(plugin.id())) },
+            { plugin, data -> plugin.identify(userId, data, callOptions?.get(plugin.id())) },
             { plugin, data, validationResponses -> plugin.postIdentify(userId, data, validationResponses) }
         )
     }
@@ -105,7 +105,7 @@ open class Itly {
             "group",
             Event("group", properties?.properties, "0"),
             false,
-            { plugin, data -> plugin.group(userId, groupId, data, callOptions?.pluginToOptions?.get(plugin.id())) },
+            { plugin, data -> plugin.group(userId, groupId, data, callOptions?.get(plugin.id())) },
             { plugin, data, validationResponses -> plugin.postGroup(userId, groupId, data, validationResponses) }
         )
     }
@@ -124,7 +124,7 @@ open class Itly {
             "track",
             event,
             true,
-            { plugin, data -> plugin.track(userId, data, callOptions?.pluginToOptions?.get(plugin.id())) },
+            { plugin, data -> plugin.track(userId, data, callOptions?.get(plugin.id())) },
             { plugin, data, validationResponses -> plugin.postTrack(userId, data, validationResponses) }
         )
     }
