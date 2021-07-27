@@ -9,7 +9,7 @@ import ly.iterative.itly.snowplow.SnowplowOptions
 
 actual class SnowplowOptions(
     androidContext: Context,
-    trackerUrl: String,
     vendor: String,
+    trackerUrl: String?,
     tracker: TrackerController?
-): SnowplowOptions(androidContext, trackerUrl, vendor, tracker)
+): SnowplowOptions(androidContext, vendor, trackerUrl, tracker)
