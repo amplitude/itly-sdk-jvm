@@ -34,12 +34,12 @@ actual class MixpanelPlugin actual constructor(
         mixpanel = MixpanelAPI.getInstance(config.androidContext, token)
     }
 
-    override fun alias(userId: String, previousId: String?, pluginCallOptions: MixpanelAliasOptions?) {
+    override fun alias(userId: String, previousId: String?, options: MixpanelAliasOptions?) {
         logger.debug("[plugin-${id()}] alias(userId=$userId previousId=$previousId)")
         mixpanel.alias(userId, previousId)
     }
 
-    override fun identify(userId: String?, properties: Properties?, pluginCallOptions: MixpanelIdentifyOptions?) {
+    override fun identify(userId: String?, properties: Properties?, options: MixpanelIdentifyOptions?) {
         logger.debug("[plugin-${id()}] identify(userId=$userId, properties=${properties?.properties})")
 
         mixpanel.identify(userId)
@@ -49,7 +49,7 @@ actual class MixpanelPlugin actual constructor(
         }
     }
 
-    override fun track(userId: String?, event: Event, pluginCallOptions: MixpanelTrackOptions?) {
+    override fun track(userId: String?, event: Event, options: MixpanelTrackOptions?) {
         logger.debug("[plugin-${id()}] track(userId = $userId event=${event.name} properties=${event.properties})")
         mixpanel.track(event.name, OrgJsonProperties.toOrgJson(event))
     }

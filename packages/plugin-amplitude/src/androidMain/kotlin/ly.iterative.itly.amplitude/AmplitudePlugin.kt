@@ -53,13 +53,13 @@ actual class AmplitudePlugin actual constructor(
         amplitude.initialize(config.androidContext, apiKey)
     }
 
-    override fun identify(userId: String?, properties: Properties?, pluginCallOptions: AmplitudeIdentifyOptions?) {
+    override fun identify(userId: String?, properties: Properties?, options: AmplitudeIdentifyOptions?) {
         logger.debug("[plugin-${id()}] identify(userId=$userId, properties=${properties?.properties})")
 
         userId?.let {
             this.amplitude.userId = it
         }
-        pluginCallOptions?.deviceId?.let {
+        options?.deviceId?.let {
             this.amplitude.deviceId = it
         }
 
@@ -121,17 +121,17 @@ actual class AmplitudePlugin actual constructor(
             this.amplitude.identify(identify)
         }
 
-        pluginCallOptions?.callback?.let { it() }
+        options?.callback?.let { it() }
     }
 
-    override fun track(userId: String?, event: Event, pluginCallOptions: AmplitudeTrackOptions?) {
+    override fun track(userId: String?, event: Event, options: AmplitudeTrackOptions?) {
         logger.debug("[plugin-${id()}] track(userId = $userId event=${event.name} properties=${event.properties})")
         val eventProps = OrgJsonProperties.toOrgJson(event)
-        pluginCallOptions?.insertId?.let {
+        options?.insertId?.let {
             eventProps?.put("insert_id", it)
         }
         amplitude.logEvent(event.name, eventProps)
-        pluginCallOptions?.callback?.let { it() }
+        options?.callback?.let { it() }
     }
 
     override fun reset() {

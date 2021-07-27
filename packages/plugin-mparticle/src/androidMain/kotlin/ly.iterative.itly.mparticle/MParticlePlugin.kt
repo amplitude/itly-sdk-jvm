@@ -45,7 +45,7 @@ actual class MParticlePlugin actual constructor(
 //        MParticle.getInstance().logScreen(mpEvent)
 //    }
 
-    override fun track(userId: String?, event: Event, pluginCallOptions: MParticleTrackOptions?) {
+    override fun track(userId: String?, event: Event, options: MParticleTrackOptions?) {
         logger.debug("$LOG_TAG track(userId = $userId event=${event.name} properties=${event.properties})")
 
         val mpMetadata = event.metadata?.get(ID)
