@@ -29,10 +29,12 @@ object AppKotlin {
         itly.load(
             Context(requiredString = "Required string"),
             Options(
-                plugins = arrayListOf(
-                    schemaValidatorPlugin,
-                    iterativelyPlugin
-                ),
+            // FIXME: Commenting plugins out until CallOptions updates are live
+            // FIXME: This example uses the live packages
+//                plugins = arrayListOf<Plugin>(
+//                    schemaValidatorPlugin,
+//                    iterativelyPlugin
+//                ),
                 logger = logger,
                 validation = ValidationOptions(
                     trackInvalid = true,
