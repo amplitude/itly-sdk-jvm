@@ -29,3 +29,6 @@ abstract class Plugin<A: PluginCallOptions, I: PluginCallOptions, G: PluginCallO
     open fun flush() {}
     open fun shutdown() {}
 }
+
+abstract class AnyPlugin(val id: String): Plugin<PluginCallOptions, PluginCallOptions, PluginCallOptions, PluginCallOptions>(id)
+typealias AnyPluginType = Plugin<PluginCallOptions, PluginCallOptions, PluginCallOptions, PluginCallOptions>

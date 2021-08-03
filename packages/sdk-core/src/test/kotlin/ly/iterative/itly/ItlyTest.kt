@@ -24,7 +24,7 @@ class ItlyTest {
 
     @Test
     fun load_trackWhenDisabled_doesntCallPlugins() {
-        val plugin = mockk<Plugin>(relaxed = true)
+        val plugin = mockk<AnyPlugin>(relaxed = true)
 
         val itly = TestUtil.getItly(Options(
             plugins = listOf(plugin),
@@ -33,14 +33,14 @@ class ItlyTest {
 
         itly.track(user.id, EventMaxIntForTest.VALID)
 
-        verify(exactly = 0) { plugin.track(user.id, EventMaxIntForTest.VALID) }
+        verify(exactly = 0) { plugin.track(user.id, EventMaxIntForTest.VALID, null) }
     }
 
     @Test
     fun alias_beforeLoad_throwsError() {
         val itly = Itly()
         Asserts.assertThrowsErrorNotInitialized {
-            itly.alias(user.id, "previous-id")
+            itly.alias(user.id, "previous-id", null)
         }
     }
 
@@ -48,7 +48,7 @@ class ItlyTest {
     fun group_beforeLoad_throwsError() {
         val itly = Itly()
         Asserts.assertThrowsErrorNotInitialized {
-            itly.group(user.id, user.groupId, Identify.VALID_ALL_PROPS)
+            itly.group(user.id, user.groupId, Identify.VALID_ALL_PROPS, null)
         }
     }
 
@@ -56,7 +56,7 @@ class ItlyTest {
     fun identity_beforeLoad_throwsError() {
         val itly = Itly()
         Asserts.assertThrowsErrorNotInitialized {
-            itly.identify(user.id, Identify.VALID_ALL_PROPS)
+            itly.identify(user.id, Identify.VALID_ALL_PROPS, null)
         }
     }
 
@@ -86,7 +86,7 @@ class ItlyTest {
         Assertions.assertDoesNotThrow {
             itly.identify(user.id, Identify(
                 requiredNumber = 42.0
-            ))
+            ), null)
         }
     }
 
@@ -108,7 +108,7 @@ class ItlyTest {
         Assertions.assertDoesNotThrow {
             itly.group(user.id, user.groupId, Group(
                 requiredBoolean = true
-            ))
+            ), null)
         }
     }
 }

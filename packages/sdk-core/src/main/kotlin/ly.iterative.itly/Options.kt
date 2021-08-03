@@ -13,7 +13,7 @@ open class Options @JvmOverloads constructor(
      * Extend the Itly SDK by adding plugins for common analytics trackers, validation and more.
      */
     @JvmField
-    val plugins: List<Plugin> = arrayListOf(),
+    val plugins: List<Plugin<in PluginCallOptions, in PluginCallOptions, in PluginCallOptions, in PluginCallOptions>> = arrayListOf(),
 
     /**
      * Whether calls to the Itly SDK should be no-ops. Default is false.
@@ -53,7 +53,7 @@ open class Options @JvmOverloads constructor(
     @JvmOverloads
     fun withOverrides(
         environment: Environment? = null,
-        plugins: List<Plugin>? = null,
+        plugins: List<Plugin<PluginCallOptions, PluginCallOptions, PluginCallOptions, PluginCallOptions>>? = null,
         disabled: Boolean? = null,
         validation: ValidationOptions? = null,
         logger: Logger? = null
@@ -71,13 +71,13 @@ open class Options @JvmOverloads constructor(
         private var environment: Environment = DEFAULT_OPTIONS.environment,
         private var disabled: Boolean = DEFAULT_OPTIONS.disabled,
         private var logger: Logger = DEFAULT_OPTIONS.logger,
-        private var plugins: List<Plugin> = DEFAULT_OPTIONS.plugins,
+        private var plugins: List<Plugin<in PluginCallOptions, in PluginCallOptions, in PluginCallOptions, in PluginCallOptions>> = DEFAULT_OPTIONS.plugins,
         private var validation: ValidationOptions = DEFAULT_OPTIONS.validation
     ) {
         fun environment(environment: Environment) = apply { this.environment = environment }
         fun disabled(disabled: Boolean) = apply { this.disabled = disabled }
         fun logger(logger: Logger) = apply { this.logger = logger }
-        fun plugins(plugins: List<Plugin>) = apply { this.plugins = plugins }
+        fun plugins(plugins: List<Plugin<PluginCallOptions, PluginCallOptions, PluginCallOptions, PluginCallOptions>>) = apply { this.plugins = plugins }
         fun validation(validation: ValidationOptions) = apply { this.validation = validation }
 
         fun build() = Options(
