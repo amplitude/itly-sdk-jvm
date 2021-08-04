@@ -10,6 +10,7 @@ import com.snowplowanalytics.snowplow.controller.TrackerController
 import com.snowplowanalytics.snowplow.event.SelfDescribing
 import com.snowplowanalytics.snowplow.network.HttpMethod
 import com.snowplowanalytics.snowplow.payload.SelfDescribingJson
+import java.lang.IllegalArgumentException
 
 open class SnowplowCallOptions : PluginCallOptions()
 class SnowplowAliasOptions : SnowplowCallOptions()
@@ -41,8 +42,10 @@ actual class SnowplowPlugin actual constructor(
     override fun load(options: PluginLoadOptions) {
         logger = options.logger
         logger.debug("[plugin-snowplow] load")
+        if (config.tracker == null && config.trackerUrl == null) {
+            throw IllegalArgumentException("At least one of 'tracker' or 'trackerUrl' in SnowplowOptions is required")
+        }
         this.snowplow = config.tracker ?: Snowplow.createTracker(config.androidContext,
-                // FIXME(Dante) Throw a helpful error if there is no trackerUrl
                 "itly", config.trackerUrl ?: "", HttpMethod.POST);
     }
 
