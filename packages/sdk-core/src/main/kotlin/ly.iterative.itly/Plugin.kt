@@ -1,6 +1,6 @@
 package ly.iterative.itly
 
-abstract class Plugin<A: PluginCallOptions, I: PluginCallOptions, G: PluginCallOptions, T: PluginCallOptions> (
+abstract class Plugin (
     private val id: String
 ) {
     fun id(): String {
@@ -13,22 +13,19 @@ abstract class Plugin<A: PluginCallOptions, I: PluginCallOptions, G: PluginCallO
         return null
     }
 
-    open fun alias(userId: String, previousId: String?, options: A?) {}
+    open fun alias(userId: String, previousId: String?, options: PluginCallOptions?) {}
     open fun postAlias(userId: String, previousId: String?) {}
 
-    open fun identify(userId: String?, properties: Properties?, options: I?) {}
+    open fun identify(userId: String?, properties: Properties?, options: PluginCallOptions?) {}
     open fun postIdentify(userId: String?, properties: Properties?, validationResults: List<ValidationResponse>) {}
 
-    open fun group(userId: String?, groupId: String, properties: Properties?, options: G?) {}
+    open fun group(userId: String?, groupId: String, properties: Properties?, options: PluginCallOptions?) {}
     open fun postGroup(userId: String?, groupId: String, properties: Properties?, validationResults: List<ValidationResponse>) {}
 
-    open fun track(userId: String?, event: Event, options: T?) {}
+    open fun track(userId: String?, event: Event, options: PluginCallOptions?) {}
     open fun postTrack(userId: String?, event: Event, validationResults: List<ValidationResponse>) {}
 
     open fun reset() {}
     open fun flush() {}
     open fun shutdown() {}
 }
-
-abstract class AnyPlugin(val id: String): Plugin<PluginCallOptions, PluginCallOptions, PluginCallOptions, PluginCallOptions>(id)
-typealias AnyPluginType = Plugin<PluginCallOptions, PluginCallOptions, PluginCallOptions, PluginCallOptions>

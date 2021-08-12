@@ -18,7 +18,7 @@ class SegmentTrackOptions : SegmentCallOptions()
 actual class SegmentPlugin actual constructor(
     private val writeKey: String,
     options: SegmentOptions
-) : Plugin<SegmentAliasOptions, SegmentIdentifyOptions, SegmentGroupOptions, SegmentTrackOptions>(ID) {
+) : Plugin(ID) {
     companion object {
         @JvmField
         val ID = "segment"
@@ -39,12 +39,12 @@ actual class SegmentPlugin actual constructor(
         Analytics.setSingletonInstance(this.segment)
     }
 
-    override fun alias(userId: String, previousId: String?, options: SegmentAliasOptions?) {
+    override fun alias(userId: String, previousId: String?, options: PluginCallOptions?) {
         logger.debug("[plugin-segment] alias(userId=$userId previousId=$previousId)")
         this.segment.alias(userId)
     }
 
-    override fun identify(userId: String?, properties: Properties?, options: SegmentIdentifyOptions?) {
+    override fun identify(userId: String?, properties: Properties?, options: PluginCallOptions?) {
         logger.debug("[plugin-segment] identify(userId=$userId, properties=${properties?.properties})")
         if (userId == null) {
             return
@@ -65,7 +65,7 @@ actual class SegmentPlugin actual constructor(
         }
     }
 
-    override fun group(userId: String?, groupId: String, properties: Properties?, options: SegmentGroupOptions?) {
+    override fun group(userId: String?, groupId: String, properties: Properties?, options: PluginCallOptions?) {
         logger.debug("[plugin-segment] group(userId = $userId, groupdId=$groupId properties=${properties?.properties})")
         var segmentTraits: Traits? = null
         if (properties != null && properties.properties.isNotEmpty()) {
@@ -78,7 +78,7 @@ actual class SegmentPlugin actual constructor(
         this.segment.group(groupId, segmentTraits, null)
     }
 
-    override fun track(userId: String?, event: Event, options: SegmentTrackOptions?) {
+    override fun track(userId: String?, event: Event, options: PluginCallOptions?) {
         logger.debug("[plugin-segment] track(userId = $userId event=${event.name} properties=${event.properties})")
         var segmentProperties: SegmentProperties? = null
         if (event.properties.isNotEmpty()) {

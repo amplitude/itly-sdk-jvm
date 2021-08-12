@@ -48,7 +48,7 @@ class IterativelyTrackOptions : IterativelyCallOptions()
 class IterativelyPlugin(
     apiKey: String,
     options: IterativelyOptions = IterativelyOptions()
-): Plugin<IterativelyAliasOptions, IterativelyIdentifyOptions, IterativelyGroupOptions, IterativelyTrackOptions>(ID) {
+): Plugin(ID) {
     companion object {
         const val ID = "iteratively"
         const val LOG_TAG = "[plugin-$ID]"

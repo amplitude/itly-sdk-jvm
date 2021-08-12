@@ -16,7 +16,7 @@ class MParticleTrackOptions : MParticleCallOptions()
 actual class MParticlePlugin actual constructor(
     private val apiKey: String,
     options: MParticleOptions
-) : Plugin<MParticleAliasOptions, MParticleIdentifyOptions, MParticleGroupOptions, MParticleTrackOptions>(ID) {
+) : Plugin(ID) {
     companion object {
         @JvmField
         val ID = "mparticle"
@@ -45,7 +45,7 @@ actual class MParticlePlugin actual constructor(
 //        MParticle.getInstance().logScreen(mpEvent)
 //    }
 
-    override fun track(userId: String?, event: Event, options: MParticleTrackOptions?) {
+    override fun track(userId: String?, event: Event, options: PluginCallOptions?) {
         logger.debug("$LOG_TAG track(userId = $userId event=${event.name} properties=${event.properties})")
 
         val mpMetadata = event.metadata?.get(ID)

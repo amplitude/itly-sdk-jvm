@@ -24,7 +24,7 @@ class ItlyTest {
 
     @Test
     fun load_trackWhenDisabled_doesntCallPlugins() {
-        val plugin = mockk<AnyPlugin>(relaxed = true)
+        val plugin = mockk<Plugin>(relaxed = true)
 
         val itly = TestUtil.getItly(Options(
             plugins = listOf(plugin),

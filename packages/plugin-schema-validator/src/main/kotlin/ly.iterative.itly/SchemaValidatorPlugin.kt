@@ -13,7 +13,7 @@ class SchemaValidatorTrackOptions : SchemaValidatorCallOptions()
 
 class SchemaValidatorPlugin constructor(
     private val schemas: Map<String, String>
-): Plugin<SchemaValidatorAliasOptions, SchemaValidatorIdentifyOptions, SchemaValidatorGroupOptions, SchemaValidatorTrackOptions>(ID) {
+): Plugin(ID) {
     companion object {
         const val ID = "schema-validator"
         private const val LOG_TAG = "[plugin-$ID]"

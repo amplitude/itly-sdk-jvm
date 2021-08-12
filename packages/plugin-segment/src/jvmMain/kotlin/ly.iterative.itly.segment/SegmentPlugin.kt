@@ -21,7 +21,7 @@ class SegmentTrackOptions : SegmentCallOptions()
 actual class SegmentPlugin actual constructor(
     private val writeKey: String,
     options: SegmentOptions
-) : Plugin<SegmentAliasOptions, SegmentIdentifyOptions, SegmentGroupOptions, SegmentTrackOptions>(ID) {
+) : Plugin(ID) {
     companion object {
         @JvmField
         val ID = "segment"
@@ -42,13 +42,13 @@ actual class SegmentPlugin actual constructor(
         segment = builder.build()
     }
 
-    override fun alias(userId: String, previousId: String?, options: SegmentAliasOptions?) {
+    override fun alias(userId: String, previousId: String?, options: PluginCallOptions?) {
         logger.info("[plugin-segment-jvm] alias(userId=$userId, previousId=$previousId)")
         segment.enqueue(AliasMessage.builder(previousId)
                 .userId(userId))
     }
 
-    override fun identify(userId: String?, properties: Properties?, options: SegmentIdentifyOptions?) {
+    override fun identify(userId: String?, properties: Properties?, options: PluginCallOptions?) {
         logger.info("[plugin-segment-jvm] identify(userId=$userId, properties=${properties?.properties})")
         val traits = HashMap(properties?.properties)
         val message = IdentifyMessage.builder().userId(userId)
@@ -58,7 +58,7 @@ actual class SegmentPlugin actual constructor(
         segment.enqueue(message)
     }
 
-    override fun group(userId: String?, groupId: String, properties: Properties?, options: SegmentGroupOptions?) {
+    override fun group(userId: String?, groupId: String, properties: Properties?, options: PluginCallOptions?) {
         logger.info("[plugin-segment-jvm] group(userId=$userId, groupId=$groupId, properties=${properties?.properties})")
         val traits = HashMap(properties?.properties)
         val message = GroupMessage.builder(groupId).userId(userId)
@@ -68,7 +68,7 @@ actual class SegmentPlugin actual constructor(
         segment.enqueue(message)
     }
 
-    override fun track(userId: String?, event: Event, options: SegmentTrackOptions?) {
+    override fun track(userId: String?, event: Event, options: PluginCallOptions?) {
         logger.info("[plugin-segment-jvm] track(userId=$userId, event=${event.name}, properties=${event.properties})")
         val properties = HashMap(event.properties)
         val message = TrackMessage.builder(event.name).userId(userId)

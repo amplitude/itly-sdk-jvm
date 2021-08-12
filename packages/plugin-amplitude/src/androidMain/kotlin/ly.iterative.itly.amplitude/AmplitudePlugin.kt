@@ -32,7 +32,7 @@ class AmplitudeTrackOptions constructor(
 actual class AmplitudePlugin actual constructor(
     private val apiKey: String,
     options: AmplitudeOptions
-) : Plugin<AmplitudeAliasOptions, AmplitudeIdentifyOptions, AmplitudeGroupOptions, AmplitudeTrackOptions>(ID) {
+) : Plugin(ID) {
     companion object {
         @JvmField
         val ID = "amplitude"
@@ -53,13 +53,15 @@ actual class AmplitudePlugin actual constructor(
         amplitude.initialize(config.androidContext, apiKey)
     }
 
-    override fun identify(userId: String?, properties: Properties?, options: AmplitudeIdentifyOptions?) {
+    override fun identify(userId: String?, properties: Properties?, options: PluginCallOptions?) {
+        val castedOptions = PluginCallOptionsValidator.validate<AmplitudeIdentifyOptions>(options)
+
         logger.debug("[plugin-${id()}] identify(userId=$userId, properties=${properties?.properties})")
 
         userId?.let {
             this.amplitude.userId = it
         }
-        options?.deviceId?.let {
+        castedOptions?.deviceId?.let {
             this.amplitude.deviceId = it
         }
 
@@ -121,17 +123,18 @@ actual class AmplitudePlugin actual constructor(
             this.amplitude.identify(identify)
         }
 
-        options?.callback?.let { it() }
+        castedOptions?.callback?.let { it() }
     }
 
-    override fun track(userId: String?, event: Event, options: AmplitudeTrackOptions?) {
+    override fun track(userId: String?, event: Event, options: PluginCallOptions?) {
+        val castedOptions = PluginCallOptionsValidator.validate<AmplitudeTrackOptions>(options)
         logger.debug("[plugin-${id()}] track(userId = $userId event=${event.name} properties=${event.properties})")
         val eventProps = OrgJsonProperties.toOrgJson(event)
-        options?.insertId?.let {
+        castedOptions?.insertId?.let {
             eventProps?.put("insert_id", it)
         }
         amplitude.logEvent(event.name, eventProps)
-        options?.callback?.let { it() }
+        castedOptions?.callback?.let { it() }
     }
 
     override fun reset() {

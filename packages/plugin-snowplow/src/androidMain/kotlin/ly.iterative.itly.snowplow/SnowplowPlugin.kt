@@ -26,7 +26,7 @@ class SnowplowTrackOptions constructor(
 
 actual class SnowplowPlugin actual constructor(
     options: SnowplowOptions
-) : Plugin<SnowplowAliasOptions, SnowplowIdentifyOptions, SnowplowGroupOptions, SnowplowTrackOptions>(ID) {
+) : Plugin(ID) {
     companion object {
         @JvmField
         val ID = "snowplow"
@@ -49,23 +49,24 @@ actual class SnowplowPlugin actual constructor(
                 "itly", config.trackerUrl ?: "", HttpMethod.POST);
     }
 
-    override fun identify(userId: String?, properties: Properties?, options: SnowplowIdentifyOptions?) {
+    override fun identify(userId: String?, properties: Properties?, options: PluginCallOptions?) {
         logger.debug("[plugin-snowplow] identify(userId=$userId, properties=${properties?.properties})")
         val subject = this.snowplow.subject
         subject?.userId = userId
     }
 
-    override fun track(userId: String?, event: Event, options: SnowplowTrackOptions?) {
+    override fun track(userId: String?, event: Event, options: PluginCallOptions?) {
+        val castedOptions = PluginCallOptionsValidator.validate<SnowplowTrackOptions>(options)
         logger.debug("[plugin-snowplow] track(userId = $userId event=${event.name} properties=${event.properties})")
         val schemaVer = event.version?.replace(Regex("/\\./g"), "-")
         val schema = "iglu:${config.vendor}/${event.name}/jsonschema/${schemaVer}"
         val selfDescribingEvent = SelfDescribingJson(schema, event.properties)
         val builder = SelfDescribing.builder()
-        if (options?.context != null) {
-            builder.contexts(options.context!!)
+        if (castedOptions?.context != null) {
+            builder.contexts(castedOptions.context!!)
         }
         this.snowplow.track(builder.eventData(selfDescribingEvent).build())
-        options?.callback?.let { it() }
+        castedOptions?.callback?.let { it() }
     }
 
 }

@@ -154,7 +154,7 @@ open class Itly {
         runOnAllPlugins("shutdown") { it.shutdown() }
     }
 
-    private fun runOnAllPlugins(op: String, name: String = "", method: (plugin: Plugin<in PluginCallOptions, in PluginCallOptions, in PluginCallOptions, in PluginCallOptions>) -> Unit) {
+    private fun runOnAllPlugins(op: String, name: String = "", method: (plugin: Plugin) -> Unit) {
         config.plugins.forEach {
             try {
                 method(it)
@@ -186,8 +186,8 @@ open class Itly {
         op: String,
         event: Event,
         includeContext: Boolean,
-        method: (plugin: Plugin<in PluginCallOptions, in PluginCallOptions, in PluginCallOptions, in PluginCallOptions>, event: Event) -> Unit,
-        postMethod: (plugin: Plugin<in PluginCallOptions, in PluginCallOptions, in PluginCallOptions, in PluginCallOptions>, event: Event, validationResponses: List<ValidationResponse>) -> Unit
+        method: (plugin: Plugin, event: Event) -> Unit,
+        postMethod: (plugin: Plugin, event: Event, validationResponses: List<ValidationResponse>) -> Unit
     ) {
         val contextValidationResponses = if (includeContext && context != null) validate(context!!) else listOf()
         val isContextValid = contextValidationResponses.all { it.valid }
