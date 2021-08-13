@@ -38,7 +38,7 @@ class Itly : IItly {
     //ALIAS
     @Throws(IllegalStateException::class)
     fun alias(userId: String, previousId: String?, options: CallOptions? = null) {
-        alias(userId, previousId, options)
+        itly.alias(userId, previousId, options)
     }
     @Throws(IllegalStateException::class)
     fun alias(userId: String) = alias(userId, null)
@@ -68,12 +68,12 @@ class Itly : IItly {
     // TRACK
     @Throws(IllegalArgumentException::class)
     override fun track(event: Event) {
-        track(null, event)
+        track(event, null)
     }
 
     @Throws(IllegalArgumentException::class)
-    fun track(userId: String?, event: Event, options: CallOptions? = null) {
-        itly.track(userId, event, options)
+    fun track(event: Event, options: CallOptions? = null) {
+        itly.track(null, event, options)
     }
 
     override fun reset() {
