@@ -28,4 +28,11 @@ abstract class Plugin (
     open fun reset() {}
     open fun flush() {}
     open fun shutdown() {}
+
+    protected companion object {
+        inline fun <reified T: PluginCallOptions> getTypedOptions(given: PluginCallOptions?): T? {
+            if (given == null) return null
+            return (given as? T) ?: throw IllegalArgumentException("Invalid PluginCallOptions. Given ${given.javaClass}, expected ${T::class}")
+        }
+    }
 }

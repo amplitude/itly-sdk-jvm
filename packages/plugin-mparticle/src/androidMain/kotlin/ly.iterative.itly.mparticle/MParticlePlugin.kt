@@ -7,11 +7,11 @@ import com.mparticle.MPEvent
 import ly.iterative.itly.*
 import com.mparticle.MParticle
 
-open class MParticleCallOptions : PluginCallOptions()
-class MParticleAliasOptions : MParticleCallOptions()
-class MParticleGroupOptions : MParticleCallOptions()
-class MParticleIdentifyOptions : MParticleCallOptions()
-class MParticleTrackOptions : MParticleCallOptions()
+open class MparticleCallOptions : PluginCallOptions()
+class MparticleAliasOptions : MparticleCallOptions()
+class MparticleGroupOptions : MparticleCallOptions()
+class MparticleIdentifyOptions : MparticleCallOptions()
+class MparticleTrackOptions : MparticleCallOptions()
 
 actual class MParticlePlugin actual constructor(
     private val apiKey: String,

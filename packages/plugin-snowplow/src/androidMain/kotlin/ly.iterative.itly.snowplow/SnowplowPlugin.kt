@@ -11,6 +11,10 @@ import com.snowplowanalytics.snowplow.event.SelfDescribing
 import com.snowplowanalytics.snowplow.network.HttpMethod
 import com.snowplowanalytics.snowplow.payload.SelfDescribingJson
 import java.lang.IllegalArgumentException
+import com.snowplowanalytics.snowplow.network.RequestCallback
+
+
+
 
 open class SnowplowCallOptions : PluginCallOptions()
 class SnowplowAliasOptions : SnowplowCallOptions()
@@ -56,7 +60,7 @@ actual class SnowplowPlugin actual constructor(
     }
 
     override fun track(userId: String?, event: Event, options: PluginCallOptions?) {
-        val castedOptions = PluginCallOptionsValidator.validate<SnowplowTrackOptions>(options)
+        val castedOptions = getTypedOptions<SnowplowTrackOptions>(options)
         logger.debug("[plugin-snowplow] track(userId = $userId event=${event.name} properties=${event.properties})")
         val schemaVer = event.version?.replace(Regex("/\\./g"), "-")
         val schema = "iglu:${config.vendor}/${event.name}/jsonschema/${schemaVer}"

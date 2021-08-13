@@ -54,7 +54,7 @@ actual class AmplitudePlugin actual constructor(
     }
 
     override fun identify(userId: String?, properties: Properties?, options: PluginCallOptions?) {
-        val castedOptions = PluginCallOptionsValidator.validate<AmplitudeIdentifyOptions>(options)
+        val castedOptions = getTypedOptions<AmplitudeIdentifyOptions>(options)
 
         logger.debug("[plugin-${id()}] identify(userId=$userId, properties=${properties?.properties})")
 
@@ -127,7 +127,7 @@ actual class AmplitudePlugin actual constructor(
     }
 
     override fun track(userId: String?, event: Event, options: PluginCallOptions?) {
-        val castedOptions = PluginCallOptionsValidator.validate<AmplitudeTrackOptions>(options)
+        val castedOptions = getTypedOptions<AmplitudeTrackOptions>(options)
         logger.debug("[plugin-${id()}] track(userId = $userId event=${event.name} properties=${event.properties})")
         val eventProps = OrgJsonProperties.toOrgJson(event)
         castedOptions?.insertId?.let {
