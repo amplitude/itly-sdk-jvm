@@ -124,7 +124,7 @@ kotlin {
         jvmMain {
             dependsOn commonMain
             dependencies {
-                implementation 'com.segment.analytics.java:analytics:2.1.1'
+                api 'com.segment.analytics.java:analytics:2.1.1'
                 // Android has it's own org.json included by default
                 implementation "$orgJsonImplementation"
             }
