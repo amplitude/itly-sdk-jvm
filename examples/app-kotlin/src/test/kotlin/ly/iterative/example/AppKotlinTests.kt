@@ -37,7 +37,6 @@ class AppKotlinTests {
         System.setOut(originalOut)
     }
 
-    // FIXME: Commenting plugins test out until CallOptions updates are live
     @Test
     fun appKotlin_runApplication_makesValidateTrackerRequest() {
         AppKotlin.main(arrayOf("test-param"))
