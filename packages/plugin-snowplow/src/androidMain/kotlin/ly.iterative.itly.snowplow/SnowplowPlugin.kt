@@ -21,8 +21,8 @@ class SnowplowAliasOptions : SnowplowCallOptions()
 class SnowplowGroupOptions : SnowplowCallOptions()
 class SnowplowIdentifyOptions : SnowplowCallOptions()
 class SnowplowTrackOptions constructor(
-        callback: (() -> Unit)?,
-        context: MutableList<SelfDescribingJson>?
+    callback: (() -> Unit)?,
+    context: MutableList<SelfDescribingJson>?
 ) : SnowplowCallOptions() {
     var callback: (() -> Unit)? = callback
     var context: MutableList<SelfDescribingJson>? = context
