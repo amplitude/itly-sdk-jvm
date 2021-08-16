@@ -13,16 +13,16 @@ abstract class Plugin (
         return null
     }
 
-    open fun alias(userId: String, previousId: String?, options: PluginCallOptions?) {}
+    open fun alias(userId: String, previousId: String?, options: PluginCallOptions? = null) {}
     open fun postAlias(userId: String, previousId: String?) {}
 
-    open fun identify(userId: String?, properties: Properties?, options: PluginCallOptions?) {}
+    open fun identify(userId: String?, properties: Properties?, options: PluginCallOptions? = null) {}
     open fun postIdentify(userId: String?, properties: Properties?, validationResults: List<ValidationResponse>) {}
 
-    open fun group(userId: String?, groupId: String, properties: Properties?, options: PluginCallOptions?) {}
+    open fun group(userId: String?, groupId: String, properties: Properties?, options: PluginCallOptions? = null) {}
     open fun postGroup(userId: String?, groupId: String, properties: Properties?, validationResults: List<ValidationResponse>) {}
 
-    open fun track(userId: String?, event: Event, options: PluginCallOptions?) {}
+    open fun track(userId: String?, event: Event, options: PluginCallOptions? = null) {}
     open fun postTrack(userId: String?, event: Event, validationResults: List<ValidationResponse>) {}
 
     open fun reset() {}

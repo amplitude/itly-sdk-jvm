@@ -56,7 +56,7 @@ actual class SnowplowPlugin actual constructor(
     override fun identify(userId: String?, properties: Properties?, options: PluginCallOptions?) {
         logger.debug("[plugin-snowplow] identify(userId=$userId, properties=${properties?.properties})")
         val subject = this.snowplow.subject
-        subject?.userId = userId
+        subject.userId = userId
     }
 
     override fun track(userId: String?, event: Event, options: PluginCallOptions?) {

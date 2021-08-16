@@ -44,11 +44,11 @@ object AppKotlin {
 
         itly.identify(user.id, Identify(
             requiredNumber = 42.0
-        ), CallOptions())
+        ))
 
         itly.group(user.id, user.groupId, Group(
             requiredBoolean = true
-        ), CallOptions())
+        ))
 
         itly.track(user.id, EventNoProperties())
 

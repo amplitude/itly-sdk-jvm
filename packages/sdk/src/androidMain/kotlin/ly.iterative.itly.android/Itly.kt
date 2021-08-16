@@ -58,7 +58,7 @@ class Itly : IItly {
 
     // GROUP
     @Throws(IllegalStateException::class)
-    fun group(groupId: String, properties: Properties?, options: CallOptions? = CallOptions()) {
+    fun group(groupId: String, properties: Properties?, options: CallOptions? = null) {
         itly.group(null, groupId, properties, options)
     }
 
