@@ -11,24 +11,17 @@ import com.snowplowanalytics.snowplow.event.SelfDescribing
 import com.snowplowanalytics.snowplow.network.HttpMethod
 import com.snowplowanalytics.snowplow.payload.SelfDescribingJson
 import java.lang.IllegalArgumentException
-import com.snowplowanalytics.snowplow.network.RequestCallback
-
-
-
 
 open class SnowplowCallOptions : PluginCallOptions()
-class SnowplowAliasOptions : SnowplowCallOptions()
-class SnowplowGroupOptions : SnowplowCallOptions()
-class SnowplowIdentifyOptions : SnowplowCallOptions()
-class SnowplowTrackOptions constructor(
-    callback: (() -> Unit)?,
-    context: MutableList<SelfDescribingJson>?
-) : SnowplowCallOptions() {
-    var callback: (() -> Unit)? = callback
-    var context: MutableList<SelfDescribingJson>? = context
-}
+open class SnowplowAliasOptions : SnowplowCallOptions()
+open class SnowplowGroupOptions : SnowplowCallOptions()
+open class SnowplowIdentifyOptions : SnowplowCallOptions()
+open class SnowplowTrackOptions constructor(
+    var callback: (() -> Unit)? = null,
+    var context: MutableList<SelfDescribingJson>? = null
+) : SnowplowCallOptions()
 
-actual class SnowplowPlugin actual constructor(
+actual open class SnowplowPlugin actual constructor(
     options: SnowplowOptions
 ) : Plugin(ID) {
     companion object {
@@ -72,5 +65,4 @@ actual class SnowplowPlugin actual constructor(
         this.snowplow.track(builder.eventData(selfDescribingEvent).build())
         castedOptions?.callback?.let { it() }
     }
-
 }
