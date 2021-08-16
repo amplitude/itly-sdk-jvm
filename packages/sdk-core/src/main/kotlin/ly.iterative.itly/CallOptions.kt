@@ -8,7 +8,7 @@ open class CallOptions constructor(map: HashMap<String, PluginCallOptions?>? = H
     fun get(pluginName: String): PluginCallOptions? {
         return map?.get(pluginName)
     }
-    fun set(pluginName: String, options: PluginCallOptions?) {
+    fun put(pluginName: String, options: PluginCallOptions?) {
         map?.put(pluginName, options)
     }
 }

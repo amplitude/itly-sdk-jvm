@@ -42,7 +42,7 @@ kotlin {
         androidMain {
             dependsOn commonMain
             dependencies {
-                implementation 'com.snowplowanalytics:snowplow-android-tracker:2.0.1@aar'
+                api 'com.snowplowanalytics:snowplow-android-tracker:2.0.1@aar'
             }
         }
         androidTest {

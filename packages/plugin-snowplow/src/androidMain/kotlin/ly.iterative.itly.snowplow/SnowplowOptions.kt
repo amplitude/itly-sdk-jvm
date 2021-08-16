@@ -9,6 +9,6 @@ import com.snowplowanalytics.snowplow.controller.TrackerController
 actual open class SnowplowOptions(
         val androidContext: Context,
         var vendor: String,
-        var trackerUrl: String?,
-        var tracker: TrackerController?
+        var trackerUrl: String? = null,
+        var tracker: TrackerController? = null
         )
