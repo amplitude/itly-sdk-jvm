@@ -63,7 +63,7 @@ open class Itly {
     }
 
     @Throws(IllegalStateException::class)
-    fun alias(userId: String, previousId: String?, callOptions: CallOptions?) {
+    fun alias(userId: String, previousId: String?, callOptions: CallOptions? = CallOptions()) {
         if (disabled) {
             return
         }
@@ -77,7 +77,7 @@ open class Itly {
     fun alias(userId: String) = alias(userId, null, null)
 
     @Throws(IllegalStateException::class)
-    fun identify(userId: String?, properties: Properties?, callOptions: CallOptions?) {
+    fun identify(userId: String?, properties: Properties?, callOptions: CallOptions? = CallOptions()) {
         if (disabled) {
             return
         }
@@ -96,7 +96,7 @@ open class Itly {
     fun identify(userId: String?) = identify(userId, null, null)
 
     @Throws(IllegalStateException::class)
-    fun group(userId: String?, groupId: String, properties: Properties?, callOptions: CallOptions?) {
+    fun group(userId: String?, groupId: String, properties: Properties?, callOptions: CallOptions? = CallOptions()) {
         if (disabled) {
             return
         }
