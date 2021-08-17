@@ -11,25 +11,19 @@ import ly.iterative.itly.internal.OrgJsonProperties
 import org.json.JSONArray
 import org.json.JSONObject
 
-open class AmplitudeCallOptions : PluginCallOptions() {}
-class AmplitudeAliasOptions : AmplitudeCallOptions() {}
-class AmplitudeGroupOptions : AmplitudeCallOptions() {}
-class AmplitudeIdentifyOptions constructor(
-        deviceId: String?,
-        callback: (() -> Unit)?
-) : AmplitudeCallOptions() {
-    var deviceId: String? = deviceId
-    var callback: (() -> Unit)? = callback
-}
-class AmplitudeTrackOptions constructor(
-        insertId: String?,
-        callback: (() -> Unit)?
-) : AmplitudeCallOptions() {
-    var insertId: String? = insertId
-    var callback: (() -> Unit)? = callback
-}
+open class AmplitudeCallOptions : PluginCallOptions()
+open class AmplitudeAliasOptions : AmplitudeCallOptions()
+open class AmplitudeGroupOptions : AmplitudeCallOptions()
+open class AmplitudeIdentifyOptions constructor(
+    var deviceId: String? = null,
+    var callback: (() -> Unit)? = null
+) : AmplitudeCallOptions()
+open class AmplitudeTrackOptions constructor(
+    var insertId: String? = null,
+    var callback: (() -> Unit)? = null
+) : AmplitudeCallOptions()
 
-actual class AmplitudePlugin actual constructor(
+actual open class AmplitudePlugin actual constructor(
     private val apiKey: String,
     options: AmplitudeOptions
 ) : Plugin(ID) {

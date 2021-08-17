@@ -10,12 +10,12 @@ import com.segment.analytics.Traits
 typealias SegmentProperties = com.segment.analytics.Properties
 
 open class SegmentCallOptions : PluginCallOptions()
-class SegmentAliasOptions : SegmentCallOptions()
-class SegmentGroupOptions : SegmentCallOptions()
-class SegmentIdentifyOptions : SegmentCallOptions()
-class SegmentTrackOptions : SegmentCallOptions()
+open class SegmentAliasOptions : SegmentCallOptions()
+open class SegmentGroupOptions : SegmentCallOptions()
+open class SegmentIdentifyOptions : SegmentCallOptions()
+open class SegmentTrackOptions : SegmentCallOptions()
 
-actual class SegmentPlugin actual constructor(
+actual open class SegmentPlugin actual constructor(
     private val writeKey: String,
     options: SegmentOptions
 ) : Plugin(ID) {
