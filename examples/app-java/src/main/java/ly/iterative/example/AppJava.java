@@ -29,7 +29,7 @@ public class AppJava {
             Context.VALID_ONLY_REQUIRED_PROPS,
             new Options(
                 environment,
-                new ArrayList<>(Arrays.asList(
+                new ArrayList<Plugin>(Arrays.asList(
                     iterativelyPlugin,
                     new SchemaValidatorPlugin(Schemas.DEFAULT)
                 )),

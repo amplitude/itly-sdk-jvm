@@ -29,7 +29,7 @@ object AppKotlin {
         itly.load(
             Context(requiredString = "Required string"),
             Options(
-                plugins = arrayListOf(
+                plugins = arrayListOf<Plugin>(
                     schemaValidatorPlugin,
                     iterativelyPlugin
                 ),

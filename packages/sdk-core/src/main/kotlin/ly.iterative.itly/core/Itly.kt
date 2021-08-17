@@ -63,21 +63,21 @@ open class Itly {
     }
 
     @Throws(IllegalStateException::class)
-    fun alias(userId: String, previousId: String?) {
+    fun alias(userId: String, previousId: String?, callOptions: CallOptions? = null) {
         if (disabled) {
             return
         }
 
-        runOnAllPlugins("alias") { it.alias(userId, previousId) }
+        runOnAllPlugins("alias") { plugin -> plugin.alias(userId, previousId, callOptions?.get(plugin.id())) }
         runOnAllPlugins("postAlias") { it.postAlias(userId, previousId) }
     }
     // NOTE: Can't use @JvmOverload above since it is an interface method
     // NOTE: Need to manually override method instead
     @Throws(IllegalStateException::class)
-    fun alias(userId: String) = alias(userId, null)
+    fun alias(userId: String) = alias(userId, null, null)
 
     @Throws(IllegalStateException::class)
-    fun identify(userId: String?, properties: Properties?) {
+    fun identify(userId: String?, properties: Properties?, callOptions: CallOptions? = null) {
         if (disabled) {
             return
         }
@@ -86,17 +86,17 @@ open class Itly {
             "identify",
             Event("identify", properties?.properties),
             false,
-            { plugin, data -> plugin.identify(userId, data) },
+            { plugin, data -> plugin.identify(userId, data, callOptions?.get(plugin.id())) },
             { plugin, data, validationResponses -> plugin.postIdentify(userId, data, validationResponses) }
         )
     }
     // NOTE: Can't use @JvmOverload above since it is an interface method
     // NOTE: Need to manually override method instead
     @Throws(IllegalStateException::class)
-    fun identify(userId: String?) = identify(userId, null)
+    fun identify(userId: String?) = identify(userId, null, null)
 
     @Throws(IllegalStateException::class)
-    fun group(userId: String?, groupId: String, properties: Properties?) {
+    fun group(userId: String?, groupId: String, properties: Properties?, callOptions: CallOptions? = null) {
         if (disabled) {
             return
         }
@@ -105,17 +105,17 @@ open class Itly {
             "group",
             Event("group", properties?.properties, "0"),
             false,
-            { plugin, data -> plugin.group(userId, groupId, data) },
+            { plugin, data -> plugin.group(userId, groupId, data, callOptions?.get(plugin.id())) },
             { plugin, data, validationResponses -> plugin.postGroup(userId, groupId, data, validationResponses) }
         )
     }
     // NOTE: Can't use @JvmOverload above since it is an interface method
     // NOTE: Need to manually override method instead
     @Throws(IllegalStateException::class)
-    fun group(userId: String?, groupId: String) = group(userId, groupId, null)
+    fun group(userId: String?, groupId: String) = group(userId, groupId, null, null)
 
     @Throws(IllegalArgumentException::class)
-    fun track(userId: String?, event: Event) {
+    fun track(userId: String?, event: Event, callOptions: CallOptions? = null) {
         if (disabled) {
             return
         }
@@ -124,7 +124,7 @@ open class Itly {
             "track",
             event,
             true,
-            { plugin, data -> plugin.track(userId, data) },
+            { plugin, data -> plugin.track(userId, data, callOptions?.get(plugin.id())) },
             { plugin, data, validationResponses -> plugin.postTrack(userId, data, validationResponses) }
         )
     }

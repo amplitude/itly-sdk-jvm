@@ -7,6 +7,12 @@ import com.mparticle.MPEvent
 import ly.iterative.itly.*
 import com.mparticle.MParticle
 
+open class MparticleCallOptions : PluginCallOptions()
+class MparticleAliasOptions : MparticleCallOptions()
+class MparticleGroupOptions : MparticleCallOptions()
+class MparticleIdentifyOptions : MparticleCallOptions()
+class MparticleTrackOptions : MparticleCallOptions()
+
 actual class MParticlePlugin actual constructor(
     private val apiKey: String,
     options: MParticleOptions
@@ -39,7 +45,7 @@ actual class MParticlePlugin actual constructor(
 //        MParticle.getInstance().logScreen(mpEvent)
 //    }
 
-    override fun track(userId: String?, event: Event) {
+    override fun track(userId: String?, event: Event, options: PluginCallOptions?) {
         logger.debug("$LOG_TAG track(userId = $userId event=${event.name} properties=${event.properties})")
 
         val mpMetadata = event.metadata?.get(ID)

@@ -37,8 +37,8 @@ class Itly : IItly {
 
     //ALIAS
     @Throws(IllegalStateException::class)
-    fun alias(userId: String, previousId: String?) {
-        itly.alias(userId, previousId)
+    fun alias(userId: String, previousId: String?, options: CallOptions? = null) {
+        itly.alias(userId, previousId, options)
     }
     @Throws(IllegalStateException::class)
     fun alias(userId: String) = alias(userId, null)
@@ -46,8 +46,8 @@ class Itly : IItly {
 
     // IDENTIFY
     @Throws(IllegalStateException::class)
-    fun identify(userId: String?, properties: Properties?) {
-        itly.identify(userId, properties)
+    fun identify(userId: String?, properties: Properties?, options: CallOptions? = null) {
+        itly.identify(userId, properties, options)
     }
     @Throws(IllegalStateException::class)
     fun identify(userId: String?) = identify(userId, null)
@@ -58,8 +58,8 @@ class Itly : IItly {
 
     // GROUP
     @Throws(IllegalStateException::class)
-    fun group(groupId: String, properties: Properties?) {
-        itly.group(null, groupId, properties)
+    fun group(groupId: String, properties: Properties?, options: CallOptions? = null) {
+        itly.group(null, groupId, properties, options)
     }
 
     @Throws(IllegalStateException::class)
@@ -68,7 +68,12 @@ class Itly : IItly {
     // TRACK
     @Throws(IllegalArgumentException::class)
     override fun track(event: Event) {
-        itly.track(null, event)
+        track(event, null)
+    }
+
+    @Throws(IllegalArgumentException::class)
+    fun track(event: Event, options: CallOptions? = null) {
+        itly.track(null, event, options)
     }
 
     override fun reset() {

@@ -5,6 +5,12 @@ import com.networknt.schema.JsonSchemaFactory
 import com.networknt.schema.SpecVersion
 import java.lang.Exception
 
+open class SchemaValidatorCallOptions : PluginCallOptions()
+class SchemaValidatorAliasOptions : SchemaValidatorCallOptions()
+class SchemaValidatorGroupOptions : SchemaValidatorCallOptions()
+class SchemaValidatorIdentifyOptions : SchemaValidatorCallOptions()
+class SchemaValidatorTrackOptions : SchemaValidatorCallOptions()
+
 class SchemaValidatorPlugin constructor(
     private val schemas: Map<String, String>
 ): Plugin(ID) {

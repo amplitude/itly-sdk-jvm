@@ -39,6 +39,12 @@ internal class AuthInterceptor(apiKey: String) : Interceptor {
     }
 }
 
+open class IterativelyCallOptions : PluginCallOptions()
+class IterativelyAliasOptions : IterativelyCallOptions()
+class IterativelyGroupOptions : IterativelyCallOptions()
+class IterativelyIdentifyOptions : IterativelyCallOptions()
+class IterativelyTrackOptions : IterativelyCallOptions()
+
 class IterativelyPlugin(
     apiKey: String,
     options: IterativelyOptions = IterativelyOptions()

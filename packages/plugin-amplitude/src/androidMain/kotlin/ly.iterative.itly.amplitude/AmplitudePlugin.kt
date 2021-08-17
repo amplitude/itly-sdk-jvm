@@ -11,7 +11,19 @@ import ly.iterative.itly.internal.OrgJsonProperties
 import org.json.JSONArray
 import org.json.JSONObject
 
-actual class AmplitudePlugin actual constructor(
+open class AmplitudeCallOptions : PluginCallOptions()
+open class AmplitudeAliasOptions : AmplitudeCallOptions()
+open class AmplitudeGroupOptions : AmplitudeCallOptions()
+open class AmplitudeIdentifyOptions constructor(
+    var deviceId: String? = null,
+    var callback: (() -> Unit)? = null
+) : AmplitudeCallOptions()
+open class AmplitudeTrackOptions constructor(
+    var insertId: String? = null,
+    var callback: (() -> Unit)? = null
+) : AmplitudeCallOptions()
+
+actual open class AmplitudePlugin actual constructor(
     private val apiKey: String,
     options: AmplitudeOptions
 ) : Plugin(ID) {
@@ -35,11 +47,16 @@ actual class AmplitudePlugin actual constructor(
         amplitude.initialize(config.androidContext, apiKey)
     }
 
-    override fun identify(userId: String?, properties: Properties?) {
+    override fun identify(userId: String?, properties: Properties?, options: PluginCallOptions?) {
+        val castedOptions = getTypedOptions<AmplitudeIdentifyOptions>(options)
+
         logger.debug("[plugin-${id()}] identify(userId=$userId, properties=${properties?.properties})")
 
         userId?.let {
             this.amplitude.userId = it
+        }
+        castedOptions?.deviceId?.let {
+            this.amplitude.deviceId = it
         }
 
         properties?.let {
@@ -99,11 +116,19 @@ actual class AmplitudePlugin actual constructor(
             }
             this.amplitude.identify(identify)
         }
+
+        castedOptions?.callback?.let { it() }
     }
 
-    override fun track(userId: String?, event: Event) {
+    override fun track(userId: String?, event: Event, options: PluginCallOptions?) {
+        val castedOptions = getTypedOptions<AmplitudeTrackOptions>(options)
         logger.debug("[plugin-${id()}] track(userId = $userId event=${event.name} properties=${event.properties})")
-        amplitude.logEvent(event.name, OrgJsonProperties.toOrgJson(event))
+        val eventProps = OrgJsonProperties.toOrgJson(event)
+        castedOptions?.insertId?.let {
+            eventProps?.put("insert_id", it)
+        }
+        amplitude.logEvent(event.name, eventProps)
+        castedOptions?.callback?.let { it() }
     }
 
     override fun reset() {

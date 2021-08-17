@@ -78,8 +78,8 @@ class SchemaValidatorPluginTest {
     fun itlyLoad_invalidContext_succeeds() {
         Assertions.assertDoesNotThrow {
             TestUtil.getItly(Context.INVALID_NO_PROPS, Options(
-                plugins = arrayListOf(SchemaValidatorPlugin(Schemas.DEFAULT))
-            ))
+                plugins = arrayListOf((SchemaValidatorPlugin(Schemas.DEFAULT))
+            )))
         }
     }
 

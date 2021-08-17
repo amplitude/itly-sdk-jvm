@@ -33,14 +33,14 @@ class ItlyTest {
 
         itly.track(user.id, EventMaxIntForTest.VALID)
 
-        verify(exactly = 0) { plugin.track(user.id, EventMaxIntForTest.VALID) }
+        verify(exactly = 0) { plugin.track(user.id, EventMaxIntForTest.VALID, null) }
     }
 
     @Test
     fun alias_beforeLoad_throwsError() {
         val itly = Itly()
         Asserts.assertThrowsErrorNotInitialized {
-            itly.alias(user.id, "previous-id")
+            itly.alias(user.id, "previous-id", null)
         }
     }
 
