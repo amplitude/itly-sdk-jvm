@@ -23,6 +23,7 @@ include("packages:plugin-mixpanel")
 include("packages:plugin-amplitude")
 include("packages:plugin-mparticle")
 include("packages:plugin-snowplow")
+include("packages:plugin-snowplow-2")
 
 // Example Apps for testing / usage
 include("examples:app-java")

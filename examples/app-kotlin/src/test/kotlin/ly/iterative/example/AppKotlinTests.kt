@@ -38,7 +38,7 @@ class AppKotlinTests {
     }
 
     // FIXME: Re-add Test after 2.0.0 is published
-//    @Test
+    @Test
     fun appKotlin_runApplication_makesValidateTrackerRequest() {
         AppKotlin.main(arrayOf("test-param"))
 
