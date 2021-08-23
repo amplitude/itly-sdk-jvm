@@ -3,13 +3,14 @@
  */
 package ly.iterative.itly.snowplow
 
-import android.content.Context
-import com.snowplowanalytics.snowplow.tracker.Emitter
-import com.snowplowanalytics.snowplow.tracker.Subject
-import com.snowplowanalytics.snowplow.tracker.Tracker
-import com.snowplowanalytics.snowplow.tracker.events.SelfDescribing
-import com.snowplowanalytics.snowplow.tracker.payload.SelfDescribingJson
 import ly.iterative.itly.*
+
+import com.snowplowanalytics.snowplow.Snowplow;
+import com.snowplowanalytics.snowplow.controller.TrackerController
+import com.snowplowanalytics.snowplow.event.SelfDescribing
+import com.snowplowanalytics.snowplow.network.HttpMethod
+import com.snowplowanalytics.snowplow.payload.SelfDescribingJson
+import java.lang.IllegalArgumentException
 
 open class SnowplowCallOptions : PluginCallOptions()
 open class SnowplowAliasOptions : SnowplowCallOptions()
@@ -30,25 +31,25 @@ actual open class SnowplowPlugin actual constructor(
 
     private var config: SnowplowOptions = options
     private lateinit var logger: Logger
-    private lateinit var snowplow: Tracker
+    private lateinit var snowplow: TrackerController
 
-    val client: Tracker
+    val client: TrackerController?
         get() = this.snowplow
 
     override fun load(options: PluginLoadOptions) {
         logger = options.logger
         logger.debug("[plugin-snowplow] load")
-        if (config.tracker == null && (config.trackerUrl == null && config.appId == null)) {
-            throw IllegalArgumentException("Either 'trackerUrl' and 'appId', or 'tracker' are required in SnowplowOptions")
+        if (config.tracker == null && config.trackerUrl == null) {
+            throw IllegalArgumentException("At least one of 'tracker' or 'trackerUrl' in SnowplowOptions is required")
         }
-        this.snowplow = config.tracker ?: createDefaultTracker(
-            config.androidContext, config.trackerUrl ?: "", config.appId ?: ""
-        )
+        this.snowplow = config.tracker ?: Snowplow.createTracker(config.androidContext,
+                "itly", config.trackerUrl ?: "", HttpMethod.POST);
     }
 
     override fun identify(userId: String?, properties: Properties?, options: PluginCallOptions?) {
         logger.debug("[plugin-snowplow] identify(userId=$userId, properties=${properties?.properties})")
-        this.snowplow.subject.identifyUser(userId)
+        val subject = this.snowplow.subject
+        subject.userId = userId
     }
 
     override fun track(userId: String?, event: Event, options: PluginCallOptions?) {
@@ -63,14 +64,5 @@ actual open class SnowplowPlugin actual constructor(
         }
         this.snowplow.track(builder.eventData(selfDescribingEvent).build())
         castedOptions?.callback?.let { it() }
-    }
-
-    protected open fun createDefaultTracker(context: Context, trackerUrl: String, appId: String): Tracker {
-        val emitter = Emitter.EmitterBuilder(trackerUrl, context).build()
-        val subject = Subject.SubjectBuilder().context(context).build();
-
-        return Tracker.init(
-            Tracker.TrackerBuilder(emitter, "itly", appId, context).subject(subject).build()
-        )
     }
 }
