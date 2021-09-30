@@ -6,6 +6,7 @@ package ly.iterative.itly.amplitude
 import com.amplitude.api.Amplitude
 import com.amplitude.api.AmplitudeClient
 import com.amplitude.api.Identify
+import com.amplitude.api.Plan
 import ly.iterative.itly.*
 import ly.iterative.itly.internal.OrgJsonProperties
 import org.json.JSONArray
@@ -33,6 +34,7 @@ actual class AmplitudePlugin actual constructor(
 
         amplitude = Amplitude.getInstance()
         amplitude.initialize(config.androidContext, apiKey)
+        amplitude.setPlan(Plan().setBranch(config.branch).setSource(config.source).setVersion(config.version))
     }
 
     override fun identify(userId: String?, properties: Properties?) {
