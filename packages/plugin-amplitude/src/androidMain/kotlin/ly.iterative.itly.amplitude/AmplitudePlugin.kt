@@ -46,7 +46,7 @@ actual open class AmplitudePlugin actual constructor(
 
         amplitude = Amplitude.getInstance()
         amplitude.initialize(config.androidContext, apiKey)
-        amplitude.setPlan(Plan().setBranch(config.branch).setSource(config.source).setVersion(config.version))
+        amplitude.setPlan(Plan().setBranch(config.planBranch).setSource(config.planSource).setVersion(config.planVersion))
     }
 
     override fun identify(userId: String?, properties: Properties?, options: PluginCallOptions?) {
