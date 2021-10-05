@@ -2,7 +2,7 @@ package ly.iterative.itly.amplitude
 
 import android.content.Context
 
-actual open class AmplitudeOptions(
+actual open class AmplitudeOptions @JvmOverloads constructor(
     val androidContext: Context,
     /**
      * Tracking plan branch name (e.g. feature/demo).
