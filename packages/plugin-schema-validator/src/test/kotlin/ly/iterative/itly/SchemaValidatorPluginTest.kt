@@ -54,6 +54,26 @@ class SchemaValidatorPluginTest {
     }
 
     @Test
+    fun validate_eventWithArrayTypes_valid() {
+        val validation = loadDefaultSchemaValidator().validate(EventWithArrayTypes(
+            arrayOf(true, false),
+            arrayOf(1.0, 2.0, 3.0),
+            arrayOf(mapOf("a" to 1, "b" to 2.0, "c" to "xyz"), mapOf("x" to "a", "y" to 2.0, "z" to "abc")),
+            arrayOf("a", "bc")
+        ))
+        Assertions.assertEquals(validation.valid, true)
+    }
+
+    @Test
+    fun validate_eventObjectTypes_valid() {
+        val validation = loadDefaultSchemaValidator().validate(EventWithObjectTypes(
+            mapOf("a" to 1, "b" to 2.0, "c" to "xyz"),
+            arrayOf(mapOf("a" to 1, "b" to 2.0, "c" to "xyz"), mapOf("x" to "a", "y" to 2.0, "z" to "abc"))
+        ))
+        Assertions.assertEquals(validation.valid, true)
+    }
+
+    @Test
     fun validate_invalidEvent_notValid() {
         val validation = loadDefaultSchemaValidator().validate(invalidEvent)
         Assertions.assertEquals(validation.valid, false)

@@ -1,7 +1,9 @@
 package ly.iterative.itly
 
 import com.fasterxml.jackson.databind.JsonNode
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.node.JsonNodeFactory
+import com.fasterxml.jackson.databind.node.ObjectNode
 
 class JacksonProperties {
     companion object {
@@ -12,6 +14,7 @@ class JacksonProperties {
             }
 
             val json = JsonNodeFactory.instance.objectNode()
+            val objectMapper = ObjectMapper()
 
             properties.properties.entries.forEach { eventPropertyEntry ->
                 val key = eventPropertyEntry.key
@@ -36,6 +39,9 @@ class JacksonProperties {
                         }
                         is String -> {
                             json.put(key, value)
+                        }
+                        is Map<*, *> -> {
+                            json.set(key, objectMapper.valueToTree<ObjectNode>(value))
                         }
                         is IntArray -> {
                             val array = json.putArray(key)
@@ -88,6 +94,9 @@ class JacksonProperties {
                                     }
                                     is String -> {
                                         array.add(item)
+                                    }
+                                    is Map<*, *> -> {
+                                        array.add(objectMapper.valueToTree<ObjectNode>(item))
                                     }
                                 }
                             }
