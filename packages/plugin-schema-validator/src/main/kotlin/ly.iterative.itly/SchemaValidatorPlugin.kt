@@ -11,6 +11,7 @@ class SchemaValidatorPlugin constructor(
     companion object {
         const val ID = "schema-validator"
         private const val LOG_TAG = "[plugin-$ID]"
+        private val SYSTEM_EVENTS = arrayOf("context", "identify", "group", "page")
     }
 
     private lateinit var validators: Map<String, JsonSchema>
@@ -30,9 +31,27 @@ class SchemaValidatorPlugin constructor(
     override fun validate(event: Event): ValidationResponse {
         logger.debug("$LOG_TAG validate(event=${event.name})")
 
+        val schemaKey = getSchemaKey(event)
+        if (!this.validators.containsKey(schemaKey)) {
+            if (SYSTEM_EVENTS.contains(schemaKey)) {
+                if (event.properties.isEmpty()) {
+                    return ValidationResponse(
+                        valid = true,
+                        pluginId = this.id()
+                    )
+                }
+            }
+
+            return ValidationResponse(
+                valid = false,
+                message = "No schema found for '${event.name}'. Received ${event.name}=${JacksonProperties.toJackson(event)}",
+                pluginId = this.id()
+            )
+        }
+
         var errorMessage: String? = null
         try {
-            val validator = this.validators.getValue(getSchemaKey(event))
+            val validator = this.validators.getValue(schemaKey)
             val errors = validator.validate(JacksonProperties.toJackson(event))
             logger.debug("$LOG_TAG errors=$errors")
             if (errors.size > 0) {
@@ -42,8 +61,6 @@ class SchemaValidatorPlugin constructor(
                 }
                 errorMessage = "Error validating '${event.name}'. $builder."
             }
-        } catch (e: NoSuchElementException) {
-            errorMessage = "No schema found for '${event.name}'. Received ${event.name}=${JacksonProperties.toJackson(event)}"
         } catch (e: Exception) {
             errorMessage = "Unhandled exception validating '${event.name}'. ${e.message}"
         }
