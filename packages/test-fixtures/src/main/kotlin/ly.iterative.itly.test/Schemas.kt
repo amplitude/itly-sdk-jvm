@@ -19,9 +19,9 @@ class Schemas {
             "event withDifferent_CasingTypes" to "{\"\$id\":\"https://iterative.ly/company/77b37977-cb3a-42eb-bce3-09f5f7c3adb7/event/fcb3d82d-208f-4bc2-b8e1-843683d9b595/version/1.0.0\",\"\$schema\":\"http://json-schema.org/draft-07/schema#\",\"title\":\"event withDifferent_CasingTypes\",\"description\":\"Description for case with space\",\"type\":\"object\",\"properties\":{\"EnumPascalCase\":{\"description\":\"DescirptionForEnumPascalCase\",\"enum\":[\"EnumPascalCase\"]},\"property with space\":{\"description\":\"Description for case with space\",\"type\":\"string\"},\"enum with space\":{\"description\":\"Description for enum with space\",\"enum\":[\"enum with space\"]},\"enum_snake_case\":{\"description\":\"description_for_enum_snake_case\",\"enum\":[\"enum_snake_case\"]},\"propertyWithCamelCase\":{\"description\":\"descriptionForCamelCase\",\"type\":\"string\"},\"PropertyWithPascalCase\":{\"description\":\"DescriptionForPascalCase\",\"type\":\"string\"},\"property_with_snake_case\":{\"description\":\"Description_for_snake_case\",\"type\":\"string\"},\"enumCamelCase\":{\"description\":\"descriptionForEnumCamelCase\",\"enum\":[\"enumCamelCase\"]}},\"additionalProperties\":false,\"required\":[\"EnumPascalCase\",\"property with space\",\"enum with space\",\"enum_snake_case\",\"propertyWithCamelCase\",\"PropertyWithPascalCase\",\"property_with_snake_case\",\"enumCamelCase\"]}"
         )
 
-        fun defaultWithout(key: String): Map<String, String> {
+        fun defaultWithEmpty(key: String): Map<String, String> {
             val map = DEFAULT.toMutableMap()
-            map.remove(key)
+            map[key] = "{\"type\":\"object\",\"properties\":{},\"additionalProperties\":false,\"required\":[]}"
             return map
         }
     }
