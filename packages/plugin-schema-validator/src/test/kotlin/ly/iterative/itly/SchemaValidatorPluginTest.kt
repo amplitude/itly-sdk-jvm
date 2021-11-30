@@ -13,10 +13,9 @@ val VALIDATION_OPTIONS_ERROR_ON_INVALID = ValidationOptions(
     errorOnInvalid = true
 )
 
-fun loadDefaultSchemaValidator(options: Options? = null): SchemaValidatorPlugin {
-    val schemaValidatorPlugin = SchemaValidatorPlugin(Schemas.DEFAULT)
-
-    val opts = options ?: Options(environment = Environment.PRODUCTION)
+fun loadSchemaValidator(schema: Map<String, String> = Schemas.DEFAULT): SchemaValidatorPlugin {
+    val schemaValidatorPlugin = SchemaValidatorPlugin(schema)
+    val opts = Options(environment = Environment.PRODUCTION)
     schemaValidatorPlugin.load(PluginLoadOptions(opts))
 
     return schemaValidatorPlugin
@@ -25,57 +24,75 @@ fun loadDefaultSchemaValidator(options: Options? = null): SchemaValidatorPlugin 
 class SchemaValidatorPluginTest {
     @Test
     fun validate_contextWithProperties_valid() {
-        val validation = loadDefaultSchemaValidator().validate(Context.VALID_ALL_PROPS)
-        Assertions.assertEquals(validation.valid, true)
+        val validation = loadSchemaValidator().validate(Context.VALID_ALL_PROPS)
+        Assertions.assertEquals(true, validation.valid)
     }
 
     @Test
     fun validate_groupWithProperties_valid() {
-        val validation = loadDefaultSchemaValidator().validate(Group.VALID_ALL_PROPS)
-        Assertions.assertEquals(validation.valid, true)
+        val validation = loadSchemaValidator().validate(Group.VALID_ALL_PROPS)
+        Assertions.assertEquals(true, validation.valid)
     }
 
     @Test
     fun validate_identifyWithProperties_valid() {
-        val validation = loadDefaultSchemaValidator().validate(Identify.VALID_ALL_PROPS)
-        Assertions.assertEquals(validation.valid, true)
+        val validation = loadSchemaValidator().validate(Identify.VALID_ALL_PROPS)
+        Assertions.assertEquals(true, validation.valid)
+    }
+
+    @Test
+    fun validate_identifyWithoutProperties_invalid() {
+        val validation = loadSchemaValidator().validate(Identify.INVALID_NO_PROPS)
+        Assertions.assertEquals(false, validation.valid)
+    }
+
+    @Test
+    fun validate_identifyWithoutPropertiesNoSchema_valid() {
+        val validation = loadSchemaValidator(Schemas.defaultWithEmpty("identify")).validate(Identify.INVALID_NO_PROPS)
+        Assertions.assertEquals(true, validation.valid)
+    }
+
+    @Test
+    fun validate_identifyWithPropertiesNoSchema_invalid() {
+        val validation = loadSchemaValidator(Schemas.defaultWithEmpty("identify")).validate(Identify.VALID_ALL_PROPS)
+        Assertions.assertEquals(false, validation.valid)
     }
 
     @Test
     fun validate_eventWithAllProperties_valid() {
-        val validation = loadDefaultSchemaValidator().validate(EventWithAllProperties.VALID_ALL_PROPS)
-        Assertions.assertEquals(validation.valid, true)
+        val validation = loadSchemaValidator().validate(EventWithAllProperties.VALID_ALL_PROPS)
+        Assertions.assertEquals(true, validation.valid)
     }
 
     @Test
     fun validate_eventWithConstTypes_valid() {
-        val validation = loadDefaultSchemaValidator().validate(EventWithConstTypes.VALID)
-        Assertions.assertEquals(validation.valid, true)
+        val validation = loadSchemaValidator().validate(EventWithConstTypes.VALID)
+        Assertions.assertEquals(true, validation.valid)
     }
 
     @Test
     fun validate_eventWithArrayTypes_valid() {
-        val validation = loadDefaultSchemaValidator().validate(EventWithArrayTypes(
+        val validation = loadSchemaValidator().validate(EventWithArrayTypes(
             arrayOf(true, false),
             arrayOf(1.0, 2.0, 3.0),
             arrayOf(mapOf("a" to 1, "b" to 2.0, "c" to "xyz"), mapOf("x" to "a", "y" to 2.0, "z" to "abc")),
             arrayOf("a", "bc")
         ))
-        Assertions.assertEquals(validation.valid, true)
+        Assertions.assertEquals(true, validation.valid)
     }
 
     @Test
     fun validate_eventObjectTypes_valid() {
-        val validation = loadDefaultSchemaValidator().validate(EventWithObjectTypes(
+        val validation = loadSchemaValidator().validate(EventWithObjectTypes(
             mapOf("a" to 1, "b" to 2.0, "c" to "xyz"),
             arrayOf(mapOf("a" to 1, "b" to 2.0, "c" to "xyz"), mapOf("x" to "a", "y" to 2.0, "z" to "abc"))
         ))
-        Assertions.assertEquals(validation.valid, true)
+        Assertions.assertEquals(true, validation.valid)
     }
 
     @Test
     fun validate_invalidEvent_notValid() {
-        val validation = loadDefaultSchemaValidator().validate(invalidEvent)
+        val validation = loadSchemaValidator().validate(invalidEvent)
         Assertions.assertEquals(validation.valid, false)
         Assertions.assertEquals(invalidEventExpectedErrorMessage, validation.message)
     }
@@ -156,7 +173,7 @@ class SchemaValidatorPluginTest {
     @Test
     fun itly_nullContextWithNoContextSchema_succeed() {
         val itly: Itly = TestUtil.getItly(Options(
-            plugins = arrayListOf(SchemaValidatorPlugin(Schemas.NO_CONTEXT))
+            plugins = arrayListOf(SchemaValidatorPlugin(Schemas.defaultWithEmpty("context")))
         ))
 
         Assertions.assertDoesNotThrow {
@@ -182,7 +199,7 @@ class SchemaValidatorPluginTest {
                 "prop" to "value"
             )),
             Options(
-                plugins = arrayListOf(SchemaValidatorPlugin(Schemas.NO_CONTEXT))
+                plugins = arrayListOf(SchemaValidatorPlugin(Schemas.defaultWithEmpty("context")))
             )
         )
 
@@ -191,7 +208,7 @@ class SchemaValidatorPluginTest {
         }
 
         Assertions.assertEquals(
-            "No schema found for 'context'. Received context={\"prop\":\"value\"}",
+            "Error validating 'context'. \$.prop: is not defined in the schema and the schema does not allow additional properties.",
             exception.message
         )
     }
