@@ -17,5 +17,9 @@ class Identify(
             requiredNumber = 2.0,
             optionalArray = arrayOf("optional")
         )
+
+        val INVALID_NO_PROPS = Event(
+            name = "identify"
+        )
     }
 }
