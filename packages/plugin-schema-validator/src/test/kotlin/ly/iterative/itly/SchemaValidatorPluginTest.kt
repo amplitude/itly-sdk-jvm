@@ -48,15 +48,14 @@ class SchemaValidatorPluginTest {
 
     @Test
     fun validate_identifyWithoutPropertiesNoSchema_valid() {
-        val validation = loadSchemaValidator(Schemas.defaultWithout("identify")).validate(Identify.INVALID_NO_PROPS)
+        val validation = loadSchemaValidator(Schemas.defaultWithEmpty("identify")).validate(Identify.INVALID_NO_PROPS)
         Assertions.assertEquals(true, validation.valid)
     }
 
     @Test
     fun validate_identifyWithPropertiesNoSchema_invalid() {
-        val validation = loadSchemaValidator(Schemas.defaultWithout("identify")).validate(Identify.VALID_ALL_PROPS)
+        val validation = loadSchemaValidator(Schemas.defaultWithEmpty("identify")).validate(Identify.VALID_ALL_PROPS)
         Assertions.assertEquals(false, validation.valid)
-        Assertions.assertEquals("No schema found for 'identify'. Received identify={\"optionalArray\":[\"optional\"],\"requiredNumber\":2.0}", validation.message)
     }
 
     @Test
@@ -174,7 +173,7 @@ class SchemaValidatorPluginTest {
     @Test
     fun itly_nullContextWithNoContextSchema_succeed() {
         val itly: Itly = TestUtil.getItly(Options(
-            plugins = arrayListOf(SchemaValidatorPlugin(Schemas.defaultWithout("context")))
+            plugins = arrayListOf(SchemaValidatorPlugin(Schemas.defaultWithEmpty("context")))
         ))
 
         Assertions.assertDoesNotThrow {
@@ -200,7 +199,7 @@ class SchemaValidatorPluginTest {
                 "prop" to "value"
             )),
             Options(
-                plugins = arrayListOf(SchemaValidatorPlugin(Schemas.defaultWithout("context")))
+                plugins = arrayListOf(SchemaValidatorPlugin(Schemas.defaultWithEmpty("context")))
             )
         )
 
@@ -209,7 +208,7 @@ class SchemaValidatorPluginTest {
         }
 
         Assertions.assertEquals(
-            "No schema found for 'context'. Received context={\"prop\":\"value\"}",
+            "Error validating 'context'. \$.prop: is not defined in the schema and the schema does not allow additional properties.",
             exception.message
         )
     }

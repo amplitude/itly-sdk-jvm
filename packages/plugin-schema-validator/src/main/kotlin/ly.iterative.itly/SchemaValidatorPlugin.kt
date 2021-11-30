@@ -17,7 +17,6 @@ class SchemaValidatorPlugin constructor(
     companion object {
         const val ID = "schema-validator"
         private const val LOG_TAG = "[plugin-$ID]"
-        private val SYSTEM_EVENTS = arrayOf("context", "identify", "group", "page")
     }
 
     private lateinit var validators: Map<String, JsonSchema>
@@ -39,15 +38,6 @@ class SchemaValidatorPlugin constructor(
 
         val schemaKey = getSchemaKey(event)
         if (!this.validators.containsKey(schemaKey)) {
-            if (SYSTEM_EVENTS.contains(schemaKey)) {
-                if (event.properties.isEmpty()) {
-                    return ValidationResponse(
-                        valid = true,
-                        pluginId = this.id()
-                    )
-                }
-            }
-
             return ValidationResponse(
                 valid = false,
                 message = "No schema found for '${event.name}'. Received ${event.name}=${JacksonProperties.toJackson(event)}",
