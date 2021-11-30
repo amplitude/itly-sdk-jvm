@@ -47,7 +47,7 @@ class SchemaValidatorPluginTest {
     }
 
     @Test
-    fun validate_pageWithoutPropertiesNoSchema_valid() {
+    fun validate_identifyWithoutPropertiesNoSchema_valid() {
         val validation = loadSchemaValidator(Schemas.defaultWithout("identify")).validate(Identify.INVALID_NO_PROPS)
         Assertions.assertEquals(true, validation.valid)
     }
